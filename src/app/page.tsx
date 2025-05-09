@@ -41,6 +41,9 @@ export default function Home(){
                             what if you wanted something... bigger?
                         </p>
                     </motion.div>
+                    {/*
+                    uhh skibidi toilet idk
+                    */}
                 </motion.div>
             </div>
         </>

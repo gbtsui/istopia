@@ -49,7 +49,7 @@ export default async function CreateUser(credentials: {name: string, display_nam
             }
         });
 
-        console.log(user)
+        console.log("created user" + user.name)
 
         result = {success: true, user: user}
     } catch (err) {

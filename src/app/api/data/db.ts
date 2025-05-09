@@ -15,10 +15,3 @@ export const prisma = globalForPrisma.prisma || new PrismaClient({});
 if (process.env.NODE_ENV !== "production") {
     globalForPrisma.prisma = prisma;
 }
-
-async function test_database() {
-    const users = await prisma.user.findMany();
-    console.log(users)
-}
-
-test_database()

@@ -1,19 +1,6 @@
 import NextAuth from 'next-auth';
-import {CredentialsProvider} from 'next-auth/providers';
+import {options} from "@/app/api/auth/[...nextauth]/options";
 
-const handler = NextAuth({
-    providers: [
-        CredentialsProvider({
-            name: "credentials",
-            credentials: {
-                identifier: {label: "username/email", type: "text", placeholder: "username/email"},
-                password: {label: "password", type: "password"}
-            },
-            //async authorize(credentials, req){
-                //add authorize data
-            //}
-        })
-    ]
-})
+const handler = NextAuth(options)
 
 export {handler as GET, handler as POST}
