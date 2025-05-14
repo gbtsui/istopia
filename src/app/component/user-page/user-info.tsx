@@ -7,7 +7,7 @@ type UserInfoComponentProps = {
 }
 
 export default function UserInfoComponent(props: UserInfoComponentProps) {
-    var {user} = props
+    const {user} = props
     return (
         <div>
             <h1>{user.name}</h1>

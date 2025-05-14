@@ -41,5 +41,8 @@ export const options: AuthOptions = {
             }
         })
     ],
+    pages: {
+        signIn: "/signin"
+    }
     //add callbacks later
 }

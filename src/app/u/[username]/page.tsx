@@ -6,8 +6,8 @@ import GetUserData from "@/app/api/data/user-management/get-user-data";
 import UserInfoComponent from "@/app/component/user-page/user-info";
 import UnknownUserPage from "@/app/component/user-page/unknown-user";
 
-export default async function UserPage({params}: {params: {username: string}}) {
-    const {username} = params;
+export default async function UserPage({params}: {params: Promise<{username: string}>}) {
+    const {username} = await params;
     //const [loading, setLoading] = useState(true);
 
     let user: User | null = await GetUserData(username);
