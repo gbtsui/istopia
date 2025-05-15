@@ -4,7 +4,7 @@ import {
     useImperativeHandle,
     useState,
     useEffect,
-    useRef, Ref
+    Ref
 } from "react";
 
 export type TypewriterProps = {
