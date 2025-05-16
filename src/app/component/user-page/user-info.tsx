@@ -18,10 +18,8 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
         const update = async () => {
             setLoading(true);
             const newUserData: PublicUser = {
-                name: user.name,
                 display_name: data.get("display_name") as string,
                 summary_text: data.get("summary_text") as string,
-                created_at: user.created_at,
                 about_me: data.get("about_me") as string,
             }
 
@@ -73,7 +71,7 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                         </button> : null}
                     <div>
                         <p>User
-                            since {user.created_at.getDate()}.{user.created_at.getMonth()}.{user.created_at.getFullYear()}</p>
+                            since {user.created_at?.getDate()}.{user.created_at?.getMonth()}.{user.created_at?.getFullYear()}</p>
                     </div>
                 </div>
 

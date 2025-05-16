@@ -1,7 +1,7 @@
 export type PublicUser = {
-    name: string,
+    name?: string,
     display_name: string,
     summary_text: string | null,
-    created_at: Date,
+    created_at?: Date,
     about_me: string | null
 }
