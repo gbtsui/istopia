@@ -12,32 +12,54 @@ type UserInfoComponentProps = {
 export default function UserInfoComponent(props: UserInfoComponentProps) {
     const {user, isLoggedInAsUser} = props
     const [editingModeEnabled, setEditingModeEnabled] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const updateUser = (data: FormData)=> {
-        //do something here wait
+    const updateUser = (data: FormData) => {
+        const update = async () => {
+            setLoading(true);
+            const newUserData: PublicUser = {
+                name: user.name,
+                display_name: data.get("display_name") as string,
+                summary_text: data.get("summary_text") as string,
+                created_at: user.created_at,
+                about_me: data.get("about_me") as string,
+            }
+
+            await UpdateUserPublicData(newUserData);
+            setLoading(false);
+            setEditingModeEnabled(false);
+        }
+        update()
+    }
+
+    if (loading) {
+        //add loading behavior here
     }
 
     return (
-        <div>
-            <form>
+        <div className={"relative"}>
+            <form action={updateUser}>
                 <div className={"p-3 m-5 bg-gray-800 rounded-xl flex flex-row justify-between"}>
                     <div>
                         <h1 className={"text-xl text-gray-400 w-sm"}>{user.name}</h1>
                         {editingModeEnabled ?
-                            <form>
+                            <>
                                 <h2>
-                                    <input className={"text-xl p-0.5 my-0.5 rounded-md bg-gray-600"}
+                                    <input className={"text-xl p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
+                                           name={"display_name"}
                                            type={"text"}
                                            defaultValue={user.display_name}
-                                           placeholder={"what do you want people to call you?"}/>
+                                           placeholder={"what do you want people to call you?"}
+                                           required/>
                                 </h2>
                                 <h3>
-                                    <input className={"text-md p-0.5 my-0.5 rounded-md bg-gray-600"}
+                                    <input className={"text-md p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
+                                           name={"summary_text"}
                                            type={"text"}
                                            defaultValue={user.summary_text as string}
                                            placeholder={"who are you?"}/>
                                 </h3>
-                            </form>
+                            </>
                             :
                             <>
                                 <h2 className={"text-2xl"}>{user.display_name}</h2>
@@ -45,9 +67,10 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                             </>
                         }
                     </div>
-                    {isLoggedInAsUser ?
-                        <button onClick={() => setEditingModeEnabled(!editingModeEnabled)}>Edit
-                            Mode</button> : null}
+                    {isLoggedInAsUser && !editingModeEnabled ?
+                        <button type="button" onClick={() => setEditingModeEnabled(!editingModeEnabled)}>
+                            Edit Mode
+                        </button> : null}
                     <div>
                         <p>User
                             since {user.created_at.getDate()}.{user.created_at.getMonth()}.{user.created_at.getFullYear()}</p>
@@ -55,8 +78,27 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                 </div>
 
                 <div className={"p-3 m-5 bg-gray-800 rounded-xl w-1/2"}>
-                    <p>{user.about_me ? user.about_me : "This user doesn't have an about me... yet!"}</p>
+                    {editingModeEnabled ?
+                        <textarea
+                            className={"text-md p-2 w-full rounded-md bg-gray-600 min-h-vh"}
+                            name={"about_me"}
+                            defaultValue={user.about_me as string}
+                            placeholder={"what do you want people to know about you?"}
+                        ></textarea> //TODO: need to add length validation and stuff!
+                        :
+                        <p>{user.about_me ? user.about_me : "This user doesn't have an about me... yet!"}</p> //TODO: make sure paragraph breaks work here! probably just do a split and render thing
+                    }
                 </div>
+                {
+                    editingModeEnabled ?
+                        <div className={"absolute bottom-0 right-0"}>
+                            <input type={"submit"}
+                                   className={"p-4 mx-5 bg-gray-200 text-black rounded-xl hover:bg-gray-500 transition-all"}
+                                   name={"save"} value={"save"}/>
+                        </div>
+                        :
+                        null
+                }
             </form>
         </div>
     )
