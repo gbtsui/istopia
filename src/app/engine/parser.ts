@@ -4,7 +4,8 @@ import {z} from "zod"
 import {Block, PieceContent} from "@/app/types";
 
 const BlockPropsSchema = z.object({
-    text: z.array(z.string())
+    content: z.array(z.string()),
+    children: z.array(z.lazy(() => BlockSchema)).optional(),
 })
 
 const BlockSchema: z.ZodType<Block> = z.lazy(() =>
@@ -12,7 +13,7 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
         type: z.string(),
         styling: z.string(),
         props: BlockPropsSchema,
-        children: z.array(z.lazy(() => BlockSchema)).optional()
+        //children: z.array(z.lazy(() => BlockSchema)).optional()
     })
 )
 

@@ -5,7 +5,6 @@
         {
           "type": "text",
           "styling": "string using tailwind styling for now ig",
-          "children": [],
           "props": {
             "content": [
               "text content split by \n!!"
@@ -15,7 +14,6 @@
         {
           "type": "typewriter",
           "styling": "",
-          "children": null,
           "props": {
             "content": [
               "more text content split by \n!!!"

@@ -4,12 +4,12 @@ import {Block, Page} from "@/app/types";
 import SimpleText from "@/app/engine/engine-components/simple-text";
 import {JSX} from "react";
 
-export async function RenderPage(data: Page) {
+export async function RenderPage({data}: {data:Page}) {
     const {blocks} = data;
     let children: Array<JSX.Element> = [] //zero type safety go brr i guess??
 
-    for (const block of blocks) {
-        children.push(<RenderBlock block={block} />); //find a way to recursively render children ig
+    for (const i in blocks) {
+        children.push(<RenderBlock key={i} block={blocks[i]} />); //find a way to recursively render children ig
     }
     return <>{children}</>;
 }

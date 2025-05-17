@@ -35,7 +35,7 @@ export interface CommentData {
 }
 
 export interface BlockProps {
-    text: string[];
+    content: string[];
     className?: string;
     //children?: Array<Block>
 }
