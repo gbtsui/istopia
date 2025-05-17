@@ -1,21 +1,11 @@
 "use server";
 
 import {z} from "zod"
-
-export interface BlockProps {
-    text: string[];
-}
+import {Block, PieceContent} from "@/app/types";
 
 const BlockPropsSchema = z.object({
     text: z.array(z.string())
 })
-
-export interface Block {
-    type: string,
-    styling: string,
-    children?: Array<Block>,
-    props: BlockProps
-}
 
 const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     z.object({
@@ -26,17 +16,9 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     })
 )
 
-export interface Page {
-    blocks: Array<Block>
-}
-
 const PageSchema = z.object({
     blocks: z.array(BlockSchema),
 })
-
-export interface PieceContent {
-    pages: Array<Page>
-}
 
 const PieceContentSchema = z.object({
     pages: z.array(PageSchema),
