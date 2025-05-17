@@ -85,7 +85,7 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                                 return <br key={id}/>
                             }
                             return <p key={id}>{line}</p>}
-                        ) : <p>"This user doesn't have an about me... yet!"</p>}</> //TODO: make sure paragraph breaks work here! probably just do a split and render thing
+                        ) : <p>"This user doesn't have an about me... yet!"</p>}</>
                     }
                 </div>
                 {
