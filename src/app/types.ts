@@ -36,12 +36,18 @@ export interface CommentData {
 
 export interface BlockProps {
     text: string[];
+    className?: string;
+    //children?: Array<Block>
 }
+
+export interface ContainerBlockProps extends BlockProps {
+    children: Array<Block>
+} // for if a block is a ParentBlock?? i guess?? parentblocks dont exist yet tho...
 
 export interface Block {
     type: string,
-    styling: string,
-    children?: Array<Block>,
+    //styling: string,
+    //children?: Array<Block>,
     props: BlockProps
 }
 

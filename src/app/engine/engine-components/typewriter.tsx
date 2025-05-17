@@ -6,13 +6,12 @@ import {
     useEffect,
     Ref
 } from "react";
-import {BlockProps} from "@/app/engine/parser";
+import {BlockProps} from "@/app/types";
 
 export interface TypewriterProps extends BlockProps {
     characterDelay?: number;
     lineDelay?: number;
     manual?: boolean;
-    className?: string;
     onComplete?: () => void;
     ref?: Ref<TypewriterHandle>
 }
