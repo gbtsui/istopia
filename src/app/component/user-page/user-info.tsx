@@ -65,10 +65,6 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                             </>
                         }
                     </div>
-                    {isLoggedInAsUser && !editingModeEnabled ?
-                        <button type="button" onClick={() => setEditingModeEnabled(!editingModeEnabled)}>
-                            Edit Mode
-                        </button> : null}
                     <div>
                         <p>User
                             since {user.created_at?.getDate()}.{user.created_at?.getMonth()}.{user.created_at?.getFullYear()}</p>
@@ -84,7 +80,12 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                             placeholder={"what do you want people to know about you?"}
                         ></textarea> //TODO: need to add length validation and stuff!
                         :
-                        <p>{user.about_me ? user.about_me : "This user doesn't have an about me... yet!"}</p> //TODO: make sure paragraph breaks work here! probably just do a split and render thing
+                        <>{user.about_me ? user.about_me.split("\n").map((line, id) => {
+                            if (line === "") {
+                                return <br key={id}/>
+                            }
+                            return <p key={id}>{line}</p>}
+                        ) : <p>"This user doesn't have an about me... yet!"</p>}</> //TODO: make sure paragraph breaks work here! probably just do a split and render thing
                     }
                 </div>
                 {
@@ -97,6 +98,10 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                         :
                         null
                 }
+                {isLoggedInAsUser && !editingModeEnabled ?
+                    <button type="button" className={"absolute bottom-0 right-0 p-4 mx-5 bg-gray-200 text-black rounded-xl hover:bg-gray-500 transition-all"} onClick={() => setEditingModeEnabled(!editingModeEnabled)}>
+                        Edit Profile
+                    </button> : null}
             </form>
         </div>
     )
