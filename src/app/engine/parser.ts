@@ -1,12 +1,14 @@
 "use server";
 
+import {z} from "zod"
+
 export interface BlockProps {
     text: string[];
 }
 
-export interface Page {
-    blocks: Array<Block>
-}
+const BlockPropsSchema = z.object({
+    text: z.array(z.string())
+})
 
 export interface Block {
     type: string,
@@ -15,19 +17,31 @@ export interface Block {
     props: BlockProps
 }
 
-export interface PieceContentSchema {
+const BlockSchema: z.ZodType<Block> = z.lazy(() =>
+    z.object({
+        type: z.string(),
+        styling: z.string(),
+        props: BlockPropsSchema,
+        children: z.array(z.lazy(() => BlockSchema)).optional()
+    })
+)
+
+export interface Page {
+    blocks: Array<Block>
+}
+
+const PageSchema = z.object({
+    blocks: z.array(BlockSchema),
+})
+
+export interface PieceContent {
     pages: Array<Page>
 }
 
-/*
-export default async function Parse(data: PieceContentSchema): Promise<PieceContentSchema> {
+const PieceContentSchema = z.object({
+    pages: z.array(PageSchema),
+})
 
-    const piece_content: PieceContentSchema = data as unknown as PieceContentSchema;
-    console.log(JSON.stringify(piece_content));
-    return piece_content;
-    //no clue if any of this works???
+export default async function Parse(data: unknown): Promise<PieceContent> {
+    return PieceContentSchema.parseAsync(data) //technically this is a validator i guess?
 }
- */
-//NEVERMIND WE DONT EVEN NEED A PARSER ANYWAYS BECAUSE THE DATA WILL ALREADY BE IN PIECECONTENTSCHEMA FORM
-
-//so ideally the parser takes the raw json data and converts it into block data? which then gets passed to the renderer which actually renders the data, which gets passed to the engine to do stuff
