@@ -1,8 +1,11 @@
 "use server";
 
 import {Block, Page} from "@/app/types";
-import SimpleText from "@/app/engine/engine-components/simple-text";
 import {JSX} from "react";
+
+
+import SimpleText from "@/app/engine/engine-components/simple-text";
+import Typewriter from "@/app/engine/engine-components/typewriter";
 
 export async function RenderPage({data}: {data:Page}) {
     const {blocks} = data;
@@ -18,6 +21,8 @@ export async function RenderBlock({block}: {block:Block}): Promise<JSX.Element |
     switch (block.type) {
         case "text":
             return <SimpleText props={block.props}/>
+        case "typewriter":
+            return <Typewriter props={block.props}/>
         default:
             return null
     }

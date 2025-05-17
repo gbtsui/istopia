@@ -22,8 +22,18 @@ export interface TypewriterHandle {
 }
 
 export default function Typewriter(
-    {text, characterDelay=25, lineDelay=1000, manual=false, className="", onComplete, ref}: TypewriterProps,
+    {props}: {props: TypewriterProps},
 )  {
+    const {
+        content,
+        characterDelay = 25,
+        lineDelay = 1000,
+        manual = false,
+        className = "",
+        onComplete,
+        ref
+    } = props;
+
     const [lines, setLines] = useState<string[]>([]);
     const [lineIndex, setLineIndex] = useState(0);
     const [charIndex, setCharIndex] = useState(0);
@@ -31,7 +41,7 @@ export default function Typewriter(
 
     useImperativeHandle(ref, () => ({
         nextLine() {
-            if (!isTyping && lineIndex + 1 < text.length) {
+            if (!isTyping && lineIndex + 1 < content.length) {
                 setLines(prev => [...prev, ""]);
                 setLineIndex(prev => prev + 1);
                 setCharIndex(0);
@@ -47,9 +57,9 @@ export default function Typewriter(
     }));
 
     useEffect(() => {
-        if (!isTyping || lineIndex >= text.length) return;
+        if (!isTyping || lineIndex >= content.length) return;
 
-        const currentLine = text[lineIndex];
+        const currentLine = content[lineIndex];
 
         if (charIndex < currentLine.length) {
             const timeout = setTimeout(() => {
@@ -63,7 +73,7 @@ export default function Typewriter(
             }, characterDelay);
             return () => clearTimeout(timeout);
         } else {
-            if (lineIndex + 1 >= text.length) {
+            if (lineIndex + 1 >= content.length) {
                 setIsTyping(false);
                 onComplete?.();
             } else if (!manual) {
@@ -76,12 +86,12 @@ export default function Typewriter(
                 return () => clearTimeout(timeout);
             }
         }
-    }, [charIndex, isTyping, lineIndex, characterDelay, lineDelay, manual, text]);
+    }, [charIndex, isTyping, lineIndex, characterDelay, lineDelay, manual, content]);
 
     useEffect(() => {
-        if (text.length > 0) setLines([""]);
+        if (content.length > 0) setLines([""]);
         setIsTyping(true);
-    }, [text]);
+    }, [content]);
     return (
         <div className={className}>
             {lines.map((line, idx) => (
