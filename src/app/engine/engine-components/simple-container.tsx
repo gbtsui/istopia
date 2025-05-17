@@ -1,10 +1,11 @@
 "use client";
 
 import {ContainerBlockProps} from "@/app/types";
-import {RenderBlock} from "@/app/engine/renderer";
+import RenderBlock from "@/app/engine/render-block";
 
-export default function SimpleContainer(props: ContainerBlockProps) {
+export default function SimpleContainer({props}: {props: ContainerBlockProps}) {
     const {children, className} = props;
-
-    return <div className={className}>{children.map((block) => <RenderBlock block={block}/>)}</div>;
+    console.log(children);
+    console.log(className)
+    return <div className={className}>{children.map((block, id) => <RenderBlock key={id} block={block}/>)}</div>;
 }

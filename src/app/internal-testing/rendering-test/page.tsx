@@ -9,22 +9,37 @@ const test_data = {
             "blocks": [
                 {
                     "type": "text",
-                    "styling": "string using tailwind styling for now ig",
-                    "children": [],
                     "props": {
                         "content": [
                             "text content split by \n!!"
-                        ]
+                        ],
+                        "className": "string using tailwind styling for now ig",
                     }
                 },
                 {
                     "type": "typewriter",
-                    "styling": "",
-                    "children": null,
                     "props": {
                         "content": [
                             "more text content split by \n!!!"
-                        ]
+                        ],
+                        "className": "",
+                    }
+                },
+                {
+                    "type":"simple-container",
+                    "props": {
+                        "children": [
+                            {
+                                "type": "text",
+                                "props": {
+                                    "content": [
+                                        "this some text in a container!"
+                                    ],
+                                    "className": "",
+                                }
+                            }
+                        ],
+                        "className":"p-3 bg-white text-black",
                     }
                 }
             ]

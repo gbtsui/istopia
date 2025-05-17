@@ -4,14 +4,14 @@ import {z} from "zod"
 import {Block, PieceContent} from "@/app/types";
 
 const BlockPropsSchema = z.object({
-    content: z.array(z.string()),
+    content: z.array(z.string()).optional(),
     children: z.array(z.lazy(() => BlockSchema)).optional(),
+    className: z.string(),
 })
 
 const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     z.object({
         type: z.string(),
-        styling: z.string(),
         props: BlockPropsSchema,
         //children: z.array(z.lazy(() => BlockSchema)).optional()
     })

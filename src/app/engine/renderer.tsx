@@ -1,11 +1,9 @@
 "use server";
 
-import {Block, Page} from "@/app/types";
+import {Page} from "@/app/types";
 import {JSX} from "react";
 
-
-import SimpleText from "@/app/engine/engine-components/simple-text";
-import Typewriter from "@/app/engine/engine-components/typewriter";
+import RenderBlock from "@/app/engine/render-block";
 
 export async function RenderPage({data}: {data:Page}) {
     const {blocks} = data;
@@ -15,15 +13,4 @@ export async function RenderPage({data}: {data:Page}) {
         children.push(<RenderBlock key={i} block={blocks[i]} />); //find a way to recursively render children ig
     }
     return <>{children}</>;
-}
-
-export async function RenderBlock({block}: {block:Block}): Promise<JSX.Element | null> {
-    switch (block.type) {
-        case "text":
-            return <SimpleText props={block.props}/>
-        case "typewriter":
-            return <Typewriter props={block.props}/>
-        default:
-            return null
-    }
 }
