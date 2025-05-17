@@ -32,10 +32,9 @@ export const options: AuthOptions = {
                     if (!pw_match) {return null;}
 
                     const {id, name, email} = db_user;
-                    console.log(name + " logged in")
                     return {id, name, email};
                 } catch (e) {
-                    console.error(e);
+                    console.error(e)
                     return null;
                 }
             }

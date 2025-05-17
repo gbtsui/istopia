@@ -33,13 +33,12 @@ export default function ParticleBackdrop(
     useEffect(() => {
         initParticlesEngine(async (engine: Engine) => {
             await loadSlim(engine);
-        }).then(() => {setInitialized(true); console.log("engine initialized")});
+        }).then(() => {setInitialized(true);});
     }, []);
 
     const particlesLoaded = async (container?: Container): Promise<void> => {console.log(container)}
 
     if (initialized) {
-        console.log("initialized! particles spawning");
         return (
             <Particles
                 id={id}
