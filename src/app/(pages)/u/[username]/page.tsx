@@ -1,6 +1,6 @@
 "use server";
 
-import {User} from "../../../../../../../../../mnt/shared-data/Documents/istopia/src/generated/prisma";
+import {User} from "@/generated/prisma";
 import GetUserData from "@/app/api/data/user-management/get-user-data";
 import UserInfoComponent from "@/app/component/user-page/user-info";
 import UnknownUserPage from "@/app/component/user-page/unknown-user";
