@@ -25,7 +25,7 @@ export default function Typewriter(
     {props}: {props: TypewriterProps},
 )  {
     const {
-        content,
+        content = [],
         characterDelay = 25,
         lineDelay = 1000,
         manual = false,

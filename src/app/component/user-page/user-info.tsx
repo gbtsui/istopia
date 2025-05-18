@@ -18,6 +18,7 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
         const update = async () => {
             setLoading(true);
             const newUserData: PublicUser = {
+                name: user.name,
                 display_name: data.get("display_name") as string,
                 summary_text: data.get("summary_text") as string,
                 about_me: data.get("about_me") as string,
@@ -74,7 +75,7 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                 <div className={"p-3 m-5 bg-gray-800 rounded-xl w-1/2"}>
                     {editingModeEnabled ?
                         <textarea
-                            className={"text-md p-2 w-full rounded-md bg-gray-600 min-h-vh"}
+                            className={"text-md p-2 w-full rounded-md bg-gray-600 min-h-screen"}
                             name={"about_me"}
                             defaultValue={user.about_me as string}
                             placeholder={"what do you want people to know about you?"}
