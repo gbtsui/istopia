@@ -37,16 +37,7 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
     }
     const content: PieceContent = await Parse(db_piece.content)
     return {
-        id: db_piece.id,
-        author_id: db_piece.author_id,
-        title: db_piece.title,
-        slug: db_piece.slug,
-        summary: db_piece.slug,
-        published: db_piece.published,
-        rating: db_piece.rating,
-        views: db_piece.views,
-        created_at: db_piece.created_at,
-        last_updated: db_piece.last_updated,
+        ...db_piece,
         content: content,
     } as PieceData
 }
