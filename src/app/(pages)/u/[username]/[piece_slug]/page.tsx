@@ -9,7 +9,7 @@ import PiecePageComponent from "@/app/component/piece/piece-page";
 export default async function PiecePage({params}: {params: Promise<{username: string, piece_slug: string}>}){
     const {username, piece_slug} = await params;
 
-    const piece_data = await FetchPieceData(username, piece_slug);
+    const piece_data = await FetchPieceData({username, slug: piece_slug});
 
     const user = await GetUserData(username);
     if (!piece_data) {

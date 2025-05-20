@@ -15,7 +15,7 @@ export interface DatabaseUser extends PublicUser {
 }
 
 export interface PieceData {
-    id: number,
+    id: string,
     author_id: string,
     title: string,
     slug: string,
