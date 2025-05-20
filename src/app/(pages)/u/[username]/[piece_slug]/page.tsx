@@ -11,7 +11,7 @@ export default async function PiecePage({params}: {params: Promise<{username: st
 
     const piece_data = await FetchPieceData({username, slug: piece_slug});
 
-    const user = await GetUserData(username);
+    const user = await GetUserData({name: username});
     if (!piece_data) {
         return <UnknownPiecePage/>
     }

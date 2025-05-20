@@ -1,10 +1,15 @@
 "use server";
 
 import {prisma} from "@/app/api/data/db";
-import {User} from "@/generated/prisma"
+import {DatabaseUser} from "@/app/types";
 
-export default async function GetUserData(name: string): Promise<User | null> {
+export default async function GetUserData({name, id} : {name?: string, id?: string}): Promise<DatabaseUser | null> {
     return prisma.user.findFirst({
-        where: {name}
+        where: {
+            OR: [
+                {name},
+                {id}
+            ]
+        }
     })
 }
