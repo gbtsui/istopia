@@ -45,11 +45,13 @@ export interface ContainerBlockProps extends BlockProps {
 
 export interface Block {
     type: string,
+    block_id: string,
     props: BlockProps
 }
 
 export interface Page {
-    blocks: Array<Block>
+    blocks: Array<Block>,
+    page_number: number,
 }
 
 export interface PieceContent {
