@@ -9,34 +9,50 @@
 //what if that happens to something else?
 
 
-import {DndContext, DragEndEvent, UniqueIdentifier} from "@dnd-kit/core";
-import Draggable from "@/app/component/editor/state/draggable";
-import Droppable from "@/app/component/editor/state/droppable";
+import {
+    closestCenter,
+    DndContext,
+    DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors
+} from "@dnd-kit/core";
+import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
+//import Draggable from "@/app/component/editor/state/draggable";
+//import Droppable from "@/app/component/editor/state/droppable";
 import {useState} from "react";
+import Sortable from "@/app/component/editor/state/sortable";
 
 export default function LoremIpsumPage() {
-    const containers = ["a", "b", "c"];
-    const [parent, setParent] = useState<UniqueIdentifier | null>(null);
-    const draggableMarkup = (
-        <Draggable><div className={"p-4 bg-white text-black"}>thou mayest draggeth me</div></Draggable>
-    )
+    const [items, setItems] = useState(["1", "2", "3"]);
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates
+        })
+    );
 
-    function handleDragEnd(event: DragEndEvent) {
-        const {over} = event
-        const result = over ? over.id : null
-        setParent(result)
+    function handleDragEnd(e: DragEndEvent) {
+        const {active, over} = e
+
+        if (!over) return;
+
+        if (active.id !== over.id) {
+            setItems((items) => {
+                const oldIndex = items.indexOf(active.id as string);
+                const newIndex = items.indexOf(over.id as string);
+                return arrayMove(items, oldIndex, newIndex);
+            })
+        }
     }
 
+
     return (
-        <DndContext onDragEnd={handleDragEnd}>
-            {!parent ? draggableMarkup : null}
-            {containers.map((id) => (
-                // We updated the Droppable component so it would accept an `id`
-                // prop and pass it to `useDroppable`
-                <Droppable key={id} id={id}>
-                    {parent === id ? draggableMarkup : 'Drop here'}
-                </Droppable>
-            ))}
+        <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
+            <SortableContext items={items} strategy={verticalListSortingStrategy}>
+                {items.map((id) => <Sortable className={"p-3 bg-green-800 m-3"} key={id} id={id} content={id}/>)}
+            </SortableContext>
         </DndContext>
     )
 }
