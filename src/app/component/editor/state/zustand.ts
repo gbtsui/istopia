@@ -1,5 +1,6 @@
 import {create} from "zustand"
 import {PieceContent, Page, Block} from "@/app/types";
+import FetchPieceData from "@/app/engine/fetcher";
 
 interface EditorProps {
     content: PieceContent,
@@ -11,6 +12,8 @@ interface EditorStore extends EditorProps {
     addBlock: (page_number: number, newBlock: Block) => void,
     reorderBlock: (page_number: number, block_id: string, new_position: number) => void,
     reorderPage: (page_number: number, new_position: number) => void,
+
+    fetchContent: (id: string) => void,
 }
 
 export const useEditorStore = create<EditorStore>((set) => ({
@@ -85,6 +88,14 @@ export const useEditorStore = create<EditorStore>((set) => ({
                     pages: updatedPages
                 }
             }
+        })
+    },
+
+    //will probably never have to use this actually
+    fetchContent: async (id) => {
+        const result = await FetchPieceData({id})
+        return set(() => {
+            return {...result}
         })
     }
 
