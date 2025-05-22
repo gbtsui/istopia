@@ -6,7 +6,7 @@ interface EditorProps {
     content: PieceContent,
 }
 
-interface EditorStore extends EditorProps {
+export interface EditorStore extends EditorProps {
     setContent: (content: PieceContent) => void,
     addPage: (newPage: Page) => void,
     addBlock: (page_number: number, newBlock: Block) => void,
@@ -54,7 +54,7 @@ export const useEditorStore = create<EditorStore>((set) => ({
         return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
-                    const blockIndex = page.blocks.findIndex((b) => b.block_id === block_id);
+                    const blockIndex = page.blocks.findIndex((b) => b.id === block_id);
                     if (blockIndex === -1) return page;
 
                     const updatedBlocks = [...page.blocks];
