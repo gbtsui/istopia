@@ -5,6 +5,7 @@ import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import UnauthorizedPage from "@/app/component/universal/unauthorized";
 import {PieceData} from "@/app/types";
 import {SummarySchema, TitleSchema} from "@/app/api/data/validation/validation-schemas";
+import {redirect} from "next/navigation";
 
 export default async function CreatePiecePage() {
     const user = await GetUserSession()
@@ -13,6 +14,7 @@ export default async function CreatePiecePage() {
     }
 
     async function create(form_data: FormData) {
+        "use server";
         try {
             const data: Partial<PieceData> = {
                 title: await TitleSchema.parseAsync(form_data.get("title") as string),
@@ -22,7 +24,8 @@ export default async function CreatePiecePage() {
             if (result instanceof Error) {
                 throw result
             } else {
-                //do something with the result? redirect the user to the editor page
+                redirect("/editor/"+result.slug)
+                //wait i need to set a loading system :(
             }
         } catch (error) {
             //handle error here!!
