@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 
-export default function CreatePieceForm({createAction, redirAction}: { createAction: (e: FormData) => Promise<void | Error> , redirAction: (slug: string) => Promise<void> }) {
+export default function CreatePieceForm({createAction}: { createAction: (e: FormData) => Promise<void | Error> }) {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
 
@@ -53,7 +53,6 @@ export default function CreatePieceForm({createAction, redirAction}: { createAct
                     error! {error}
                 </div>
             }
-            <button onClick={() => redirAction("98023692-3171-423f-a9ef-a56aeb9fb53e")}>redirect me</button>
         </div>
     )
 
