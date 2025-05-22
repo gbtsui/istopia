@@ -27,4 +27,9 @@ export const LoginIdentifierSchema = z.string()
         }
     );
 
+export const TitleSchema = z.string()
+    .min(1, "title is required")
+    .max(255, "title must be less than 255 characters long")
 
+export const SummarySchema = z.string()
+    .max(2000, "summary must be less than 2000 characters long")
