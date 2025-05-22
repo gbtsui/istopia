@@ -12,6 +12,7 @@ const BlockPropsSchema = z.object({
 const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     z.object({
         type: z.string(),
+        block_id: z.string(),
         props: BlockPropsSchema,
         //children: z.array(z.lazy(() => BlockSchema)).optional()
     })
@@ -19,6 +20,7 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
 
 const PageSchema = z.object({
     blocks: z.array(BlockSchema),
+    page_number: z.number(),
 })
 
 const PieceContentSchema = z.object({
