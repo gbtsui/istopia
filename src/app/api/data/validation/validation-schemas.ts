@@ -33,3 +33,4 @@ export const TitleSchema = z.string()
 
 export const SummarySchema = z.string()
     .max(2000, "summary must be less than 2000 characters long")
+    .optional()

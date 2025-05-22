@@ -19,9 +19,10 @@ export default function Editor(props: EditorProps) {
 
     return (
         <div>
-            {editor_store.content.pages[currentPage].blocks.map((block) => {
+            {/*editor_store.content.pages[currentPage].blocks.map((block) => {
                 return <div>{block.block_id}</div>
-            })}
+            })*/}
+            this is the editor!
         </div>
     )
 }
