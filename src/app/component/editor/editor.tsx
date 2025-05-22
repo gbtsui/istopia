@@ -27,7 +27,7 @@ export default function Editor(props: EditorProps) {
                     <button onClick={() => editor_store.addPage({blocks: [], page_number:0})}>add a blank page</button>
                 </div>
                 :
-                    <PageContents page_number={currentPage} editor_store={editor_store}/>
+                    <PageContents page_number={currentPage}/>
             }
             {/**/}
         </div>
