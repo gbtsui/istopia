@@ -16,27 +16,16 @@ export default async function CreatePiecePage() {
 
     async function create(form_data: FormData) {
         "use server";
-        let result: Error | PieceData | null = null;
-        try {
-            const data: Partial<PieceData> = {
-                title: await TitleSchema.parseAsync(form_data.get("title") as string),
-                summary: await SummarySchema.parseAsync(form_data.get("summary") as string),
-            } //piece data
-            result = await CreatePiece(user?.name as string, data)
-            if (result instanceof Error) {
-                throw result
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                return error
-            } else {
-                return new Error("unknown error occurred")
-            }
-        } finally {
-            if (!(result instanceof Error) && (result !== null)) {
-                redirect(`/editor/${result.id}`)
-            }
+
+        const data: Partial<PieceData> = {
+            title: await TitleSchema.parseAsync(form_data.get("title") as string),
+            summary: await SummarySchema.parseAsync(form_data.get("summary") as string),
+        } //piece data
+        const result = await CreatePiece(user?.name as string, data)
+        if (result instanceof Error) {
+            return {error: result.message}
         }
+        redirect(`/editor/${result.id}`)
     }
 
     return (

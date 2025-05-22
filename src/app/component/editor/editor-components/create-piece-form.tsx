@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 
-export default function CreatePieceForm({createAction}: { createAction: (e: FormData) => Promise<void | Error> }) {
+export default function CreatePieceForm({createAction}: { createAction: (e: FormData) => Promise<{error: string}> }) {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
 
@@ -14,8 +14,8 @@ export default function CreatePieceForm({createAction}: { createAction: (e: Form
         const runTheThingy = async () => {
             setLoading(true);
             const result = await createAction(e)
-            if (result instanceof Error) {
-                setError(result.message)
+            if (result) {
+                setError(result.error)
             }
             setLoading(false)
         }
