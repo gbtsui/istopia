@@ -7,10 +7,11 @@ import PageContents from "@/app/component/editor/editor-components/page-contents
 
 type EditorProps = {
     initialPieceData: PieceData;
+    username: string;
 }
 
 export default function Editor(props: EditorProps) {
-    const {initialPieceData} = props;
+    const {initialPieceData, username} = props;
     const [currentPage, setCurrentPage] = useState(0);
     const editor_store = useEditorStore()
     useEffect(() => {
@@ -20,6 +21,7 @@ export default function Editor(props: EditorProps) {
 
     return (
         <div>
+            <button onClick={() => editor_store.saveContent(username, initialPieceData.id)}>Save</button>
             {
                 editor_store.content.pages.length == 0 ?
                 <div className={"text-center justify-center m-4 text-xl"}>
