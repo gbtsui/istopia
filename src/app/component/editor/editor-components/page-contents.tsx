@@ -44,17 +44,17 @@ export default function PageContents(props: PageContentsProps) {
     const newBlock: Block = {
         type: "text",
         id: crypto.randomUUID(),
-        props: {
-
-        }
+        props: {}
     }
 
     return (
         <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
-            <SortableContext items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks} strategy={verticalListSortingStrategy}>
+            <SortableContext
+                items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks}
+                strategy={verticalListSortingStrategy}>
                 <div>page contents!!</div>
                 {page.blocks.length < 1 &&
-                <div>empty! oopsies</div>}
+                    <div>empty! oopsies</div>}
                 {page.blocks.map(block => (
                     <div key={block.id}>
                         Block!<br/>
@@ -62,7 +62,9 @@ export default function PageContents(props: PageContentsProps) {
                     </div>
                 ))}
 
-                <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>add a block</button>
+                <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>add a
+                    block
+                </button>
             </SortableContext>
         </DndContext>
     )
