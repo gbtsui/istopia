@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {PieceContent, Page, Block} from "@/app/types";
+import {PieceContent, Page, Block, BlockProps} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 
 interface EditorProps {
@@ -12,6 +12,8 @@ export interface EditorStore extends EditorProps {
     addBlock: (page_number: number, newBlock: Block) => void,
     reorderBlock: (page_number: number, block_id: string, new_position: number) => void,
     reorderPage: (page_number: number, new_position: number) => void,
+
+    editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
     fetchContent: (id: string) => void,
 }
@@ -97,7 +99,34 @@ export const useEditorStore = create<EditorStore>((set) => ({
         return set(() => {
             return {...result}
         })
-    }
+    },
 
+    editBlock: (page_number, block_id, new_props) => {
+        return set((state) => {
+            const updatedPages = state.content.pages.map((page) => {
+                if (page.page_number === page_number) {
+                    const blockIndex: number = page.blocks.findIndex((block) => block.id === block_id);
+                    if (blockIndex === -1) {
+                        return {...page}
+                    }
+                    const updatedBlocks: Block[] = [...page.blocks];
+                    const [block] = updatedBlocks.splice(blockIndex, 1)
+                    block.props = new_props
+                    updatedBlocks.splice(blockIndex, 0, block)
+                    return {
+                        ...page,
+                        blocks: updatedBlocks
+                    }
+                }
+                return page
+            })
+
+            return {
+                content: {
+                    pages: updatedPages
+                }
+            }
+        })
+    }
 
 }))

@@ -60,14 +60,17 @@ export default function PageContents(props: PageContentsProps) {
                     {page.blocks.length < 1 &&
                         <div>empty! oopsies</div>}
                     {page.blocks.map(block => (
-                        <Sortable id={block.id} content={block.type} key={block.id} className={"p-2 m-2 bg-white rounded-lg text-black"}>
+                        <Sortable id={block.id} content={block.type} key={block.id}
+                                  className={"p-2 m-2 bg-white rounded-lg text-black"}>
                             <div>block!</div>
-                            <textarea className={"p-0.5 w-full"} placeholder={"write some text..."} defaultValue={block.props.content?.toString()} contentEditable={true}/>
-                            {block.props.content? <div>content exists</div>:<div>content doesn't exist</div>}
+                            <textarea className={"p-0.5 w-full"} placeholder={"write some text..."}
+                                      defaultValue={block.props.content?.toString()} contentEditable={true}/>
+                            {block.props.content ? <div>content exists</div> : <div>content doesn't exist</div>}
                         </Sortable>
                     ))}
 
-                    <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>add a
+                    <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>
+                        add a
                         block
                     </button>
                 </SortableContext>
