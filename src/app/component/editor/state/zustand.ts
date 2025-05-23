@@ -16,6 +16,7 @@ export interface EditorStore extends EditorProps {
     editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
     fetchContent: (id: string) => void,
+    saveContent: () => void
 }
 
 export const useEditorStore = create<EditorStore>((set) => ({
@@ -91,6 +92,10 @@ export const useEditorStore = create<EditorStore>((set) => ({
                 }
             }
         })
+    },
+
+    saveContent: () => {
+
     },
 
     //will probably never have to use this actually
