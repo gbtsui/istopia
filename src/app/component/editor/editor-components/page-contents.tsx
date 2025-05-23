@@ -12,6 +12,7 @@ import {
 } from "@dnd-kit/core";
 import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
+import Sortable from "@/app/component/editor/state/sortable";
 
 type PageContentsProps = {
     page_number: number;
@@ -44,28 +45,33 @@ export default function PageContents(props: PageContentsProps) {
     const newBlock: Block = {
         type: "text",
         id: crypto.randomUUID(),
-        props: {}
+        props: {
+            content: []
+        }
     }
 
     return (
-        <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
-            <SortableContext
-                items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks}
-                strategy={verticalListSortingStrategy}>
-                <div>page contents!!</div>
-                {page.blocks.length < 1 &&
-                    <div>empty! oopsies</div>}
-                {page.blocks.map(block => (
-                    <div key={block.id}>
-                        Block!<br/>
-                        {block.props.content?.map(str => <p>{str}</p>)}
-                    </div>
-                ))}
+        <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
+            <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
+                <SortableContext
+                    items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks}
+                    strategy={verticalListSortingStrategy}>
+                    <div className={"text-center text-xl"}>page contents!!</div>
+                    {page.blocks.length < 1 &&
+                        <div>empty! oopsies</div>}
+                    {page.blocks.map(block => (
+                        <Sortable id={block.id} content={block.type} key={block.id} className={"p-2 m-2 bg-white rounded-lg text-black"}>
+                            <div>block!</div>
+                            <textarea className={"p-0.5 w-full"} placeholder={"write some text..."} defaultValue={block.props.content?.toString()} contentEditable={true}/>
+                            {block.props.content? <div>content exists</div>:<div>content doesn't exist</div>}
+                        </Sortable>
+                    ))}
 
-                <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>add a
-                    block
-                </button>
-            </SortableContext>
-        </DndContext>
+                    <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>add a
+                        block
+                    </button>
+                </SortableContext>
+            </DndContext>
+        </div>
     )
 }

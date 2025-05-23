@@ -26,8 +26,12 @@ export default function Sortable(props: SortableProps) {
     }
 
     return (
-        <div ref={setNodeRef} style={style} className={props.className} {...attributes} {...listeners}>
+        <div ref={setNodeRef} style={style} className={props.className} {...attributes}>
+            <div {...listeners}>
+                handle
+            </div>
             <p>{props.content}</p>
+            {props.children}
         </div>
     )
 }
