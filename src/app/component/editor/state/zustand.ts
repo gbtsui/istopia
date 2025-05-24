@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {PieceContent, Page, Block, BlockProps, PieceData} from "@/app/types";
+import {PieceContent, Page, Block, BlockProps} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 
@@ -17,7 +17,7 @@ export interface EditorStore extends EditorProps {
     editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
     fetchContent: (id: string) => void,
-    saveContent: (username: string, piece_id: string) => Promise<void>
+    saveContent: (username: string, piece_id: string) => void
 }
 
 export const useEditorStore = create<EditorStore>((set) => ({
@@ -95,18 +95,13 @@ export const useEditorStore = create<EditorStore>((set) => ({
         })
     },
 
-    saveContent: async (username: string, piece_id: string) => {
-        console.log("saving content from zustand...")
-        console.log(result)
-        if (result instanceof Error) {
-            console.error(result)
-        }
-        async function update(state:EditorStore) {
-            const result = await UpdatePieceContent({username, piece_id, piece_content: state.content});
+    saveContent: (username: string, piece_id: string) => {
+        return set((state) => {
+            console.log("updating from zustand")
+            UpdatePieceContent({username, piece_id, piece_content: state.content});
 
             return {...state}
-        }
-        set(await update)
+            })
     },
 
     //will probably never have to use this actually

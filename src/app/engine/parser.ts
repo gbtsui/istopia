@@ -6,7 +6,7 @@ import {Block, PieceContent} from "@/app/types";
 const BlockPropsSchema = z.object({
     content: z.array(z.string()).optional(),
     children: z.array(z.lazy(() => BlockSchema)).optional(),
-    className: z.string(),
+    className: z.string().optional(),
 })
 
 const BlockSchema: z.ZodType<Block> = z.lazy(() =>

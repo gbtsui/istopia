@@ -26,5 +26,5 @@ export default async function EditPiecePage({params}: {params: Promise<{piece_id
     }
 
     console.log("ニヤ~") //TODO: reflect on what i am doing with my life
-    return <Editor initialPieceData={piece_data}/>
+    return <Editor initialPieceData={piece_data} username={logged_in_user.name as string}/>
 }
