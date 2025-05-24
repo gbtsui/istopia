@@ -97,7 +97,6 @@ export const useEditorStore = create<EditorStore>((set) => ({
 
     saveContent: (username: string, piece_id: string) => {
         return set((state) => {
-            console.log("updating from zustand")
             UpdatePieceContent({username, piece_id, piece_content: state.content});
 
             return {...state}

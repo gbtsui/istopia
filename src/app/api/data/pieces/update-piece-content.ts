@@ -26,7 +26,6 @@ export default async function UpdatePieceContent({username, piece_id, piece_cont
         where: {id: piece_id, author_id: db_user.id}, //redundancy :3
         data: {content: piece_content as unknown as InputJsonValue}
     })
-    console.log(result)
 
     return {
         ...result,
