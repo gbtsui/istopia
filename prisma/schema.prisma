@@ -5,16 +5,17 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 model User {
-  id           String    @id @default(uuid())
-  name         String    @unique @db.VarChar(255)
-  display_name String    @db.VarChar(255)
-  email        String    @unique @db.VarChar(255)
-  created_at   DateTime  @default(now())
-  summary_text String?   @db.VarChar(255)
-  about_me     String?   @db.VarChar(1023)
-  password     String
-  pieces       Piece[]
-  comments     Comment[]
+  id                   String    @id @default(uuid())
+  name                 String    @unique @db.VarChar(255)
+  display_name         String    @db.VarChar(255)
+  email                String    @unique @db.VarChar(255)
+  created_at           DateTime  @default(now())
+  summary_text         String?   @db.VarChar(255)
+  about_me             String?   @db.VarChar(1023)
+  password             String
+  pieces               Piece[]
+  comments             Comment[]
+  profile_picture_link String?
 }
 
 model Piece {
