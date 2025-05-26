@@ -3,6 +3,7 @@
 import {PublicUser} from "@/app/types";
 import {useState} from "react";
 import UpdateUserPublicData from "@/app/api/data/user-management/update-public-user-data"
+import Image from "next/image";
 
 type UserInfoComponentProps = {
     user: PublicUser;
@@ -39,32 +40,45 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
         <div className={"relative"}>
             <form action={updateUser}>
                 <div className={"p-3 m-5 bg-gray-800 rounded-xl flex flex-row justify-between"}>
-                    <div>
-                        <h1 className={"text-xl text-gray-400 w-sm"}>{user.name}</h1>
-                        {editingModeEnabled ?
-                            <>
-                                <h2>
-                                    <input className={"text-xl p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
-                                           name={"display_name"}
-                                           type={"text"}
-                                           defaultValue={user.display_name}
-                                           placeholder={"what do you want people to call you?"}
-                                           required/>
-                                </h2>
-                                <h3>
-                                    <input className={"text-md p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
-                                           name={"summary_text"}
-                                           type={"text"}
-                                           defaultValue={user.summary_text as string}
-                                           placeholder={"who are you?"}/>
-                                </h3>
-                            </>
-                            :
-                            <>
-                                <h2 className={"text-2xl"}>{user.display_name}</h2>
-                                <h3 className={"text-lg text-gray-400"}>{user.summary_text}</h3>
-                            </>
-                        }
+                    <div className={"flex flex-row justify-start gap-3 items-center"}>
+                        <div>
+                            <div className={"relative w-24 h-24"}>
+                                <Image
+                                    src={user.profile_picture_link ? user.profile_picture_link : "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/pfp/default/default.png"}
+                                    alt={"pfp"} fill={true} className={"rounded-3xl"}/>
+                                {editingModeEnabled &&
+                                    <input type={"image"} name={"file"} className={"text-center"} placeholder={"upload an image..."} onChange={(e) => {}}/>//TODO: do this later
+                                }
+
+                            </div>
+                        </div>
+                        <div>
+                            {editingModeEnabled ?
+                                <>
+                                    <h2>
+                                        <input className={"text-xl p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
+                                               name={"display_name"}
+                                               type={"text"}
+                                               defaultValue={user.display_name}
+                                               placeholder={"what do you want people to call you?"}
+                                               required/>
+                                    </h2>
+                                    <h3>
+                                        <input className={"text-md p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
+                                               name={"summary_text"}
+                                               type={"text"}
+                                               defaultValue={user.summary_text as string}
+                                               placeholder={"who are you?"}/>
+                                    </h3>
+                                </>
+                                :
+                                <>
+                                    <h1 className={"text-xl text-gray-400"}>{user.name}</h1>
+                                    <h2 className={"text-2xl"}>{user.display_name}</h2>
+                                    <h3 className={"text-lg text-gray-400"}>{user.summary_text}</h3>
+                                </>
+                            }
+                        </div>
                     </div>
                     <div>
                         <p>User
@@ -82,10 +96,11 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                         ></textarea> //TODO: need to add length validation and stuff!
                         :
                         <>{user.about_me ? user.about_me.split("\n").map((line, id) => {
-                            if (line === "") {
-                                return <br key={id}/>
+                                if (line === "") {
+                                    return <br key={id}/>
+                                }
+                                return <p key={id}>{line}</p>
                             }
-                            return <p key={id}>{line}</p>}
                         ) : <p>"This user doesn't have an about me... yet!"</p>}</>
                     }
                 </div>
@@ -100,7 +115,9 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                         null
                 }
                 {isLoggedInAsUser && !editingModeEnabled ?
-                    <button type="button" className={"absolute bottom-0 right-0 p-4 mx-5 bg-gray-200 text-black rounded-xl hover:bg-gray-500 transition-all"} onClick={() => setEditingModeEnabled(!editingModeEnabled)}>
+                    <button type="button"
+                            className={"absolute bottom-0 right-0 p-4 mx-5 bg-gray-200 text-black rounded-xl hover:bg-gray-500 transition-all"}
+                            onClick={() => setEditingModeEnabled(!editingModeEnabled)}>
                         Edit Profile
                     </button> : null}
             </form>

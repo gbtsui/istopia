@@ -56,7 +56,7 @@ export default async function UploadPFP(formData: FormData) {
         await supabase.storage.from("pfp").remove([path])
     }
 
-    const filename = `pfp/${db_user.name}.${file_extension}`;
+    const filename = `${db_user.name}.${file_extension}`;
 
     const {error: uploadError} = await supabase.storage
         .from("pfp")
@@ -76,5 +76,5 @@ export default async function UploadPFP(formData: FormData) {
         data: {profile_picture_link: publicUrl}
     })
 
-    return true
+    return publicUrl
 }

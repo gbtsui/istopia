@@ -3,7 +3,8 @@ export interface PublicUser {
     display_name: string,
     summary_text: string | null,
     created_at?: Date,
-    about_me: string | null
+    about_me: string | null,
+    profile_picture_link?: string,
 }
 
 export interface DatabaseUser extends PublicUser {

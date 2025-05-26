@@ -19,7 +19,7 @@ export default function CreatePieceForm({createAction}: { createAction: (e: Form
             }
             setLoading(false)
         }
-        runTheThingy().then(() => console.log("client side action complete :3"));
+        runTheThingy().then(() => {});
     }
 
     return (
