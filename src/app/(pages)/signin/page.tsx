@@ -1,10 +1,11 @@
 "use client";
 
 import Typewriter from "@/app/engine/engine-components/typewriter";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {signIn} from "next-auth/react";
 import {redirect} from "next/navigation";
 import ParticleBackdrop from "@/app/engine/engine-components/particle-backdrop";
+import GetUserSession from "@/app/api/data/user-management/get-user-session";
 
 const SignInPoem = [
     "I see someone.",
@@ -20,6 +21,16 @@ export default function SigninPage() {
     const [error, setError] = useState<Error|null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
+
+    useEffect(() => {
+        const init = async () => {
+            const user = await GetUserSession()
+            if (user) {
+                redirect("/dashboard")
+            }
+        }
+        init()
+    }, []);
 
     function login(form_data: FormData){
         const getResult = async ()=> {

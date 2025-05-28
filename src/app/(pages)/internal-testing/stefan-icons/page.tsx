@@ -52,7 +52,7 @@ async function UploadPFP(formData: FormData) {
     }
 
     if (db_user.profile_picture_link) {
-        const path = db_user.profile_picture_link.split("/objects/public")[1];
+        const path = db_user.profile_picture_link.split("/objects/public/pfp")[1];
         await supabase.storage.from("pfp").remove([path])
     }
 
