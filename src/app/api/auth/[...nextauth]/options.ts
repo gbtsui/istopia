@@ -64,7 +64,6 @@ export const options: AuthOptions = {
             if (db_user) {
                 token.picture = db_user.profile_picture_link
             }
-            console.log(token)
             return token;
         },
         async session({ session, token }) {
@@ -74,8 +73,6 @@ export const options: AuthOptions = {
                 session.user.image = token.picture as string;
 
             }
-            console.log(token)
-            console.log(session)
             return session;
         },
     }

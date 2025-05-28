@@ -9,20 +9,23 @@ export default async function UploadTempPfp(file: File, username: string) {
         throw new Error("Unauthorized");
     }
 
-    const temp_file_name = `${crypto.randomUUID()}.${username}.${Date.now()}`;
+    const temp_file_name = `${crypto.randomUUID()}.${username}.${Date.now()}.${file.name.split(".").pop()}`;
 
     const supabase = await createSupabaseServerClient()
 
-    await supabase.storage
+    const {error} = await supabase.storage
         .from("pfp")
-        .upload(`temp/${temp_file_name}`, file, {
+        .upload(`/temp/${temp_file_name}`, file, {
             cacheControl: "3600",
             upsert: true
         })
+    if (error) {
+        console.error(error);
+    }
 
     const public_url = supabase.storage
         .from("pfp")
-        .getPublicUrl(`temp/${temp_file_name}`).data.publicUrl
+        .getPublicUrl(`/temp/${temp_file_name}`).data.publicUrl
 
-    return { path: `temp/${temp_file_name}`, url: public_url }
+    return { path: `/temp/${temp_file_name}`, url: public_url }
 }

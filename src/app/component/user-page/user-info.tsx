@@ -5,6 +5,7 @@ import {useState} from "react";
 import UpdateUserPublicData from "@/app/api/data/user-management/update-public-user-data"
 import Image from "next/image";
 import UploadTempPfp from "@/app/api/data/user-management/upload-temp-pfp";
+import {MakePfpPermanent} from "@/app/api/data/user-management/make-pfp-permanent";
 
 type UserInfoComponentProps = {
     user: PublicUser;
@@ -29,6 +30,10 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
             }
 
             await UpdateUserPublicData(newUserData);
+            if (previewImageUrl) {
+                const pfp_permanence_result = await MakePfpPermanent(previewImageUrl, user.name as string)
+                console.log(pfp_permanence_result)
+            }
             setLoading(false);
             setEditingModeEnabled(false);
         }
@@ -44,14 +49,14 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
             <form action={updateUser}>
                 <div className={"p-3 m-5 bg-gray-800 rounded-xl flex flex-row justify-between"}>
                     <div className={"flex flex-row justify-start gap-3 items-center"}>
-                        <div>
-                            <div className={"relative w-24 h-24"}>
-                                <Image
-                                    src={previewImageUrl ?? user.profile_picture_link ?? "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/pfp/default/default.png"}
-                                    alt={"pfp"} fill={true} className={"rounded-3xl"}/>
-                                {editingModeEnabled &&
-                                    <input type={"file"} name={"file"} accept="image/*" className={"text-center"}
-                                           placeholder={"upload an image..."}
+                        <div className={"relative w-24 h-24"}>
+                            <Image
+                                src={previewImageUrl ?? user.profile_picture_link ?? "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/pfp/default/default.png"}
+                                alt={"pfp"} fill={true} className={"rounded-3xl"}/>
+                            {editingModeEnabled &&
+                                <div>
+                                    <input type={"file"} name={"file"} accept="image/*"
+                                           className={"absolute inset-0 opacity-0 cursor-pointer"}
                                            onChange={async (e) => {
                                                setLoading(true)
                                                if (!e.target.files) {
@@ -59,14 +64,15 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                                                }
                                                const file = e.target.files[0];
                                                if (file) {
-                                                    const {url} = await UploadTempPfp(file, user.name as string)
-                                                    setPreviewImageUrl(url)
+                                                   const {url} = await UploadTempPfp(file, user.name as string)
+                                                   setPreviewImageUrl(url)
+                                                   console.log(url)
                                                }
+                                               console.log("image uploaded!")
                                                setLoading(false)
-                                           }}/>//TODO: do this later
-                                }
-
-                            </div>
+                                           }}/>
+                                </div>
+                            }
                         </div>
                         <div>
                             {editingModeEnabled ?

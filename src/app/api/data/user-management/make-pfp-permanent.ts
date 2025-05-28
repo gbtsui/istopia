@@ -3,7 +3,14 @@
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {createSupabaseServerClient, prisma} from "@/app/api/data/db";
 
-export async function MakePfpPermanent(temp_file_path: string, username: string) {
+export async function MakePfpPermanent(temp_file_url: string | null, username: string) {
+    console.log("triggered")
+    if (!temp_file_url) {
+        return "";
+    }
+
+    const temp_file_path = temp_file_url.split("/").pop() as string;
+
     const user = await GetUserSession()
     if (!user || user.name !== username) {
         return new Error("Unauthorized");
@@ -18,14 +25,17 @@ export async function MakePfpPermanent(temp_file_path: string, username: string)
 
     const supabase = await createSupabaseServerClient()
 
+    console.log("downloading: " + temp_file_path)
     const {data, error: downloadError} = await supabase.storage
         .from("pfp")
-        .download(temp_file_path);
+        .download(`temp/${temp_file_path}`);
 
+    console.log(downloadError)
     if (downloadError) return downloadError;
 
     const file_extension = temp_file_path.split(".").pop()?.toLowerCase().replace(/[^a-z]/g, "");
     const final_path = `${db_user.name}.${file_extension}`
+    console.log("uploading")
     const {error: uploadError} = await supabase.storage
         .from("pfp")
         .upload(
@@ -35,12 +45,13 @@ export async function MakePfpPermanent(temp_file_path: string, username: string)
         )
     if (uploadError) return uploadError;
 
-    const public_url = supabase.storage.from("pfp").getPublicUrl(final_path).data.publicUrl;
-
+    const {data: {publicUrl}} = supabase.storage.from("pfp").getPublicUrl(final_path);
     await prisma.user.update({
         where: {id: db_user.id},
-        data: {profile_picture_link: public_url}
+        data: {profile_picture_link: publicUrl}
     })
 
-    return public_url
+    console.log(publicUrl)
+
+    return publicUrl
 }
