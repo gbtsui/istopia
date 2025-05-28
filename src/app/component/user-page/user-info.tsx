@@ -4,6 +4,7 @@ import {PublicUser} from "@/app/types";
 import {useState} from "react";
 import UpdateUserPublicData from "@/app/api/data/user-management/update-public-user-data"
 import Image from "next/image";
+import UploadTempPfp from "@/app/api/data/user-management/upload-temp-pfp";
 
 type UserInfoComponentProps = {
     user: PublicUser;
@@ -14,6 +15,8 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
     const {user, isLoggedInAsUser} = props
     const [editingModeEnabled, setEditingModeEnabled] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
     const updateUser = (data: FormData) => {
         const update = async () => {
@@ -44,10 +47,23 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                         <div>
                             <div className={"relative w-24 h-24"}>
                                 <Image
-                                    src={user.profile_picture_link ? user.profile_picture_link : "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/pfp/default/default.png"}
+                                    src={previewImageUrl ?? user.profile_picture_link ?? "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/pfp/default/default.png"}
                                     alt={"pfp"} fill={true} className={"rounded-3xl"}/>
                                 {editingModeEnabled &&
-                                    <input type={"image"} name={"file"} className={"text-center"} placeholder={"upload an image..."} onChange={(e) => {}}/>//TODO: do this later
+                                    <input type={"file"} name={"file"} accept="image/*" className={"text-center"}
+                                           placeholder={"upload an image..."}
+                                           onChange={async (e) => {
+                                               setLoading(true)
+                                               if (!e.target.files) {
+                                                   return
+                                               }
+                                               const file = e.target.files[0];
+                                               if (file) {
+                                                    const {url} = await UploadTempPfp(file, user.name as string)
+                                                    setPreviewImageUrl(url)
+                                               }
+                                               setLoading(false)
+                                           }}/>//TODO: do this later
                                 }
 
                             </div>

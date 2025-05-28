@@ -2,7 +2,7 @@
 
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import { createServerClient } from "@supabase/ssr";
-import {prisma} from "@/app/api/data/db";
+import {createSupabaseServerClient, prisma} from "@/app/api/data/db";
 import {cookies} from "next/headers";
 import {ReadonlyRequestCookies} from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
@@ -77,4 +77,20 @@ export default async function UploadPFP(formData: FormData) {
     })
 
     return publicUrl
+}
+
+export async function MakePfpPermanent(temp_file_path: string, username: string) {
+    const user = await GetUserSession()
+    if (!user || user.name !== username) {
+        throw new Error("Unauthorized");
+    }
+
+    const db_user = await prisma.user.findUnique({
+        where: {name: user.name as string}
+    })
+
+    const supabase = await createSupabaseServerClient()
+
+    const {data: fileData, error: downloadError} = await supabase.storage
+    .from("pfp")
 }
