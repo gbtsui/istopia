@@ -4,6 +4,7 @@ import {Block, BlockProps} from "@/app/types";
 import Sortable from "@/app/component/editor/state/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {ChangeEvent} from "react";
+import BlockEditFields from "@/app/component/editor/editor-components/block-edit-fields";
 
 type BlockEditProps = {
     block: Block;
@@ -22,6 +23,14 @@ export default function BlockEdit(props:BlockEditProps){
         updateZustand(newProps)
     }
 
+    const updateClassName = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        const newProps = {
+            ...block.props,
+            className: e.target.value.toString()
+        }
+        updateZustand(newProps)
+    }
+
     const updateZustand = (newProps: BlockProps) => {
         editBlock(page_number, block.id, newProps)
     }
@@ -29,16 +38,7 @@ export default function BlockEdit(props:BlockEditProps){
     return (
         <Sortable id={block.id} content={block.type} key={block.id}
                   className={"p-2 m-2 bg-white rounded-lg text-black"}>
-            <div></div>
-            {
-                block.props.content ?
-                    <textarea className={"p-0.5 w-full"} placeholder={"write some text..."}
-                              value={block.props.content?.toString()}  contentEditable={true}
-                              onChange={updateContent}/>
-                    :
-                    null
-            }
-
+            <BlockEditFields blockProps={block.props} updateContent={updateContent} updateClassName={updateClassName}/>
         </Sortable>
     )
 }
