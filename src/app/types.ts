@@ -1,10 +1,10 @@
 export interface PublicUser {
     name?: string,
-    display_name: string,
-    summary_text: string | null,
+    display_name?: string,
+    summary_text?: string | null,
     created_at?: Date,
     about_me: string | null,
-    profile_picture_link?: string,
+    profile_picture_link?: string | null,
 }
 
 export interface DatabaseUser extends PublicUser {
@@ -58,3 +58,5 @@ export interface Page {
 export interface PieceContent {
     pages: Array<Page>
 }
+
+export type Result<T> = {success: true, data: T} | {success: false, error: string}
