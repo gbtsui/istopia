@@ -1,7 +1,7 @@
 "use server";
 
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
-import { createServerClient } from "@supabase/ssr";
+import {createServerClient} from "@supabase/ssr";
 import {createSupabaseServerClient, prisma} from "@/app/api/data/db";
 import {cookies} from "next/headers";
 import {ReadonlyRequestCookies} from "next/dist/server/web/spec-extension/adapters/request-cookies";
@@ -88,9 +88,28 @@ export async function MakePfpPermanent(temp_file_path: string, username: string)
     const db_user = await prisma.user.findUnique({
         where: {name: user.name as string}
     })
+    if (!db_user) {
+        throw new Error("User doesn't exist in database.")
+    }
 
     const supabase = await createSupabaseServerClient()
 
-    const {data: fileData, error: downloadError} = await supabase.storage
-    .from("pfp")
+    const {data, error: downloadError} = await supabase.storage
+        .from("pfp")
+        .download(temp_file_path);
+
+    if (downloadError) throw downloadError;
+
+    const file_extension = temp_file_path.split(".").pop()?.toLowerCase().replace(/[^a-z]/g, "");
+    const final_path = `${db_user.name}.${file_extension}`
+    const {error: uploadError} = await supabase.storage
+        .from("pfp")
+        .upload(
+            final_path,
+            data,
+            {upsert: true}
+        )
+    if (uploadError) throw uploadError;
+
+    return supabase.storage.from("pfp").getPublicUrl(final_path).data.publicUrl;
 }
