@@ -57,7 +57,7 @@ export default function SigninPage() {
         <div className={"flex relative"}>
             <ParticleBackdrop id={"tsparticlespmo"}/>
             <div className={"px-6 py-10 text-gray-500 w-1/2"}>
-                <Typewriter props={{content: SignInPoem, lineDelay: 3000, className: "bg-gray-800 opacity-80 p-4 rounded-xl transition-all text-green-500"}}/>
+                <Typewriter content={SignInPoem} lineDelay={3000} className={"bg-gray-800 opacity-80 p-4 rounded-xl transition-all text-green-500"}/>
             </div>
             <div className={"bg-gray-700 border-gray-50 m-4 p-10 rounded-2xl w-1/2 flex flex-col gap-6 items-center opacity-80"}>
                 <h1 className={"text-4xl"}>welcome back.</h1>

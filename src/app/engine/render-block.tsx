@@ -9,11 +9,11 @@ import SimpleContainer from "@/app/engine/engine-components/simple-container";
 export default function RenderBlock({block}: {block:Block}): JSX.Element | null {
     switch (block.type) {
         case "text":
-            return <SimpleText props={block.props}/>
+            return <SimpleText {...block.props}/>
         case "typewriter":
-            return <Typewriter props={block.props}/>
+            return <Typewriter {...block.props}/>
         case "simple-container":
-            return <SimpleContainer props={block.props as ContainerBlockProps}/>
+            return <SimpleContainer {...block.props as ContainerBlockProps}/>
         default:
             return null
     }

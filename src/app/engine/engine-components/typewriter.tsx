@@ -22,7 +22,7 @@ export interface TypewriterHandle {
 }
 
 export default function Typewriter(
-    {props}: {props: TypewriterProps},
+    props: TypewriterProps
 )  {
     const {
         content = [],
