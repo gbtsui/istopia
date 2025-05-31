@@ -3,11 +3,6 @@ import {Block, BlockProps} from "@/app/types";
 import SimpleText from "@/app/engine/engine-components/simple-text";
 import Typewriter, {TypewriterHandle} from "@/app/engine/engine-components/typewriter";
 
-type BlockTrigger = {
-    listen_target_id: string,
-    action: string
-}
-
 type BlockInfo<T extends BlockProps = BlockProps> = {
     block_name: string;
     block_component: (props: T) => JSX.Element;
