@@ -14,7 +14,17 @@ export interface TypewriterProps extends BlockProps {
     manual?: boolean;
     onComplete?: () => void;
     ref?: Ref<TypewriterHandle>
+
+    listeners?: Array<{
+        target_block_id: string,
+        target_event: string,
+        action: string
+    }>
 }
+
+export type TypewriterActions = (
+    {action: "nextLine" | "reset", target_id: string}
+)
 
 export interface TypewriterHandle {
     nextLine: () => void;
@@ -38,6 +48,8 @@ export default function Typewriter(
     const [lineIndex, setLineIndex] = useState(0);
     const [charIndex, setCharIndex] = useState(0);
     const [isTyping, setIsTyping] = useState(false);
+
+
 
     useImperativeHandle(ref, () => ({
         nextLine() {
@@ -92,6 +104,9 @@ export default function Typewriter(
         if (content.length > 0) setLines([""]);
         setIsTyping(true);
     }, [content]);
+
+
+
     return (
         <div className={className}>
             {lines.map((line, idx) => (
