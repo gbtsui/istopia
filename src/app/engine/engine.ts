@@ -132,7 +132,7 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         if (!block) {
             return null
         }
-        return block.get(ref.target_value)
+        return block.get(target_value)
     }
 
     const setBlockValue = (ref: ExternalValueRef, data: any) => {
