@@ -30,9 +30,7 @@ export const BlockList: BlockInfo<any>[] = [
             onComplete: () => {},
             ref: null,
 
-            triggers: {
-
-            }
+            triggers: []
         }
     }
 

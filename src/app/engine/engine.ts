@@ -42,7 +42,10 @@ export type IstopiaEngine = (setBlock: (id: string) => void) => {
     listen: (listener: EventListener) => void; //start listening to X event
     unlisten: (listener: EventListener) => void; //stop listening to X event
     getBlockValue: (ref: ExternalValueRef) => any; //get a value from another block
-    setBlockValue: (ref: ExternalValueRef) => void; //set a value from another block in the engine (can be from your own block as well)
+    setBlockValue: (ref: ExternalValueRef, data: any) => void; //set a value from another block in the engine (can be from your own block as well)
+
+    registerBlock: (id: string, handler: (event: EngineEvent) => void) => void;
+    unregisterBlock: (id: string) => void;
 }
 
 const evaluateCondition = (condition: Condition) => {
@@ -53,19 +56,6 @@ const evaluateCondition = (condition: Condition) => {
             case "<": return condition.side_1 < condition.side_2
             default: return false
         }
-}
-
-const checkConditionType = (c: Condition | LogicalCondition) => {
-    switch (c.operator){
-        case undefined: return null
-        case "==": return "condition"
-        case ">": return "condition"
-        case "!=": return "condition"
-        case "<": return "condition"
-        case "AND": return "logical"
-        case "OR": return "logical"
-        case "NOT": return "logical"
-    }
 }
 
 const isLogicalCondition = (c: Condition | LogicalCondition): c is LogicalCondition => {
@@ -102,9 +92,8 @@ const evaluateLogicalCondition = (logicalCondition: LogicalCondition): boolean =
 }
 
 export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
-    const [state, setState] = useState<Record<string, any>>({});
     const [listeners, setListeners] = useState<Array<EventListener>>([]); //array of all listeners
-    const [blockValues, setBlockValues] = useState<Record<string, Record<string, any>>>({}); //this is gross tbh.
+    const blockValues = useRef(<Record<string, Record<string, any>>>({})); //this is gross tbh.
     //a record containing all blocks by id
     //which then contains all fields of that block by name
     //aeugh
@@ -139,15 +128,16 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
 
     const getBlockValue = (ref: ExternalValueRef) => {
         const {target_block_id, target_value} = ref
-        const block = blockValues[target_block_id]
+        const block = blockValues.current[target_block_id]
         if (!block) {
             return null
         }
         return block.get(ref.target_value)
     }
 
-    const setBlockValue = (ref: ExternalValueRef) => {
-
+    const setBlockValue = (ref: ExternalValueRef, data: any) => {
+        blockValues.current[ref.target_block_id][ref.target_value] = data
+        setBlock(ref.target_block_id)
     }
 
     const notifyListener = (self_block_id: string, event: EngineEvent) => {
@@ -165,5 +155,5 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         blockHandlers.current.delete(id)
     }
 
-    return {handleEvent, state, listen, unlisten, getBlockValue, setBlockValue, registerBlock, unregisterBlock};
+    return {handleEvent, listen, unlisten, getBlockValue, setBlockValue, registerBlock, unregisterBlock};
 }
