@@ -28,7 +28,7 @@ export const BlockList: BlockInfo<any>[] = [
             lineDelay: 1000,
             manual: false,
 
-            triggers: []
+            listeners: []
         }
     }
 

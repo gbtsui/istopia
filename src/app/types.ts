@@ -1,3 +1,5 @@
+import {EngineEventListener} from "@/app/engine";
+
 export interface PublicUser {
     name?: string,
     display_name?: string,
@@ -39,6 +41,7 @@ export interface BlockProps {
     id: string, //why am i having this in here twice?
     content?: string[];
     className?: string;
+    listeners: Array<EngineEventListener>
 }
 
 export interface ContainerBlockProps extends BlockProps {

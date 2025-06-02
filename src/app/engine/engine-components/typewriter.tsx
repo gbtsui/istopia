@@ -5,14 +5,12 @@ import {
     useEffect,
 } from "react";
 import {BlockProps} from "@/app/types";
-import {EngineEventListener, useEngine} from "@/app/engine";
+import {useEngine} from "@/app/engine";
 
 export interface TypewriterProps extends BlockProps {
     characterDelay?: number;
     lineDelay?: number;
     manual?: boolean;
-
-    listeners?: Array<EngineEventListener>
 }
 
 export type TypewriterActions = (
@@ -34,6 +32,7 @@ export default function Typewriter(
         lineDelay = 1000,
         manual = false,
         className = "",
+        listeners = []
     } = props;
 
     const engine = useEngine(() => {}); //TODO: need to make a setBlock later...
@@ -80,6 +79,10 @@ export default function Typewriter(
 
     useEffect(() => {
         engine.registerBlock(id, handler)
+
+        for (const listener of listeners) {
+            engine.listen(listener);
+        }
     })
 
     useEffect(() => {
