@@ -1,11 +1,11 @@
-"use server";
+"use client";
 
 import {Page} from "@/app/types";
 import {JSX} from "react";
 
 import RenderBlock from "@/app/engine/render-block";
 
-export async function RenderPage({data}: {data:Page}) {
+export function RenderPage({data}: {data:Page}) {
     const {blocks} = data;
     let children: Array<JSX.Element> = [] //zero type safety go brr i guess??
 
