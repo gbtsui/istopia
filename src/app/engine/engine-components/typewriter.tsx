@@ -1,25 +1,18 @@
 "use client";
 
 import {
-    useImperativeHandle,
     useState,
     useEffect,
-    Ref
 } from "react";
 import {BlockProps} from "@/app/types";
+import {EngineEventListener, useEngine} from "@/app/engine";
 
 export interface TypewriterProps extends BlockProps {
     characterDelay?: number;
     lineDelay?: number;
     manual?: boolean;
-    onComplete?: () => void;
-    ref?: Ref<TypewriterHandle>
 
-    listeners?: Array<{
-        target_block_id: string,
-        target_event: string,
-        action: string
-    }>
+    listeners?: Array<EngineEventListener>
 }
 
 export type TypewriterActions = (
@@ -35,38 +28,59 @@ export default function Typewriter(
     props: TypewriterProps
 )  {
     const {
+        id,
         content = [],
         characterDelay = 25,
         lineDelay = 1000,
         manual = false,
         className = "",
-        onComplete,
-        ref
     } = props;
+
+    const engine = useEngine(() => {}); //TODO: need to make a setBlock later...
 
     const [lines, setLines] = useState<string[]>([]);
     const [lineIndex, setLineIndex] = useState(0);
     const [charIndex, setCharIndex] = useState(0);
     const [isTyping, setIsTyping] = useState(false);
 
+    const onComplete = () => {
+        engine.handleEvent({
+            event: {
+                name: "typewriter:typingComplete",
+                value: null
+            },
+            triggering_block_id: id
+        })
+    }
 
-
-    useImperativeHandle(ref, () => ({
-        nextLine() {
-            if (!isTyping && lineIndex + 1 < content.length) {
-                setLines(prev => [...prev, ""]);
-                setLineIndex(prev => prev + 1);
-                setCharIndex(0);
-                setIsTyping(true);
-            }
-        },
-        reset() {
-            setLines([""]);
-            setLineIndex(0);
+    const nextLine = () => {
+        if (!isTyping && lineIndex + 1 < content.length) {
+            setLines(prev => [...prev, ""]);
+            setLineIndex(prev => prev + 1);
             setCharIndex(0);
             setIsTyping(true);
         }
-    }));
+    }
+
+    const reset = () => {
+        setLines([""]);
+        setLineIndex(0);
+        setCharIndex(0);
+        setIsTyping(true);
+    }
+
+    const handler = (action: string) => {
+        switch (action) {
+            case "nextLine": return nextLine();
+            case "reset": return reset();
+        }
+    }
+
+
+
+    useEffect(() => {
+        engine.registerBlock(id, handler)
+    })
 
     useEffect(() => {
         if (!isTyping || lineIndex >= content.length) return;

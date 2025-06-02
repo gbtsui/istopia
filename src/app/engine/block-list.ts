@@ -1,7 +1,7 @@
-import {JSX, Ref} from "react";
-import {Block, BlockProps} from "@/app/types";
+import {JSX} from "react";
+import {BlockProps} from "@/app/types";
 import SimpleText from "@/app/engine/engine-components/simple-text";
-import Typewriter, {TypewriterHandle} from "@/app/engine/engine-components/typewriter";
+import Typewriter from "@/app/engine/engine-components/typewriter";
 
 type BlockInfo<T extends BlockProps = BlockProps> = {
     block_name: string;
@@ -27,8 +27,6 @@ export const BlockList: BlockInfo<any>[] = [
             characterDelay: 25,
             lineDelay: 1000,
             manual: false,
-            onComplete: () => {},
-            ref: null,
 
             triggers: []
         }

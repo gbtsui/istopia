@@ -36,6 +36,7 @@ export interface CommentData {
 }
 
 export interface BlockProps {
+    id: string, //why am i having this in here twice?
     content?: string[];
     className?: string;
 }

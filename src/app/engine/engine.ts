@@ -1,5 +1,5 @@
 "use client";
-import {useRef, useState} from "react";
+import {useRef} from "react";
 
 export interface EngineEvent {
     event: {
@@ -9,7 +9,7 @@ export interface EngineEvent {
     triggering_block_id: string; //what block triggered the event?
 }
 
-export interface EventListener {
+export interface EngineEventListener {
     self_block_id: string; //what block is listening?
     target_block_id: string; //what block are you listening to?
     target_event: string; //what event are you listening to?
@@ -39,20 +39,20 @@ export interface ExternalValueRef {
 
 export type IstopiaEngine = (setBlock: (id: string) => void) => {
     handleEvent: (event: EngineEvent) => void; //what happens when an event occurs?
-    listen: (listener: EventListener) => void; //start listening to X event
-    unlisten: (listener: EventListener) => void; //stop listening to X event
+    listen: (listener: EngineEventListener) => void; //start listening to X event
+    unlisten: (listener: EngineEventListener) => void; //stop listening to X event
     getBlockValue: (ref: ExternalValueRef) => any; //get a value from another block
     setBlockValue: (ref: ExternalValueRef, data: any) => void; //set a value from another block in the engine (can be from your own block as well)
 
-    registerBlock: (id: string, handler: (event: EngineEvent) => void) => void;
+    registerBlock: (id: string, handler: (action: string) => void) => void;
     unregisterBlock: (id: string) => void;
 }
 
 const evaluateCondition = (condition: Condition) => {
     switch (condition.operator) {
-            case "==": return condition.side_1 == condition.side_2
+            case "==": return condition.side_1 === condition.side_2
             case ">": return condition.side_1 > condition.side_2
-            case "!=": return condition.side_1 != condition.side_2
+            case "!=": return condition.side_1 !== condition.side_2
             case "<": return condition.side_1 < condition.side_2
             default: return false
         }
@@ -92,17 +92,12 @@ const evaluateLogicalCondition = (logicalCondition: LogicalCondition): boolean =
 }
 
 export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
-    const [listeners, setListeners] = useState<Array<EventListener>>([]); //array of all listeners
+    const listeners = useRef<Array<EngineEventListener>>([]); //array of all listeners
     const blockValues = useRef(<Record<string, Record<string, any>>>({})); //this is gross tbh.
-    //a record containing all blocks by id
-    //which then contains all fields of that block by name
-    //aeugh
-    //const blockValues = useRef(new Map<string, Map<string, any>>());
-    //should use records instead? idk
-    const blockHandlers = useRef(new Map<string, (event: EngineEvent) => void>()) //block with id X is listening for events, call this function when a event comes in
+    const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in
 
     const handleEvent = (event: EngineEvent)=> {
-        listeners.forEach((listener) => {
+        listeners.current.forEach((listener) => {
             if (
                 listener.target_block_id === event.triggering_block_id
                 &&
@@ -111,19 +106,18 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
                 const conditionsMet = listener.logical_conditions.every(logicalCondition => evaluateLogicalCondition(logicalCondition))
 
                 if (conditionsMet) {
-                    notifyListener(listener.self_block_id, event)
+                    notifyListener(listener.self_block_id, listener.action)
                 }
             }
         })
     }
 
-    const listen = (listener: EventListener) => {
-        setListeners([...listeners, listener]);
+    const listen = (listener: EngineEventListener) => {
+        listeners.current.push(listener)
     }
 
-    const unlisten = (listener: EventListener) => {
-        const newListeners = listeners.filter(l => l !== listener);
-        setListeners(newListeners);
+    const unlisten = (listener: EngineEventListener) => {
+        listeners.current.filter(l => l !== listener);
     }
 
     const getBlockValue = (ref: ExternalValueRef) => {
@@ -132,7 +126,7 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         if (!block) {
             return null
         }
-        return block.get(target_value)
+        return block[target_value]
     }
 
     const setBlockValue = (ref: ExternalValueRef, data: any) => {
@@ -140,14 +134,14 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         setBlock(ref.target_block_id)
     }
 
-    const notifyListener = (self_block_id: string, event: EngineEvent) => {
+    const notifyListener = (self_block_id: string, action: string) => {
         const handler = blockHandlers.current.get(self_block_id)
         if (handler) {
-            handler(event) //run the block's event handler!
+            handler(action) //run the block's event handler!
         }
     }
 
-    const registerBlock = (id: string, handler: (event: EngineEvent) => void)=> {
+    const registerBlock = (id: string, handler: (action: string) => void)=> {
         blockHandlers.current.set(id, handler);
     }
 
