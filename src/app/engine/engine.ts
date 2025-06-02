@@ -1,4 +1,5 @@
-"use client";import {useRef, useState} from "react";
+"use client";
+import {useRef, useState} from "react";
 
 export interface EngineEvent {
     event: {
@@ -26,8 +27,9 @@ export interface Condition {
 }
 
 export interface LogicalCondition {
+    key: string;
     operator: "AND" | "OR" | "NOT" //you can probably recreate every logic gate type with this tbh
-    conditions: Condition[];
+    conditions: Array<Condition | LogicalCondition>;
 }
 
 export interface ExternalValueRef {
@@ -43,29 +45,71 @@ export type IstopiaEngine = (setBlock: (id: string) => void) => {
     setBlockValue: (ref: ExternalValueRef) => void; //set a value from another block in the engine (can be from your own block as well)
 }
 
-const evaluateConditions = (conditions: Condition[]) => {
-    return conditions.every(condition => {
-        switch (condition.operator) {
+const evaluateCondition = (condition: Condition) => {
+    switch (condition.operator) {
             case "==": return condition.side_1 == condition.side_2
             case ">": return condition.side_1 > condition.side_2
             case "!=": return condition.side_1 != condition.side_2
             case "<": return condition.side_1 < condition.side_2
+            default: return false
         }
-    })
 }
 
-const evaluateLogicalConditions = (logicalConditions: LogicalCondition[]) => {
-    return logicalConditions.every(lc => {
-        switch (lc.operator) {
-            case "AND": return evaluateConditions(lc.conditions)
-        }
-    })
+const checkConditionType = (c: Condition | LogicalCondition) => {
+    switch (c.operator){
+        case undefined: return null
+        case "==": return "condition"
+        case ">": return "condition"
+        case "!=": return "condition"
+        case "<": return "condition"
+        case "AND": return "logical"
+        case "OR": return "logical"
+        case "NOT": return "logical"
+    }
+}
+
+const isLogicalCondition = (c: Condition | LogicalCondition): c is LogicalCondition => {
+    return ["AND", "OR", "NOT"].includes((c as LogicalCondition).operator);
+};
+
+const evaluateLogicalCondition = (logicalCondition: LogicalCondition): boolean => {
+    switch (logicalCondition.operator) {
+        case "AND":
+            return logicalCondition.conditions.every(c =>
+                isLogicalCondition(c)
+                    ? evaluateLogicalCondition(c)
+                    : evaluateCondition(c)
+            );
+        case "OR":
+            return logicalCondition.conditions.some(c =>
+                isLogicalCondition(c)
+                    ? evaluateLogicalCondition(c)
+                    : evaluateCondition(c)
+            );
+        case "NOT":
+            if (logicalCondition.conditions.length !== 1) {
+                console.warn("NOT operator expects exactly 1 condition");
+                return false;
+            }
+            const c = logicalCondition.conditions[0];
+            return !(isLogicalCondition(c)
+                ? evaluateLogicalCondition(c)
+                : evaluateCondition(c));
+        default:
+            console.warn("Unknown operator:", logicalCondition.operator);
+            return false;
+    }
 }
 
 export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
     const [state, setState] = useState<Record<string, any>>({});
     const [listeners, setListeners] = useState<Array<EventListener>>([]); //array of all listeners
-    const [blockValues, setBlockValues] = useState<Array<Record<string, any>>>([]); //array of all blockValues
+    const [blockValues, setBlockValues] = useState<Record<string, Record<string, any>>>({}); //this is gross tbh.
+    //a record containing all blocks by id
+    //which then contains all fields of that block by name
+    //aeugh
+    //const blockValues = useRef(new Map<string, Map<string, any>>());
+    //should use records instead? idk
     const blockHandlers = useRef(new Map<string, (event: EngineEvent) => void>()) //block with id X is listening for events, call this function when a event comes in
 
     const handleEvent = (event: EngineEvent)=> {
@@ -75,9 +119,11 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
                 &&
                 listener.target_event === event.event.name
             ) {
-                const conditionsMet = evaluateConditions(listener.conditions)
+                const conditionsMet = listener.logical_conditions.every(logicalCondition => evaluateLogicalCondition(logicalCondition))
 
-                if (conditionsMet)
+                if (conditionsMet) {
+                    notifyListener(listener.self_block_id, event)
+                }
             }
         })
     }
@@ -92,7 +138,12 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
     }
 
     const getBlockValue = (ref: ExternalValueRef) => {
-
+        const {target_block_id, target_value} = ref
+        const block = blockValues[target_block_id]
+        if (!block) {
+            return null
+        }
+        return block.get(ref.target_value)
     }
 
     const setBlockValue = (ref: ExternalValueRef) => {
@@ -114,5 +165,5 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         blockHandlers.current.delete(id)
     }
 
-    return {handleEvent, state, listen, unlisten, getBlockValue, setBlockValue};
+    return {handleEvent, state, listen, unlisten, getBlockValue, setBlockValue, registerBlock, unregisterBlock};
 }
