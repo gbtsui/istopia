@@ -13,41 +13,45 @@ const test_data = {
             "blocks": [
                 {
                     "type": "text",
-                    "id":"1",
                     "props": {
                         "content": [
                             "text content split by \n!!"
                         ],
                         "className": "string using tailwind styling for now ig",
+                        "listeners": [],
+                        "id":"1",
                     }
                 },
                 {
                     "type": "typewriter",
-                    "id":"2",
                     "props": {
                         "content": [
                             "more text content split by \n!!!"
                         ],
                         "className": "",
+                        "listeners": [],
+                        "id":"2",
                     }
                 },
                 {
                     "type":"simple-container",
-                    "id":"3",
                     "props": {
                         "children": [
                             {
                                 "type": "text",
-                                "id":"1",
                                 "props": {
                                     "content": [
                                         "this some text in a container!"
                                     ],
                                     "className": "",
+                                    "listeners": [],
+                                    "id":"1",
                                 }
                             }
                         ],
                         "className":"p-3 bg-white text-black",
+                        "listeners": [],
+                        "id":"3",
                     }
                 }
             ]
@@ -64,7 +68,7 @@ export default function RenderingTestPage() {
             setLoading(false)
         }
         init()
-    })
+    }, [])
     if (loading) return <div>loading...</div>
     if (!validatedData) return <div>data isn't validated!</div>
     return <EngineProvider>{validatedData.pages.map((page, id) => <RenderPage key={id} data={page} />)}</EngineProvider>
