@@ -38,15 +38,16 @@ export default function PageContents(props: PageContentsProps) {
         if (!over) return;
 
         if (active.id !== over.id) {
-            editor_store.reorderBlock(page_number, active.id as string, page.blocks.findIndex(block => block.id === over.id));
+            editor_store.reorderBlock(page_number, active.id as string, page.blocks.findIndex(block => block.props.id === over.id));
         }
     }
 
     const newBlock: Block = {
         type: "text",
-        id: crypto.randomUUID(),
         props: {
-            content: []
+            id: crypto.randomUUID(),
+            content: [],
+            listeners: []
         }
     }
 
@@ -54,16 +55,16 @@ export default function PageContents(props: PageContentsProps) {
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
                 <SortableContext
-                    items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks}
+                    items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks.map(block => block.props.id)}
                     strategy={verticalListSortingStrategy}>
                     <div className={"text-center text-xl"}>page contents!!</div>
                     {page.blocks.length < 1 &&
                         <div>empty! oopsies</div>}
                     {page.blocks.map(block => (
-                        <BlockEdit block={block} key={block.id} page_number={page_number}/>
+                        <BlockEdit block={block} key={block.props.id} page_number={page_number}/>
                     ))}
 
-                    <button onClick={() => editor_store.addBlock(page_number, {...newBlock, id: crypto.randomUUID()})}>
+                    <button onClick={() => editor_store.addBlock(page_number, {...newBlock, props: {...newBlock.props, id: crypto.randomUUID()}})}>
                         add a
                         block
                     </button>

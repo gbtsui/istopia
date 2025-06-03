@@ -19,11 +19,10 @@ export interface EngineEventListener {
 }
 
 export interface Condition {
-    type: "flag" | "variable";
     key: string;
     operator: "==" | "!=" | ">" | "<"; //self-explanatory
-    side_1: any, //probably self value
-    side_2: any, //external value
+    side_1?: any, //probably self value
+    side_2?: any, //external value
 }
 
 export interface LogicalCondition {
@@ -97,6 +96,8 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
     const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in
 
     const handleEvent = (event: EngineEvent)=> {
+        console.log("new event just dropped gng")
+        console.log(event)
         listeners.current.forEach((listener) => {
             if (
                 listener.target_block_id === event.triggering_block_id

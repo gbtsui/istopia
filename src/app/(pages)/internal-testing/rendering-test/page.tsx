@@ -9,9 +9,11 @@ import {EngineProvider} from "@/app/engine/engine-context";
 const test_data = {
     "pages": [
         {
+            "page_number": 0,
             "blocks": [
                 {
                     "type": "text",
+                    "id":"1",
                     "props": {
                         "content": [
                             "text content split by \n!!"
@@ -21,6 +23,7 @@ const test_data = {
                 },
                 {
                     "type": "typewriter",
+                    "id":"2",
                     "props": {
                         "content": [
                             "more text content split by \n!!!"
@@ -30,10 +33,12 @@ const test_data = {
                 },
                 {
                     "type":"simple-container",
+                    "id":"3",
                     "props": {
                         "children": [
                             {
                                 "type": "text",
+                                "id":"1",
                                 "props": {
                                     "content": [
                                         "this some text in a container!"

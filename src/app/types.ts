@@ -50,7 +50,6 @@ export interface ContainerBlockProps extends BlockProps {
 
 export interface Block {
     type: string,
-    id: string,
     props: BlockProps
 }
 

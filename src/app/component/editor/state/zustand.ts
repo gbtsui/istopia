@@ -58,7 +58,7 @@ export const useEditorStore = create<EditorStore>((set) => ({
         return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
-                    const blockIndex = page.blocks.findIndex((b) => b.id === block_id);
+                    const blockIndex = page.blocks.findIndex((b) => b.props.id === block_id);
                     if (blockIndex === -1) return page;
 
                     const updatedBlocks = [...page.blocks];
@@ -115,7 +115,7 @@ export const useEditorStore = create<EditorStore>((set) => ({
         return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
-                    const blockIndex: number = page.blocks.findIndex((block) => block.id === block_id);
+                    const blockIndex: number = page.blocks.findIndex((block) => block.props.id === block_id);
                     if (blockIndex === -1) {
                         return {...page}
                     }

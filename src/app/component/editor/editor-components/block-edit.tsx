@@ -32,11 +32,11 @@ export default function BlockEdit(props:BlockEditProps){
     }
 
     const updateZustand = (newProps: BlockProps) => {
-        editBlock(page_number, block.id, newProps)
+        editBlock(page_number, block.props.id, newProps)
     }
 
     return (
-        <Sortable id={block.id} content={block.type} key={block.id}
+        <Sortable id={block.props.id} content={block.type} key={block.props.id}
                   className={"p-2 m-2 bg-white rounded-lg text-black"}>
             <BlockEditFields blockProps={block.props} updateContent={updateContent} updateClassName={updateClassName}/>
         </Sortable>
