@@ -29,7 +29,15 @@ const test_data = {
                             "more text content split by \n!!!"
                         ],
                         "className": "",
-                        "listeners": [],
+                        "listeners": [
+                            {
+                                "self_block_id": "2",
+                                "target_block_id": "2",
+                                "target_event":"typewriter:typingComplete",
+                                "action":"reset",
+                                "logical_conditions": []
+                            }
+                        ],
                         "id":"2",
                     }
                 },
