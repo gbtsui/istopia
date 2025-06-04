@@ -31,6 +31,15 @@ export interface PieceData {
     content: PieceContent,
 }
 
+export interface PieceMetaData {
+    id: string,
+    author_id: string,
+    author_name: string,
+    title: string,
+    slug: string,
+    summary: string,
+}
+
 export interface CommentData {
     id: number,
     piece_id: number,

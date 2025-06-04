@@ -1,21 +1,29 @@
 "use server"
 
 import {prisma} from "@/app/api/data/db";
-import {PieceContent, PieceData, Result} from "@/app/types";
+import {PieceMetaData, Result} from "@/app/types";
 
-export default async function GetPieces(params: {amount: number, sortBy: "random" | "views" | "rating" | "hot"}): Promise<Result<Array<PieceData>>> {
+export default async function GetPieces(params: {amount: number, sortBy: "random" | "views" | "rating" | "hot"}): Promise<Result<Array<PieceMetaData>>> {
     const {amount, sortBy} = params;
 
     const result = await prisma.piece.findMany({
-
+        include: {
+            author: true,
+        }
     })
 
-    const resultAsPieceData: Array<PieceData> = result.map((piece) => {
+    const resultAsPieceData: Array<PieceMetaData> = result.map((piece) => {
         return {
-            ...piece,
-            content: piece.content as unknown as PieceContent,
+            id: piece.id,
+            author_id: piece.author_id,
+            author_name: piece.author.name,
+            title: piece.title,
+            slug: piece.slug,
+            summary: piece.summary,
+            rating: piece.rating,
         }
     })
 
     return {success: true, data: resultAsPieceData}
 }
+
