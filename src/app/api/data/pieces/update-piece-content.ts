@@ -24,7 +24,7 @@ export default async function UpdatePieceContent({username, piece_id, piece_cont
 
     const result = await prisma.piece.update({
         where: {id: piece_id, author_id: db_user.id}, //redundancy :3
-        data: {content: piece_content as unknown as InputJsonValue}
+        data: {content: piece_content as unknown as InputJsonValue, last_updated: new Date()}
     })
 
     return {

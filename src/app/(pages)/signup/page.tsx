@@ -80,7 +80,7 @@ export default function SignUpPage() {
                         <label>what shall you be called?</label><br/>
                         <input type="text" name={"display_name"}
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
-                               placeholder={username ?? "display name"} disabled={loading}/>
+                               placeholder={username? username : "display name"} disabled={loading}/>
                     </div>
                     <div>
                         <label>how will we reach you?</label><br/>

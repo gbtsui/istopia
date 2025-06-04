@@ -1,12 +1,9 @@
 "use client";
 
-import {Block, ContainerBlockProps} from "@/app/types";
-import {JSX} from "react";
-import SimpleText from "@/app/engine/engine-components/simple-text";
-import Typewriter from "@/app/engine/engine-components/typewriter";
-import SimpleContainer from "@/app/engine/engine-components/simple-container";
+import {Block} from "@/app/types";
 import {BlockList} from "@/app/engine/block-list";
 
+/*
 export default function RenderBlock({block}: {block:Block}): JSX.Element | null {
     switch (block.type) {
         case "text":
@@ -19,8 +16,9 @@ export default function RenderBlock({block}: {block:Block}): JSX.Element | null 
             return null
     }
 }
+ */
 
-export function RenderBlockFromList({block}: {block:Block}) {
+export default function RenderBlock({block}: {block:Block}) {
     for (const blockInfo of BlockList) {
         if (block.type === blockInfo.block_name) {
             return blockInfo.block_component(block.props)

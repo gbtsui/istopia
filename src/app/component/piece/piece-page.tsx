@@ -19,7 +19,7 @@ export default function PiecePageComponent({props}: {props: PiecePageProps}) {
                 <p className={"text-sm text-gray-400"}>last updated {piece_data.last_updated.toString()}</p>
             </div>
             <div className={"p-3 m-5 bg-gray-800 rounded-xl"}>
-                <p>{piece_data.summary}</p>
+                <p>{piece_data.summary? piece_data.summary : "This piece doesn't have a summary yet!"}</p>
             </div>
         </div>
     )
