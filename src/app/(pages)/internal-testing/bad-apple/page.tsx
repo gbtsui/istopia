@@ -2,7 +2,7 @@
 
 export default async function BadAppleLyricsPage() {
     return (
-        <>
+        <div>
             ながれてく とき の なか で でも
             けだるさ が ほら ぐるぐる まわって
             わたし から はなれる こころ も
@@ -82,6 +82,6 @@ export default async function BadAppleLyricsPage() {
             すべて の こと も まだ しらない の
             おもい まぶた を あけた の ならば
             すべて こわす の なら くろ に なれ!!!
-        </>
+        </div>
     )
 }

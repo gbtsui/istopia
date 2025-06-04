@@ -19,10 +19,19 @@ export default function Editor(props: EditorProps) {
     useEffect(() => {
         editor_store.setContent(initialPieceData.content)
         setCurrentPage(0)
+
+        console.log("so, uh, hi.")
+        console.log("this isn't in a remotely shippable state yet. i'm sorry.")
+        console.log("there's just a few things i need to fix up before this is actually usable.")
+        console.log("rn there's no way to publish your stuff.")
+        console.log("or read it for that matter.")
+        console.log("i'll get that fixed within a few days. there's just been a lot going on recently.")
+        console.log("sorry guys.")
     }, [])
 
     return (
         <div>
+            <h1>notice: please check your browser console!!!!!</h1>
             <div>
                 <button onClick={() => {editor_store.saveContent(username, initialPieceData.id); setLastSaved(new Date())}} className={"p-2 bg-gray-800 rounded-xl m-2"}>Save</button>
                 <p>last saved: {lastSaved.toString()} </p>{/*TODO: please fix this up to sync properly*/}
