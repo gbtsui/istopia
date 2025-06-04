@@ -7,6 +7,9 @@ export default async function GetPieces(params: {amount: number, sortBy: "random
     const {amount, sortBy} = params;
 
     const result = await prisma.piece.findMany({
+        where: {
+            published: true
+        },
         include: {
             author: true,
         }

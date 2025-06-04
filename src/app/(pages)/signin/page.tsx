@@ -7,6 +7,7 @@ import {redirect} from "next/navigation";
 import ParticleBackdrop from "@/app/engine/engine-components/particle-backdrop";
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {EngineProvider} from "@/app/engine/engine-context";
+import Link from "next/link";
 
 const SignInPoem = [
     "I see someone.",
@@ -88,6 +89,7 @@ export default function SigninPage() {
 
                     </form>
                     <label className={"text-red-500"}>{error ? <p>Error: {error.message}</p> : null}</label>
+                    <Link href={`/signup`}>Don't have an account? Sign up instead</Link>
                 </div>
             </div>
         </EngineProvider>

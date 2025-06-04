@@ -23,7 +23,7 @@ export default async function BrowsePage() {
                         </div>
                         <p>by {piece.author_name}</p>
                     </div>
-                }) : <div>loading...</div>}
+                }) : <div>looks like there's nothing that matches your criteria!</div>}
             </div>
         </div>
     )

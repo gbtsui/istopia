@@ -19,6 +19,10 @@ export default async function PiecePage({params}: {params: Promise<{username: st
     const session_user = await GetUserSession()
     const isLoggedInAsUser: boolean = session_user? session_user.name === user?.name : false
 
+    if (!piece_data.published && !isLoggedInAsUser) {
+        return <UnknownPiecePage/>
+    }
+
     return (
         <PiecePageComponent props={{piece_data, username, isLoggedInAsUser}}/>
     )
