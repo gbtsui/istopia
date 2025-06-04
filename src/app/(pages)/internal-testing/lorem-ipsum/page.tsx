@@ -1,3 +1,4 @@
+/*
 "use client";
 
 //what is lorem ipsum?
@@ -55,4 +56,9 @@ export default function LoremIpsumPage() {
             </SortableContext>
         </DndContext>
     )
+}
+*/
+
+export default async function LoremIpsumPage() {
+    return <div>lorem ipsum</div>
 }

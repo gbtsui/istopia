@@ -14,7 +14,7 @@ export default async function BrowsePage() {
     return (
         <div>
             {pieces ? pieces.map((piece: PieceData) => {
-                return <div>
+                return <div key={piece.id}>
                     <div>
                     <Link href={`/p/${piece.id}`}>{piece.title}</Link>
                     </div>

@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {prisma} from "@/app/api/data/db";
@@ -78,15 +78,18 @@ async function UploadPFP(formData: FormData) {
 
     return publicUrl
 }
-
+*/
 export default function StefanIconsPage() {
     return (
         <div>stefan is no longer iconning</div>
     )
-    /*return (
+    /*
+    return (
         <form action={async (formData) => console.log(await UploadPFP(formData))}>
             <input type={"file"} accept={"image/*"} name={"file"}/>
             <button type="submit">Save</button>
         </form>
-    )*/
+    )
+
+     */
 }

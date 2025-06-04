@@ -1,3 +1,4 @@
+/*
 "use client"
 
 import {useEffect, useState} from "react";
@@ -80,4 +81,9 @@ export default function RenderingTestPage() {
     if (loading) return <div>loading...</div>
     if (!validatedData) return <div>data isn't validated!</div>
     return <EngineProvider>{validatedData.pages.map((page, id) => <RenderPage key={id} data={page} />)}</EngineProvider>
+}
+*/
+
+export default function RenderingTestPage() {
+    return <div>rendering test mostly complete</div>
 }
