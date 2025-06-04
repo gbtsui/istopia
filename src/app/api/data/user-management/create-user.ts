@@ -4,14 +4,12 @@ import {prisma} from "@/app/api/data/db";
 import {User} from "@/generated/prisma";
 import bcrypt from "bcrypt"
 import ValidateUserCredentials from "@/app/api/data/user-management/validate-user-credentials";
-
-type CreateUserResult = {
-    success: true; user: User } | { success: false; error: string
-}
+import {PublicUser, Result} from "@/app/types";
+import SendConfirmationEmail from "@/app/api/send/send-confirmation-email";
 
 
-export default async function CreateUser(credentials: {name: string, display_name: string, email: string, password: string}): Promise<CreateUserResult>{
-    let result: CreateUserResult;
+export default async function CreateUser(credentials: {name: string, display_name: string, email: string, password: string}): Promise<Result<PublicUser>>{
+    let result: Result<PublicUser>;
     try {
         const validation_result = await ValidateUserCredentials(credentials);
         if (validation_result instanceof Error) {
@@ -51,7 +49,9 @@ export default async function CreateUser(credentials: {name: string, display_nam
 
         console.log("created user" + user.name)
 
-        result = {success: true, user: user}
+        result = {success: true, data: user as PublicUser}
+
+        await SendConfirmationEmail(user)
     } catch (err) {
         if (err instanceof Error) {
             result = {success: false, error: err.message}
@@ -60,6 +60,6 @@ export default async function CreateUser(credentials: {name: string, display_nam
         }
     }
 
-    return result;
+    return result
 }
 
