@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function SendConfirmationEmail(data: DatabaseUser) {
     const result = await resend.emails.send({
-        from: "do-not-reply@istopia.gbtsui.dev",
+        from: "do-not-reply.istopia@gbtsui.dev",
         to: data.email,
         subject: "welcome to istopia!",
         html: "<h1>welcome to istopia!</h1>" +
