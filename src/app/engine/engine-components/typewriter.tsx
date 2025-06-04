@@ -90,7 +90,7 @@ export default function Typewriter(
         return () => {
             engine.unregisterBlock(id)
         }
-    }, [])
+    }, [engine, handler, id, listeners])
 
 
     //typewrite text
@@ -128,7 +128,7 @@ export default function Typewriter(
                 return () => clearTimeout(timeout);
             }
         }
-    }, [charIndex, isTyping, lineIndex, characterDelay, lineDelay, manual, content, hasCompleted]);
+    }, [charIndex, isTyping, lineIndex, characterDelay, lineDelay, manual, content, hasCompleted, onComplete]);
 
     //initialize typing
     useEffect(() => {

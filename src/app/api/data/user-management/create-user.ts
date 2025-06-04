@@ -15,7 +15,7 @@ export default async function CreateUser(credentials: {name: string, display_nam
         if (validation_result instanceof Error) {
             throw validation_result;
         }
-        let {name, display_name, email, password} = validation_result;
+        const {name, display_name, email, password} = validation_result;
 
         const hashed_password = await bcrypt.hash(password, 12);
 
@@ -36,12 +36,12 @@ export default async function CreateUser(credentials: {name: string, display_nam
             }
         }
 
-        if (!display_name) { display_name = name }
+        //if (!display_name) { display_name = name }
 
         const user: User = await prisma.user.create({
             data: {
                 name,
-                display_name,
+                display_name: display_name ?? name,
                 email,
                 password: hashed_password
             }

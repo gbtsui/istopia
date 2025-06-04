@@ -1,6 +1,7 @@
 "use client"
 
 import {useEditorStore} from "@/app/component/editor/state/zustand";
+import {BlockList} from "@/app/engine/block-list";
 import {Block} from "@/app/types";
 import {useState} from "react";
 

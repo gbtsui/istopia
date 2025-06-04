@@ -17,7 +17,7 @@ export default function Editor(props: EditorProps) {
     useEffect(() => {
         editor_store.setContent(initialPieceData.content)
         setCurrentPage(0)
-    }, [])
+    }, [editor_store, initialPieceData.content])
 
     return (
         <div>

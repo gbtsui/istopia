@@ -8,7 +8,7 @@ export default function CreatePieceForm({createAction}: { createAction: (e: Form
 
     useEffect(() => {
         setLoading(false);
-    })
+    }, [])
 
     function action(e: FormData) {
         const runTheThingy = async () => {
