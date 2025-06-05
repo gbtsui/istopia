@@ -23,7 +23,7 @@ export default function BlockEdit(props:BlockEditProps){
         updateZustand(newProps)
     }
 
-    const updateClassName = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const updateClassName = (e: ChangeEvent<HTMLInputElement>) => {
         const newProps = {
             ...block.props,
             className: e.target.value.toString()

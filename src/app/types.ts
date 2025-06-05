@@ -51,6 +51,10 @@ export interface BlockProps {
     content?: string[];
     className?: string;
     listeners: Array<EngineEventListener>
+
+    additional_props: {
+        [key: string]: any
+    }
 }
 
 export interface ContainerBlockProps extends BlockProps {

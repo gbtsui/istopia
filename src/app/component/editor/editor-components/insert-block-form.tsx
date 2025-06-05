@@ -25,7 +25,7 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
                 <button onClick={() => setDialogIsOpen(false)}>Close</button>
                 <div className={"overflow-scroll h-60 flex flex-wrap"}>
                     {BlockList.map((block) => (
-                        <div className={"p-2 m-2 bg-black rounded-xl w-full"}>
+                        <div className={"p-2 m-2 bg-black rounded-xl w-full"} key={block.block_name}>
                             <button onClick={() => setSelectedBlock({
                                 type: block.block_name,
                                 props: {...block.block_props, id: crypto.randomUUID()}

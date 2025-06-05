@@ -7,24 +7,29 @@ import {
 import {BlockProps} from "@/app/types";
 import {useEngineContext} from "@/app/engine/engine-context";
 
+/*
 export interface TypewriterProps extends BlockProps {
     characterDelay?: number;
     lineDelay?: number;
     manual?: boolean;
 }
+ */
 
 export default function Typewriter(
-    props: TypewriterProps
-)  {
+    props: BlockProps
+) {
     const {
         id,
         content = [],
-        characterDelay = 25,
-        lineDelay = 1000,
-        manual = false,
         className = "",
-        listeners = []
+        listeners = [],
+        additional_props = {
+            characterDelay: 25,
+            lineDelay: 1000,
+            manual: false,
+        }
     } = props;
+    const {characterDelay, lineDelay, manual} = additional_props
 
     const engine = useEngineContext();
 
@@ -71,8 +76,10 @@ export default function Typewriter(
     const handler = useCallback((action: string) => {
         //console.log("handling action!")
         switch (action) {
-            case "nextLine": return nextLine();
-            case "reset": return reset();
+            case "nextLine":
+                return nextLine();
+            case "reset":
+                return reset();
         }
     }, [nextLine, reset]);
 
