@@ -1,7 +1,7 @@
 import {JSX} from "react";
 import {BlockProps} from "@/app/types";
 import SimpleText from "@/app/engine/engine-components/simple-text";
-import Typewriter from "@/app/engine/engine-components/typewriter";
+import Typewriter, {TypewriterProps} from "@/app/engine/engine-components/typewriter";
 
 type BlockInfo<T extends BlockProps = BlockProps> = {
     block_name: string;
@@ -9,19 +9,22 @@ type BlockInfo<T extends BlockProps = BlockProps> = {
     block_props: T,
 }
 
-export const BlockList: BlockInfo<any>[] = [
+export const BlockList: BlockInfo[] = [
     {
         block_name: "text",
         block_component: SimpleText,
         block_props: {
+            id: "",
             content: [],
-            className: ""
-        }
+            className: "",
+            listeners: []
+        } as BlockProps
     },
     {
         block_name: "typewriter",
         block_component: Typewriter,
         block_props: {
+            id: "",
             content: [],
             className: "",
             characterDelay: 25,
@@ -29,7 +32,7 @@ export const BlockList: BlockInfo<any>[] = [
             manual: false,
 
             listeners: []
-        }
+        } as TypewriterProps
     }
 
-]
+] //ALWAYS INITIALIZE IDS
