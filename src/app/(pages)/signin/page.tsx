@@ -60,7 +60,7 @@ export default function SigninPage() {
             <div className={"flex relative"}>
                 <ParticleBackdrop id={"tsparticlespmo"}/>
                 <div className={"px-6 py-10 text-gray-500 w-1/2"}>
-                    <Typewriter id={crypto.randomUUID()} content={SignInPoem} lineDelay={3000}
+                    <Typewriter id={crypto.randomUUID()} content={SignInPoem} additional_props={{lineDelay: 3000}}
                                 className={"bg-gray-800 opacity-80 p-4 rounded-xl transition-all text-green-500"}
                                 listeners={[]}/>
                 </div>

@@ -10,6 +10,7 @@ const BlockPropsSchema = z.object({
     children: z.array(z.lazy(() => BlockSchema)).optional(),
     className: z.string().optional(),
     listeners: z.array(z.lazy(() => EngineEventListenerSchema)),
+    additional_props: z.record(z.string(), z.union([z.string(), z.boolean(), z.number()]))
 })
 
 const EngineEventListenerSchema: z.ZodType<EngineEventListener> = z.object({

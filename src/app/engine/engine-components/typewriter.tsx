@@ -15,8 +15,14 @@ export interface TypewriterProps extends BlockProps {
 }
  */
 
+type TypewriterAdditionalProps = {
+    characterDelay?: number;
+    lineDelay?: number;
+    manual?: boolean
+}
+
 export default function Typewriter(
-    props: BlockProps
+    props: BlockProps<TypewriterAdditionalProps>
 ) {
     const {
         id,
@@ -119,7 +125,7 @@ export default function Typewriter(
                     return updated;
                 });
                 setCharIndex(prev => prev + 1);
-            }, characterDelay);
+            }, characterDelay as number);
             return () => clearTimeout(timeout);
         } else {
             if (lineIndex + 1 >= content.length && !hasCompleted) {
@@ -131,7 +137,7 @@ export default function Typewriter(
                     setLineIndex(prev => prev + 1);
                     setCharIndex(0);
                     setIsTyping(true);
-                }, lineDelay);
+                }, lineDelay as number);
                 return () => clearTimeout(timeout);
             }
         }
