@@ -13,6 +13,7 @@ import {
 import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEdit from "@/app/component/editor/editor-components/block-edit";
+import InsertBlockButton from "@/app/component/editor/editor-components/insert-block-button";
 
 type PageContentsProps = {
     page_number: number;
@@ -42,15 +43,6 @@ export default function PageContents(props: PageContentsProps) {
         }
     }
 
-    const newBlock: Block = {
-        type: "text",
-        props: {
-            id: crypto.randomUUID(),
-            content: [],
-            listeners: []
-        }
-    }
-
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
@@ -64,12 +56,9 @@ export default function PageContents(props: PageContentsProps) {
                         <BlockEdit block={block} key={block.props.id} page_number={page_number}/>
                     ))}
 
-                    <button onClick={() => editor_store.addBlock(page_number, {...newBlock, props: {...newBlock.props, id: crypto.randomUUID()}})}>
-                        add a
-                        block
-                    </button>
                 </SortableContext>
             </DndContext>
+            <InsertBlockButton page_number={page_number}/>
         </div>
     )
 }

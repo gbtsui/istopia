@@ -46,12 +46,14 @@ export interface CommentData {
     author_id: string,
 }
 
-export interface BlockProps {
+export interface BlockProps<T extends Record<string, string|boolean|number> = Record<string, string|boolean|number>> {
     id: string, //why am i having this in here twice?
     content?: string[];
     className?: string;
     listeners: Array<EngineEventListener>
-}
+
+    additional_props?: T//Record<string, string | boolean | number>
+} //modularize this maybe?
 
 export interface ContainerBlockProps extends BlockProps {
     children: Array<Block>

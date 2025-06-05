@@ -7,24 +7,35 @@ import {
 import {BlockProps} from "@/app/types";
 import {useEngineContext} from "@/app/engine/engine-context";
 
+/*
 export interface TypewriterProps extends BlockProps {
     characterDelay?: number;
     lineDelay?: number;
     manual?: boolean;
 }
+ */
+
+type TypewriterAdditionalProps = {
+    characterDelay?: number;
+    lineDelay?: number;
+    manual?: boolean
+}
 
 export default function Typewriter(
-    props: TypewriterProps
-)  {
+    props: BlockProps<TypewriterAdditionalProps>
+) {
     const {
         id,
         content = [],
-        characterDelay = 25,
-        lineDelay = 1000,
-        manual = false,
         className = "",
-        listeners = []
+        listeners = [],
+        additional_props = {
+            characterDelay: 25,
+            lineDelay: 1000,
+            manual: false,
+        }
     } = props;
+    const {characterDelay, lineDelay, manual} = additional_props
 
     const engine = useEngineContext();
 
@@ -71,8 +82,10 @@ export default function Typewriter(
     const handler = useCallback((action: string) => {
         //console.log("handling action!")
         switch (action) {
-            case "nextLine": return nextLine();
-            case "reset": return reset();
+            case "nextLine":
+                return nextLine();
+            case "reset":
+                return reset();
         }
     }, [nextLine, reset]);
 
@@ -112,7 +125,7 @@ export default function Typewriter(
                     return updated;
                 });
                 setCharIndex(prev => prev + 1);
-            }, characterDelay);
+            }, characterDelay as number);
             return () => clearTimeout(timeout);
         } else {
             if (lineIndex + 1 >= content.length && !hasCompleted) {
@@ -124,7 +137,7 @@ export default function Typewriter(
                     setLineIndex(prev => prev + 1);
                     setCharIndex(0);
                     setIsTyping(true);
-                }, lineDelay);
+                }, lineDelay as number);
                 return () => clearTimeout(timeout);
             }
         }
