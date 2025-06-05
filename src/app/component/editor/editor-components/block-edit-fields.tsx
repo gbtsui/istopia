@@ -15,17 +15,15 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
             {
             }
 
-            {blockProps.content ?
+            {blockProps.content !== undefined &&
                 <textarea className={"p-0.5 w-full"} placeholder={"write some text..."}
-                          value={blockProps.content?.toString()} contentEditable={true}
+                          value={blockProps.content.toString()} contentEditable={true}
                           onChange={(e) => updateProps({content: e.target.value.split("\n")})}/>
-                : null
             }
             {
-                blockProps.className ?
+                blockProps.className !== undefined &&
                     <input type={"text"} className={"p-0.5 w-full"} placeholder={"className..."}
                            onChange={(e) => updateProps({className: e.target.value})}/>
-                    : null
             }
             {
                 blockProps.additional_props ?
