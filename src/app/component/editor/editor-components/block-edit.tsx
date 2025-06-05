@@ -3,7 +3,6 @@
 import {Block, BlockProps} from "@/app/types";
 import Sortable from "@/app/component/editor/state/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
-import {ChangeEvent} from "react";
 import BlockEditFields from "@/app/component/editor/editor-components/block-edit-fields";
 
 type BlockEditProps = {
@@ -15,20 +14,16 @@ export default function BlockEdit(props:BlockEditProps){
     const {block, page_number} = props;
     const editBlock = useEditorStore((state) => state.editBlock)
 
-    const updateContent = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const newProps = {
+    const updateProps = (newProps: Partial<BlockProps>) => {
+        const finalProps = {
             ...block.props,
-            content: e.target.value.toString().split("\n")
+            ...newProps,
+            additional_props: {
+                ...block.props.additional_props,
+                ...(newProps.additional_props || {}),
+            }
         }
-        updateZustand(newProps)
-    }
-
-    const updateClassName = (e: ChangeEvent<HTMLInputElement>) => {
-        const newProps = {
-            ...block.props,
-            className: e.target.value.toString()
-        }
-        updateZustand(newProps)
+        updateZustand(finalProps)
     }
 
     const updateZustand = (newProps: BlockProps) => {
@@ -38,7 +33,7 @@ export default function BlockEdit(props:BlockEditProps){
     return (
         <Sortable id={block.props.id} content={block.type} key={block.props.id}
                   className={"p-2 m-2 bg-white rounded-lg text-black"}>
-            <BlockEditFields blockProps={block.props} updateContent={updateContent} updateClassName={updateClassName}/>
+            <BlockEditFields blockProps={block.props} updateProps={updateProps}/>
         </Sortable>
     )
 }

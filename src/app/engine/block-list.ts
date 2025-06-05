@@ -6,6 +6,7 @@ import Typewriter from "@/app/engine/engine-components/typewriter";
 type BlockInfo<T extends BlockProps = BlockProps> = {
     block_name: string;
     block_component: (props: T) => JSX.Element;
+    block_description: string;
     block_props: T,
 }
 
@@ -14,6 +15,7 @@ export const BlockList: BlockInfo[] = [
     {
         block_name: "text",
         block_component: SimpleText,
+        block_description: "a simple chunk of text. surprisingly powerful",
         block_props: {
             id: "",
             content: [],
@@ -25,6 +27,7 @@ export const BlockList: BlockInfo[] = [
     {
         block_name: "typewriter",
         block_component: Typewriter,
+        block_description: "text written using a typewriter effect. letters appear in sequence.",
         block_props: {
             id: "",
             content: [],

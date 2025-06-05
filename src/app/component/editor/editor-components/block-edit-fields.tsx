@@ -1,21 +1,14 @@
 "use client"
 
 import {BlockProps, ContainerBlockProps} from "@/app/types";
-import {ChangeEvent} from "react";
 
 type BlockEditFieldsProps = {
     blockProps: BlockProps | ContainerBlockProps,
-    updateContent: (e: ChangeEvent<HTMLTextAreaElement>) => void,
-    updateClassName: (e: ChangeEvent<HTMLInputElement>) => void,
+    updateProps: (newProps: Partial<BlockProps>) => void
 }
 
 export default function BlockEditFields(props: BlockEditFieldsProps) {
-    const {blockProps, updateContent, updateClassName} = props
-
-    let additional_props: Array<{ [key: string]: boolean | string | number }> = []
-    for (const key in blockProps.additional_props) {
-        additional_props.push(blockProps.additional_props[key])
-    }
+    const {blockProps, updateProps} = props
 
     return (
         <div>
@@ -25,13 +18,13 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
             {blockProps.content ?
                 <textarea className={"p-0.5 w-full"} placeholder={"write some text..."}
                           value={blockProps.content?.toString()} contentEditable={true}
-                          onChange={updateContent}/>
+                          onChange={(e) => updateProps({content: e.target.value.split("\n")})}/>
                 : null
             }
             {
                 blockProps.className ?
                     <input type={"text"} className={"p-0.5 w-full"} placeholder={"className..."}
-                           onChange={updateClassName}/>
+                           onChange={(e) => updateProps({className: e.target.value})}/>
                     : null
             }
             {
@@ -40,23 +33,23 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
                         switch (typeof value) {
                             case "string":
                                 return (
-                                    <div className={"p-2"}>
+                                    <div className={"p-2"} key={key}>
                                         <span>{key}</span>
-                                        <input type={"text"} defaultValue={value} name={key}/>
+                                        <input type={"text"} defaultValue={value} onChange={(e) => updateProps({additional_props: {[key]: e.target.value}})} name={key}/>
                                     </div>
                                 )
                             case "number":
                                 return (
-                                    <div className={"p-2"}>
+                                    <div className={"p-2"} key={key}>
                                         <span>{key}</span>
-                                        <input type={"number"} defaultValue={value} name={key}/>
+                                        <input type={"number"} defaultValue={value} onChange={(e) => updateProps({additional_props: {[key]: e.target.value}})} name={key}/>
                                     </div>
                                 )
                             case "boolean":
                                 return (
-                                    <div className={"p-2"}>
+                                    <div className={"p-2"} key={key}>
                                         <span>{key}</span>
-                                        <input type={"checkbox"} checked={value} name={key}/>
+                                        <input type={"checkbox"} checked={value} onChange={(e) => updateProps({additional_props: {[key]: e.target.checked}})} name={key}/>
                                     </div>
                                 )
                             default:
