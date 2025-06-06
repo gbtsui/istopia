@@ -34,6 +34,7 @@ export default function BlockEdit(props:BlockEditProps){
         <Sortable id={block.props.id} content={block.type} key={block.props.id}
                   className={"p-2 m-2 bg-white rounded-lg text-black"}>
             <BlockEditFields blockProps={block.props} updateProps={updateProps}/>
+            <span className={"material-symbols-outlined select-none cursor-pointer"}>delete</span> {/*TODO: make this work with a dialog*/}
         </Sortable>
     )
 }
