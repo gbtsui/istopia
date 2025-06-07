@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {PieceContent, Page, Block, BlockProps} from "@/app/types";
+import {PieceContent, Page, Block, BlockProps, Result} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 
@@ -13,16 +13,16 @@ export interface EditorStore extends EditorProps {
     addBlock: (page_number: number, newBlock: Block) => void,
     reorderBlock: (page_number: number, block_id: string, new_position: number) => void,
     reorderPage: (page_number: number, new_position: number) => void,
-    deleteBlock: (block_id: string) => void,
+    deleteBlock: (page_number: number, block_id: string) => void,
     deletePage: (page_number: number) => void,
 
     editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
     fetchContent: (id: string) => Promise<void>,
-    saveContent: (username: string, piece_id: string) => void
+    saveContent: (username: string, piece_id: string) => Promise<Result<null>>
 }
 
-export const useEditorStore = create<EditorStore>((set) => ({
+export const useEditorStore = create<EditorStore>((set, get) => ({
     content: {pages: []},
     setContent: (content) => {
         return set({content})
@@ -98,9 +98,19 @@ export const useEditorStore = create<EditorStore>((set) => ({
     },
 
 
-    deleteBlock: (block_id: string) => {
+    deleteBlock: (page_number: number, block_id: string) => {
        return set((state) => {
-           return {...state} //TODO: finish this pls :3
+           const updatedPages = state.content.pages.map((page) => {
+               if (page.page_number !== page_number) return page;
+
+               const updatedBlocks = page.blocks.filter((b) => b.props.id !== block_id);
+               return {...page, blocks: updatedBlocks}
+           })
+           return {
+               content: {
+                   pages: updatedPages
+               }
+           }
        })
     },
 
@@ -126,12 +136,15 @@ export const useEditorStore = create<EditorStore>((set) => ({
         })
     },
 
-    saveContent: (username: string, piece_id: string) => {
-        return set((state) => {
-            UpdatePieceContent({username, piece_id, piece_content: state.content});
-
-            return {...state}
-            })
+    saveContent: async (username: string, piece_id: string) => {
+        const {content} = get()
+        try {
+            await UpdatePieceContent({username, piece_id, piece_content: content});
+            return {success: true, data: null}
+        } catch (error) {
+            if (error instanceof Error) return {success: false, error: error.message}
+            return {success: false, error: "unknown error occurred"}
+        }
     },
 
     editBlock: (page_number, block_id, new_props) => {
