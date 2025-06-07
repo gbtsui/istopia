@@ -17,7 +17,7 @@ export default async function EditPiecePage({params}: {params: Promise<{piece_id
         return <UnauthorizedPage message={"please log in!"}/>
     }
     const db_user: DatabaseUser | null = await GetUserData({name: logged_in_user?.name as string});
-    if (!db_user) {
+    if (!db_user || piece_data?.author_id !== db_user?.id) {
         return <UnauthorizedPage message={"you don't have edit permissions for this piece!"}/>
     }
 

@@ -21,7 +21,7 @@ export interface EditorStore extends EditorProps {
     publishContent: (username: string, piece_id: string) => Promise<Result<null>>
 
     fetchContent: (id: string) => Promise<void>,
-    saveContent: (username: string, piece_id: string) => Promise<Result<null>>
+    saveContent: (username: string, piece_id: string) => Promise<Result<Date>>
 }
 
 export const useEditorStore = create<EditorStore>((set, get) => ({
@@ -40,8 +40,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
     addBlock: (page_number, newBlock) => {
         return set((state) => {
-            const updatedPages = state.content.pages.map((page, index) => {
-                if (index === page_number) {
+            const updatedPages = state.content.pages.map((page) => {
+                if (page.page_number === page_number) {
                     return {
                         ...page,
                         blocks: [...page.blocks, newBlock],
@@ -178,8 +178,11 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     saveContent: async (username: string, piece_id: string) => {
+        console.log("zustand save content called")
         const {content} = get()
-        return await UpdatePieceContent({username, piece_id, piece_content: content});
+        const result = await UpdatePieceContent({username, piece_id, piece_content: content});
+        console.log(result)
+        return result
     },
 
     //will probably never have to use this actually
@@ -191,4 +194,34 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
 
+}))
+
+export interface EditorMetaDataProps {
+    piece_id: string,
+    author_id: string,
+    author_name: string,
+    title: string,
+    slug: string,
+    summary: string,
+    published: boolean,
+}
+
+export interface EditorMetaDataMethods {
+    setData: (data: EditorMetaDataProps) => void
+}
+
+export type EditorMetaDataStore = EditorMetaDataProps & EditorMetaDataMethods
+
+export const useEditorMetaDataStore = create<EditorMetaDataStore>((set, get) => ({
+    piece_id: "",
+    author_id: "",
+    author_name: "",
+    title: "",
+    slug: "",
+    summary: "",
+    published: false,
+
+    setData: (data: Partial<EditorMetaDataProps>) => {
+        return set({...data})
+    }
 }))

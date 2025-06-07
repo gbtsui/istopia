@@ -14,7 +14,7 @@ export default async function DashboardPage() {
         <div className={"text-center"}>
             <h1>welcome to the dashboard!</h1>
             <h2>currently sorting everything out right now since i have to ship this quickly haha</h2>
-            <Link href={"/src/app/(pages)/(without-navbar)/editor/create"} className={"p-2 bg-gray-700 rounded-xl"}>create a piece here!</Link>
+            <Link href={"/editor/create"} className={"p-2 bg-gray-700 rounded-xl"}>create a piece here!</Link>
         </div>
     )
 }

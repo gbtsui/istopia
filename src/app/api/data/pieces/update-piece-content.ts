@@ -12,7 +12,7 @@ type UpdatePieceContentParams = {
     published?: boolean,
 }
 
-export default async function UpdatePieceContent({username, piece_id, piece_content, published}: UpdatePieceContentParams): Promise<Result<null>> {
+export default async function UpdatePieceContent({username, piece_id, piece_content, published}: UpdatePieceContentParams): Promise<Result<Date>> {
     try {
         const user = await GetUserSession()
         if (!user || user.name != username) {
@@ -29,7 +29,7 @@ export default async function UpdatePieceContent({username, piece_id, piece_cont
             data: {content: piece_content as unknown as InputJsonValue, last_updated: new Date(), published}
         })
 
-        return {success: true, data: null}
+        return {success: true, data: new Date()}
     } catch (error) {
         if (error instanceof Error) return {success: false, error: error.message}
         return {success: false, error: "unknown error"}
