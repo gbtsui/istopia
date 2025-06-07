@@ -13,10 +13,12 @@ export interface EditorStore extends EditorProps {
     addBlock: (page_number: number, newBlock: Block) => void,
     reorderBlock: (page_number: number, block_id: string, new_position: number) => void,
     reorderPage: (page_number: number, new_position: number) => void,
+    deleteBlock: (block_id: string) => void,
+    deletePage: (page_number: number) => void,
 
     editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
-    fetchContent: (id: string) => void,
+    fetchContent: (id: string) => Promise<void>,
     saveContent: (username: string, piece_id: string) => void
 }
 
@@ -95,20 +97,41 @@ export const useEditorStore = create<EditorStore>((set) => ({
         })
     },
 
+
+    deleteBlock: (block_id: string) => {
+       return set((state) => {
+           return {...state} //TODO: finish this pls :3
+       })
+    },
+
+    deletePage: (page_number: number) => {
+        return set((state) => {
+            const pageIndex = state.content.pages.findIndex((p) => p.page_number === page_number);
+            if (pageIndex === -1) return {};
+            const updatedPages: Array<Page> = [...state.content.pages];
+            const removed_pages: Array<Page> = updatedPages.splice(pageIndex);
+            removed_pages.shift()
+            const updatedRemovedPages: Array<Page> = removed_pages.map((p: Page) => {
+                return {
+                    ...p,
+                    page_number: p.page_number - 1
+                }
+            })
+            const final = updatedPages.concat(updatedRemovedPages)
+            return {
+                content: {
+                    pages: final
+                }
+            }
+        })
+    },
+
     saveContent: (username: string, piece_id: string) => {
         return set((state) => {
             UpdatePieceContent({username, piece_id, piece_content: state.content});
 
             return {...state}
             })
-    },
-
-    //will probably never have to use this actually
-    fetchContent: async (id) => {
-        const result = await FetchPieceData({id})
-        return set(() => {
-            return {...result}
-        })
     },
 
     editBlock: (page_number, block_id, new_props) => {
@@ -137,6 +160,14 @@ export const useEditorStore = create<EditorStore>((set) => ({
                 }
             }
         })
-    }
+    },
+    //will probably never have to use this actually
+    fetchContent: async (id) => {
+        const result = await FetchPieceData({id})
+        return set(() => {
+            return {...result}
+        })
+    },
+
 
 }))

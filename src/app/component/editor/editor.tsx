@@ -25,19 +25,28 @@ export default function Editor(props: EditorProps) {
     return (
         <div>
             <div className={"flex"}>
-            <EditorTopBar currentPage={currentPage} setCurrentPage={setCurrentPage} lastSaved={lastSaved} setLastSaved={() => {editor_store.saveContent(username, initialPieceData.id); setLastSaved(new Date())}} totalPages={editor_store.content.pages.length}/>
+                <EditorTopBar currentPage={currentPage} setCurrentPage={setCurrentPage} lastSaved={lastSaved}
+                              setLastSaved={() => {
+                                  editor_store.saveContent(username, initialPieceData.id);
+                                  setLastSaved(new Date())
+                              }} totalPages={editor_store.content.pages.length}/>
             </div>
             {<div>
-                <button onClick={() => {editor_store.saveContent(username, initialPieceData.id); setLastSaved(new Date())}} className={"p-2 bg-gray-800 rounded-xl m-2"}>Save</button>
+                <button onClick={() => {
+                    editor_store.saveContent(username, initialPieceData.id);
+                    setLastSaved(new Date())
+                }} className={"p-2 bg-gray-800 rounded-xl m-2"}>Save
+                </button>
                 <p>last saved: {lastSaved.toString()} </p>{/*TODO: please fix this up to sync properly*/}
             </div>}
             {
                 editor_store.content.pages.length == 0 ?
                     <div className={"text-center justify-center m-4 text-xl"}>
-                    looks like you don't have any pages so far... let's change that!<br/>
-                    <button onClick={() => editor_store.addPage({blocks: [], page_number:1})}>add a blank page</button>
-                </div>
-                :
+                        looks like you don't have any pages so far... let's change that!<br/>
+                        <button onClick={() => editor_store.addPage({blocks: [], page_number: 1})}>add a blank page
+                        </button>
+                    </div>
+                    :
                     <PageContents page_number={currentPage}/>
             }
             {/**/}
