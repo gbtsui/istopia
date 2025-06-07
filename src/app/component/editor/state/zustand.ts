@@ -18,6 +18,8 @@ export interface EditorStore extends EditorProps {
 
     editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
+    publishContent: (username: string, piece_id: string) => Promise<Result<null>>
+
     fetchContent: (id: string) => Promise<void>,
     saveContent: (username: string, piece_id: string) => Promise<Result<null>>
 }
@@ -47,6 +49,34 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 }
                 return page;
             });
+
+            return {
+                content: {
+                    pages: updatedPages
+                }
+            }
+        })
+    },
+
+    editBlock: (page_number, block_id, new_props) => {
+        return set((state) => {
+            const updatedPages = state.content.pages.map((page) => {
+                if (page.page_number === page_number) {
+                    const blockIndex: number = page.blocks.findIndex((block) => block.props.id === block_id);
+                    if (blockIndex === -1) {
+                        return {...page}
+                    }
+                    const updatedBlocks: Block[] = [...page.blocks];
+                    const [block] = updatedBlocks.splice(blockIndex, 1)
+                    block.props = new_props
+                    updatedBlocks.splice(blockIndex, 0, block)
+                    return {
+                        ...page,
+                        blocks: updatedBlocks
+                    }
+                }
+                return page
+            })
 
             return {
                 content: {
@@ -136,10 +166,10 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         })
     },
 
-    saveContent: async (username: string, piece_id: string) => {
+    publishContent: async (username: string, piece_id: string): Promise<Result<null>> => {
         const {content} = get()
         try {
-            await UpdatePieceContent({username, piece_id, piece_content: content});
+            await UpdatePieceContent({username, piece_id, piece_content: content, published: true})
             return {success: true, data: null}
         } catch (error) {
             if (error instanceof Error) return {success: false, error: error.message}
@@ -147,33 +177,11 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         }
     },
 
-    editBlock: (page_number, block_id, new_props) => {
-        return set((state) => {
-            const updatedPages = state.content.pages.map((page) => {
-                if (page.page_number === page_number) {
-                    const blockIndex: number = page.blocks.findIndex((block) => block.props.id === block_id);
-                    if (blockIndex === -1) {
-                        return {...page}
-                    }
-                    const updatedBlocks: Block[] = [...page.blocks];
-                    const [block] = updatedBlocks.splice(blockIndex, 1)
-                    block.props = new_props
-                    updatedBlocks.splice(blockIndex, 0, block)
-                    return {
-                        ...page,
-                        blocks: updatedBlocks
-                    }
-                }
-                return page
-            })
-
-            return {
-                content: {
-                    pages: updatedPages
-                }
-            }
-        })
+    saveContent: async (username: string, piece_id: string) => {
+        const {content} = get()
+        return await UpdatePieceContent({username, piece_id, piece_content: content});
     },
+
     //will probably never have to use this actually
     fetchContent: async (id) => {
         const result = await FetchPieceData({id})
