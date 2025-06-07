@@ -15,7 +15,7 @@ type UpdatePieceContentParams = {
 export default async function UpdatePieceContent({username, piece_id, piece_content, published}: UpdatePieceContentParams): Promise<Result<Date>> {
     try {
         const user = await GetUserSession()
-        if (!user || user.name != username) {
+        if (!user || user.name !== username) {
             throw new Error("unauthorized")
         }
 

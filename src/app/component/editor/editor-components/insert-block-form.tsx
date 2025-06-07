@@ -21,7 +21,7 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
     }
     return (
         <div
-            className={"fixed inset-0 items-center justify-center flex z-50 w-full h-full bg-black backdrop-opacity-50"}>
+            className={"fixed inset-0 items-center justify-center flex z-50 w-full h-full bg-black/50 backdrop-blur-md"}>
             <div className={"w-1/2 m-3 p-3 bg-gray-700 rounded-2xl"}>
                 <button onClick={() => setDialogIsOpen(false)} className={"p-4 bg-black rounded-2xl"}>x</button>
                 <div className={"overflow-auto h-60 flex flex-wrap"}>

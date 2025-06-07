@@ -1,6 +1,7 @@
 "use client"
 
 import {useEffect, useState} from "react";
+import {PublishButton} from "@/app/component/editor/editor-components/publish-form";
 
 type EditorTopBarProps = {
     currentPage: number,
@@ -80,7 +81,7 @@ export default function EditorTopBar(props: EditorTopBarProps) {
                 <span>{saving? <span className={"text-gray-200 text-sm"}>`saving...`</span> :`last saved ${formattedTime} ago`}</span>
             </div>
             <div>
-                <button onClick={() => alert("publishing is broken vruh")}>Publish</button>
+                <PublishButton/>
             </div>
         </div>
     )
