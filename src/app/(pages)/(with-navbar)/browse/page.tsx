@@ -18,7 +18,7 @@ export default async function BrowsePage() {
                 {pieces ? pieces.map((piece: PieceMetaData) => {
                     return <div key={piece.id} className={"p-3 w-1/3"}>
                         <div>
-                            <Link href={`/u/${piece.author_name}/${piece.slug}`}
+                            <Link href={`/src/app/(pages)/(with-navbar)/u/${piece.author_name}/${piece.slug}`}
                                   className={"text-xl"}>{piece.title}</Link>
                         </div>
                         <p>by {piece.author_name}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import {Block, Page} from "@/app/types";
+import {Page} from "@/app/types";
 import {
     closestCenter,
     DndContext,
@@ -43,11 +43,14 @@ export default function PageContents(props: PageContentsProps) {
         }
     }
 
+    const zustand_page = editor_store.content.pages.find(page => page.page_number === page_number)
+    if (!zustand_page) return <div>oopsie! bug occurred :( try refreshing</div>
+
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
                 <SortableContext
-                    items={editor_store.content.pages[editor_store.content.pages.findIndex(page => page.page_number === page_number)].blocks.map(block => block.props.id)}
+                    items={zustand_page?.blocks.map(block => block.props.id)}
                     strategy={verticalListSortingStrategy}>
                     <div className={"text-center text-xl"}>page contents!!</div>
                     {page.blocks.length < 1 &&

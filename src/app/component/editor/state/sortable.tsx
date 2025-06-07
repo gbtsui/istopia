@@ -27,10 +27,13 @@ export default function Sortable(props: SortableProps) {
 
     return (
         <div ref={setNodeRef} style={style} className={props.className} {...attributes}>
-            <div {...listeners}>
-                handle
+            <div className={"flex gap-5 flex-row w-full"}>
+                <div className={"material-symbols-outlined select-none cursor-grab"} {...listeners}>
+                    menu
+                </div>
+                <p>{props.content}</p>
             </div>
-            <p>{props.content}</p>
+
             {props.children}
         </div>
     )

@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {PieceContent, Page, Block, BlockProps} from "@/app/types";
+import {PieceContent, Page, Block, BlockProps, Result} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 
@@ -13,14 +13,18 @@ export interface EditorStore extends EditorProps {
     addBlock: (page_number: number, newBlock: Block) => void,
     reorderBlock: (page_number: number, block_id: string, new_position: number) => void,
     reorderPage: (page_number: number, new_position: number) => void,
+    deleteBlock: (page_number: number, block_id: string) => void,
+    deletePage: (page_number: number) => void,
 
     editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
 
-    fetchContent: (id: string) => void,
-    saveContent: (username: string, piece_id: string) => void
+    publishContent: (username: string, piece_id: string) => Promise<Result<null>>
+
+    fetchContent: (id: string) => Promise<void>,
+    saveContent: (username: string, piece_id: string) => Promise<Result<Date>>
 }
 
-export const useEditorStore = create<EditorStore>((set) => ({
+export const useEditorStore = create<EditorStore>((set, get) => ({
     content: {pages: []},
     setContent: (content) => {
         return set({content})
@@ -36,8 +40,8 @@ export const useEditorStore = create<EditorStore>((set) => ({
 
     addBlock: (page_number, newBlock) => {
         return set((state) => {
-            const updatedPages = state.content.pages.map((page, index) => {
-                if (index === page_number) {
+            const updatedPages = state.content.pages.map((page) => {
+                if (page.page_number === page_number) {
                     return {
                         ...page,
                         blocks: [...page.blocks, newBlock],
@@ -45,6 +49,34 @@ export const useEditorStore = create<EditorStore>((set) => ({
                 }
                 return page;
             });
+
+            return {
+                content: {
+                    pages: updatedPages
+                }
+            }
+        })
+    },
+
+    editBlock: (page_number, block_id, new_props) => {
+        return set((state) => {
+            const updatedPages = state.content.pages.map((page) => {
+                if (page.page_number === page_number) {
+                    const blockIndex: number = page.blocks.findIndex((block) => block.props.id === block_id);
+                    if (blockIndex === -1) {
+                        return {...page}
+                    }
+                    const updatedBlocks: Block[] = [...page.blocks];
+                    const [block] = updatedBlocks.splice(blockIndex, 1)
+                    block.props = new_props
+                    updatedBlocks.splice(blockIndex, 0, block)
+                    return {
+                        ...page,
+                        blocks: updatedBlocks
+                    }
+                }
+                return page
+            })
 
             return {
                 content: {
@@ -95,12 +127,62 @@ export const useEditorStore = create<EditorStore>((set) => ({
         })
     },
 
-    saveContent: (username: string, piece_id: string) => {
-        return set((state) => {
-            UpdatePieceContent({username, piece_id, piece_content: state.content});
 
-            return {...state}
+    deleteBlock: (page_number: number, block_id: string) => {
+       return set((state) => {
+           const updatedPages = state.content.pages.map((page) => {
+               if (page.page_number !== page_number) return page;
+
+               const updatedBlocks = page.blocks.filter((b) => b.props.id !== block_id);
+               return {...page, blocks: updatedBlocks}
+           })
+           return {
+               content: {
+                   pages: updatedPages
+               }
+           }
+       })
+    },
+
+    deletePage: (page_number: number) => {
+        return set((state) => {
+            const pageIndex = state.content.pages.findIndex((p) => p.page_number === page_number);
+            if (pageIndex === -1) return {};
+            const updatedPages: Array<Page> = [...state.content.pages];
+            const removed_pages: Array<Page> = updatedPages.splice(pageIndex);
+            removed_pages.shift()
+            const updatedRemovedPages: Array<Page> = removed_pages.map((p: Page) => {
+                return {
+                    ...p,
+                    page_number: p.page_number - 1
+                }
             })
+            const final = updatedPages.concat(updatedRemovedPages)
+            return {
+                content: {
+                    pages: final
+                }
+            }
+        })
+    },
+
+    publishContent: async (username: string, piece_id: string): Promise<Result<null>> => {
+        const {content} = get()
+        try {
+            await UpdatePieceContent({username, piece_id, piece_content: content, published: true})
+            return {success: true, data: null}
+        } catch (error) {
+            if (error instanceof Error) return {success: false, error: error.message}
+            return {success: false, error: "unknown error occurred"}
+        }
+    },
+
+    saveContent: async (username: string, piece_id: string) => {
+        console.log("zustand save content called")
+        const {content} = get()
+        const result = await UpdatePieceContent({username, piece_id, piece_content: content});
+        console.log(result)
+        return result
     },
 
     //will probably never have to use this actually
@@ -111,32 +193,35 @@ export const useEditorStore = create<EditorStore>((set) => ({
         })
     },
 
-    editBlock: (page_number, block_id, new_props) => {
-        return set((state) => {
-            const updatedPages = state.content.pages.map((page) => {
-                if (page.page_number === page_number) {
-                    const blockIndex: number = page.blocks.findIndex((block) => block.props.id === block_id);
-                    if (blockIndex === -1) {
-                        return {...page}
-                    }
-                    const updatedBlocks: Block[] = [...page.blocks];
-                    const [block] = updatedBlocks.splice(blockIndex, 1)
-                    block.props = new_props
-                    updatedBlocks.splice(blockIndex, 0, block)
-                    return {
-                        ...page,
-                        blocks: updatedBlocks
-                    }
-                }
-                return page
-            })
 
-            return {
-                content: {
-                    pages: updatedPages
-                }
-            }
-        })
+}))
+
+export interface EditorMetaDataProps {
+    piece_id: string,
+    author_id: string,
+    author_name: string,
+    title: string,
+    slug: string,
+    summary: string,
+    published: boolean,
+}
+
+export interface EditorMetaDataMethods {
+    setData: (data: EditorMetaDataProps) => void
+}
+
+export type EditorMetaDataStore = EditorMetaDataProps & EditorMetaDataMethods
+
+export const useEditorMetaDataStore = create<EditorMetaDataStore>((set, get) => ({
+    piece_id: "",
+    author_id: "",
+    author_name: "",
+    title: "",
+    slug: "",
+    summary: "",
+    published: false,
+
+    setData: (data: Partial<EditorMetaDataProps>) => {
+        return set({...data})
     }
-
 }))
