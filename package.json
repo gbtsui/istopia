@@ -19,6 +19,7 @@
     "@tsparticles/slim": "^3.8.1",
     "@types/bcrypt": "^5.0.2",
     "@types/color": "^4.2.0",
+    "@xyflow/react": "^12.6.4",
     "bcrypt": "^5.1.1",
     "framer-motion": "^12.10.0",
     "next": "15.3.2",

@@ -53,12 +53,13 @@ export interface CommentData {
 
 export interface BlockProps<T extends Record<string, string|boolean|number> = Record<string, string|boolean|number>> {
     id: string, //why am i having this in here twice?
+    friendly_name: string, //whatever the user wants to call the block, defaults to type plus first 6 chars of id
     content?: string[]; //split a raw string by \n and reconstruct with \n
     className?: string; //maybe create a tailwind parser in the future?
     listeners: Array<EngineEventListener>
 
     //children?: Array<Block>
-    children_ids?: string[], //makes shallow structure easier
+    children_ids?: string[], //makes shallow structure easier. also ordered!
     parent_id?: string, //if it's in the top level then this should be "root". root should have a nulled value
     additional_props?: T //additional props can be any {[k: string]: v} :3
 }
@@ -71,11 +72,26 @@ export interface Block {
 export interface Page {
     //blocks: Array<Block>,
     blocks: Record<string, Block> //Always initialize with an immutable "root" block so that every block has a parent and the system doesn't explode on itself!
-    page_number: number, //not sure if this can just be substituted for index tbh
+    //page_number: number, //not sure if this can just be substituted for index tbh
+    friendly_name: string, //user-friendly name!! defaults to "page" plus first 6 chars of uuid
+    id: string //uuid,
+    outward_connections: string[]
 }
 
+//so apparently reactflow wants me to have a certain node object type
+export interface PageNode {
+    id: string, //copy from page.id
+    position: {x: number, y: number}, //are we persisting this...?
+    data: {label: string}, //should just be friendly_name
+    type: "input" | null //only one input needed btw! entry point or first page
+}
+export interface PageNodeEdge {
+
+} //stop edging pls
+
 export interface PieceContent {
-    pages: Array<Page>
+    //pages: Array<Page>
+    pages: Record<string, Page>
 }
 
 export type Result<T> = {success: true, data: T} | {success: false, error: string}
