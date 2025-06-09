@@ -1,15 +1,18 @@
 "use server";
 
 import {z} from "zod"
-import {Block, PieceContent} from "@/app/types";
+import {Block, BlockProps, Page, PieceContent} from "@/app/types";
 import {Condition, EngineEventListener, LogicalCondition} from "@/app/engine/engine";
 
-const BlockPropsSchema = z.object({
+const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
     id: z.string(),
+    friendly_name: z.string(),
     content: z.array(z.string()).optional(),
     children: z.array(z.lazy(() => BlockSchema)).optional(),
     className: z.string().optional(),
     listeners: z.array(z.lazy(() => EngineEventListenerSchema)),
+    children_ids: z.array(z.string()).optional(),
+    parent_id: z.string().optional(),
     additional_props: z.record(z.string(), z.union([z.string(), z.boolean(), z.number()])).optional()
 })
 
@@ -51,13 +54,15 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     })
 )
 
-const PageSchema = z.object({
-    blocks: z.array(BlockSchema),
-    page_number: z.number(),
+const PageSchema: z.ZodType<Page> = z.object({
+    blocks: z.record(z.string(), BlockSchema),
+    friendly_name: z.string(),
+    id: z.string(),
+    outward_connections: z.array(z.string())
 })
 
-const PieceContentSchema = z.object({
-    pages: z.array(PageSchema),
+const PieceContentSchema: z.ZodType<PieceContent> = z.object({
+    pages: z.record(z.string(), PageSchema)
 })
 
 export default async function Parse(data: unknown): Promise<PieceContent> {
