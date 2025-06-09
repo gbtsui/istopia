@@ -41,22 +41,26 @@ export interface PieceMetaData {
 }
 
 export interface CommentData {
-    id: number,
-    piece_id: number,
+    id: string, //uuid
+    piece_id: string,
     author_id: string,
-}
+    author_name: string,
+    content: string[],
+    rating: number | null,
+    upvotes: number,
+    downvotes: number,
+} //why thank you kind redditor
 
 export interface BlockProps<T extends Record<string, string|boolean|number> = Record<string, string|boolean|number>> {
     id: string, //why am i having this in here twice?
-    content?: string[];
-    className?: string;
+    content?: string[]; //split a raw string by \n and reconstruct with \n
+    className?: string; //maybe create a tailwind parser in the future?
     listeners: Array<EngineEventListener>
 
-    additional_props?: T//Record<string, string | boolean | number>
-} //modularize this maybe?
-
-export interface ContainerBlockProps extends BlockProps {
-    children: Array<Block>
+    //children?: Array<Block>
+    children_ids?: string[], //makes shallow structure easier
+    parent_id?: string, //if it's in the top level then this should be "root". root should have a nulled value
+    additional_props?: T //additional props can be any {[k: string]: v} :3
 }
 
 export interface Block {
@@ -65,8 +69,9 @@ export interface Block {
 }
 
 export interface Page {
-    blocks: Array<Block>,
-    page_number: number,
+    //blocks: Array<Block>,
+    blocks: Record<string, Block> //Always initialize with an immutable "root" block so that every block has a parent and the system doesn't explode on itself!
+    page_number: number, //not sure if this can just be substituted for index tbh
 }
 
 export interface PieceContent {
