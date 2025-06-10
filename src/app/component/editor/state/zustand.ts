@@ -107,6 +107,25 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     reorderBlock: (page_number, block_id, new_position) => {
+        const {pages} = get().content;
+        const current_page = pages[page_number];
+        const current_block = current_page.blocks[block_id]
+
+        if (!current_block) throw new Error("block not found?")
+        if (current_block.props.id === "root") return set({content: {pages}})
+
+        const block_parent_id = current_block.props.parent_id as string
+        const block_parent = current_page.blocks[block_parent_id];
+        const children_ids = block_parent.props.children_ids || []
+        const index = children_ids.findIndex((b) => b === block_id)
+        children_ids.splice(index, 1)
+        children_ids.splice(new_position, 0, block_id)
+
+        block_parent.props.children_ids = children_ids
+        current_page.blocks[block_parent_id] = block_parent
+        pages[page_number] = current_page
+        return set({content: {pages}})
+
         /*return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
@@ -135,7 +154,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     deleteBlock: (page_id: string, block_id: string) => {
         const {pages} = get().content;
         const page = pages[page_id];
-        pages[page_id] = {...page, [block_id]: undefined};
+        delete page.blocks[block_id];
+        //pages[page_id] = {...page, [block_id]: undefined};
+        pages[page_id] = page
         return set({content: {pages}})
         /*return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
@@ -153,6 +174,10 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     deletePage: (page_id: string) => {
+        const {pages} = get().content;
+        delete pages[page_id];
+        return set({content: {pages}})
+
         /*return set((state) => {
             const pageIndex = state.content.pages.findIndex((p) => p.page_number === page_number);
             if (pageIndex === -1) return {};
