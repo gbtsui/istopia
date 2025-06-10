@@ -9,14 +9,13 @@ interface EditorProps {
 
 export interface EditorStore extends EditorProps {
     setContent: (content: PieceContent) => void,
-    addPage: (newPage: Page) => void,
-    addBlock: (page_number: number, newBlock: Block) => void,
-    reorderBlock: (page_number: number, block_id: string, new_position: number) => void,
-    reorderPage: (page_number: number, new_position: number) => void,
-    deleteBlock: (page_number: number, block_id: string) => void,
-    deletePage: (page_number: number) => void,
+    addPage: () => void,
+    addBlock: (page_id: string, newBlock: Block) => void,
+    reorderBlock: (page_id: string, block_id: string, new_position: number) => void,
+    deleteBlock: (page_id: string, block_id: string) => void,
+    deletePage: (page_id: string) => void,
 
-    editBlock: (page_number: number, block_id: string, new_props: BlockProps) => void,
+    editBlock: (page_id: string, block_id: string, new_props: BlockProps) => void,
 
     publishContent: (username: string, piece_id: string) => Promise<Result<null>>
 
@@ -25,26 +24,44 @@ export interface EditorStore extends EditorProps {
 }
 
 export const useEditorStore = create<EditorStore>((set, get) => ({
-    content: {pages: []},
+    content: {pages: {}},
     setContent: (content) => {
         return set({content})
     },
 
-    addPage: (newPage) => {
-        return set((state) => ({
+    addPage: () => {
+        const id = crypto.randomUUID()
+        const {content} = get()
+        const pages = content.pages
+        pages[id] = {
+            blocks: {},
+            id,
+            friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
+            outward_connections: []
+        }
+        return set({content: {pages}})
+
+        /*return set((state) => ({
             content: {
                 pages: [...state.content.pages, newPage]
             }
-        }))
+        }))*/
     },
 
-    addBlock: (page_number, newBlock) => {
-        return set((state) => {
+    addBlock: (page_id, newBlock) => {
+        const {pages} = get().content
+        const current_page = pages[page_id]
+        current_page.blocks[newBlock.props.id] = newBlock
+        pages[current_page.id] = current_page
+        return set({content: {pages}})
+        /*return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
+                    const blocks = page.blocks
+                    blocks[newBlock.props.id] = newBlock
                     return {
                         ...page,
-                        blocks: [...page.blocks, newBlock],
+                        blocks: blocks
                     };
                 }
                 return page;
@@ -55,25 +72,27 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                     pages: updatedPages
                 }
             }
-        })
+        })*/
     },
 
-    editBlock: (page_number, block_id, new_props) => {
-        return set((state) => {
+    editBlock: (page_id, block_id, new_props) => {
+        const {pages} = get().content
+        const block = pages[page_id].blocks[block_id]
+        if (!block) throw new Error("block not found?")
+        block.props = new_props
+        pages[page_id].blocks[block_id] = block
+        return set({content: {pages}})
+
+
+        /*return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
-                    const blockIndex: number = page.blocks.findIndex((block) => block.props.id === block_id);
-                    if (blockIndex === -1) {
-                        return {...page}
-                    }
-                    const updatedBlocks: Block[] = [...page.blocks];
-                    const [block] = updatedBlocks.splice(blockIndex, 1)
+                    const block = page.blocks[block_id];
+                    if (!block) return page
                     block.props = new_props
-                    updatedBlocks.splice(blockIndex, 0, block)
-                    return {
-                        ...page,
-                        blocks: updatedBlocks
-                    }
+                    const updatedPage = page
+                    updatedPage.blocks[block_id] = block
+                    return updatedPage
                 }
                 return page
             })
@@ -84,10 +103,11 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 }
             }
         })
+        */
     },
 
     reorderBlock: (page_number, block_id, new_position) => {
-        return set((state) => {
+        /*return set((state) => {
             const updatedPages = state.content.pages.map((page) => {
                 if (page.page_number === page_number) {
                     const blockIndex = page.blocks.findIndex((b) => b.props.id === block_id);
@@ -109,43 +129,31 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                     pages: updatedPages
                 }
             }
-        })
+        })*/
     },
 
-    reorderPage: (page_number, new_position) => {
-        return set((state) => {
-            const pageIndex = state.content.pages.findIndex((p) => p.page_number === page_number);
-            if (pageIndex === -1) return {...state};
-            const updatedPages = [...state.content.pages];
-            const [page] = updatedPages.splice(pageIndex, 1);
-            updatedPages.splice(new_position, 0, page);
+    deleteBlock: (page_id: string, block_id: string) => {
+        const {pages} = get().content;
+        const page = pages[page_id];
+        pages[page_id] = {...page, [block_id]: undefined};
+        return set({content: {pages}})
+        /*return set((state) => {
+            const updatedPages = state.content.pages.map((page) => {
+                if (page.page_number !== page_number) return page;
+
+                const updatedBlocks = page.blocks.filter((b) => b.props.id !== block_id);
+                return {...page, blocks: updatedBlocks}
+            })
             return {
                 content: {
                     pages: updatedPages
                 }
             }
-        })
+        })*/
     },
 
-
-    deleteBlock: (page_number: number, block_id: string) => {
-       return set((state) => {
-           const updatedPages = state.content.pages.map((page) => {
-               if (page.page_number !== page_number) return page;
-
-               const updatedBlocks = page.blocks.filter((b) => b.props.id !== block_id);
-               return {...page, blocks: updatedBlocks}
-           })
-           return {
-               content: {
-                   pages: updatedPages
-               }
-           }
-       })
-    },
-
-    deletePage: (page_number: number) => {
-        return set((state) => {
+    deletePage: (page_id: string) => {
+        /*return set((state) => {
             const pageIndex = state.content.pages.findIndex((p) => p.page_number === page_number);
             if (pageIndex === -1) return {};
             const updatedPages: Array<Page> = [...state.content.pages];
@@ -163,7 +171,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                     pages: final
                 }
             }
-        })
+        })*/
     },
 
     publishContent: async (username: string, piece_id: string): Promise<Result<null>> => {
