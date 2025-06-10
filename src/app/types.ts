@@ -64,6 +64,11 @@ export interface BlockProps<T extends Record<string, string|boolean|number> = Re
     additional_props?: T //additional props can be any {[k: string]: v} :3
 }
 
+export interface ContainerProps<T extends Record<string, string|boolean|number> = Record<string, string|boolean|number>> extends BlockProps {
+    page_blocks: Record<string, Block>
+    additional_props?: T
+}
+
 export interface Block {
     type: string,
     props: BlockProps
