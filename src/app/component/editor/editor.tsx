@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import PageContents from "@/app/component/editor/editor-components/page-contents";
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
 import PagesGraph from "@/app/component/editor/editor-components/pages-graph";
+import {ReactFlowProvider} from "@xyflow/react";
 
 type EditorProps = {
     initialPieceData: PieceData;
@@ -53,7 +54,7 @@ export default function Editor(props: EditorProps) {
                                   saving={saving}/>
                 </div>
                 {
-                    currentPage === null && <PagesGraph/>
+                    currentPage === null && <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
                 }
             </div>
 

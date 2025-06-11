@@ -1,7 +1,7 @@
 "use server";
 
 import {z} from "zod"
-import {Block, BlockProps, Page, PieceContent} from "@/app/types";
+import {Block, BlockProps, Page, PageNode, PieceContent} from "@/app/types";
 import {Condition, EngineEventListener, LogicalCondition} from "@/app/engine/engine";
 
 const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
@@ -54,11 +54,25 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     })
 )
 
+const PageNodeSchema: z.ZodType<PageNode> = z.object({
+    id: z.string(),
+    position: z.object({
+        x: z.number(),
+        y: z.number()
+    }),
+    data: z.object({
+        label: z.string()
+    }),
+    type: z.union([z.literal("input"), z.undefined()])
+})
+
 const PageSchema: z.ZodType<Page> = z.object({
     blocks: z.record(z.string(), BlockSchema),
     friendly_name: z.string(),
     id: z.string(),
-    outward_connections: z.array(z.string())
+    outward_connections: z.array(z.string()),
+    is_first: z.boolean(),
+    flow_node_data: PageNodeSchema
 })
 
 const PieceContentSchema: z.ZodType<PieceContent> = z.object({

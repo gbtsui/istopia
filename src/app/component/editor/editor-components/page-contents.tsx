@@ -16,14 +16,16 @@ import BlockEdit from "@/app/component/editor/editor-components/block-edit";
 import InsertBlockButton from "@/app/component/editor/editor-components/insert-block-button";
 
 type PageContentsProps = {
-    page_id: string;
+    page_id: string|null;
 }
 
 export default function PageContents(props: PageContentsProps) {
     const {page_id} = props;
-    const editor_store = useEditorStore();
     const page = useEditorStore(
-        (state) => state.content.pages[page_id]
+        (state) => {
+                if (page_id) return state.content.pages[page_id]
+                return null
+        }
     )
     //const [blocks, setBlocks] = useState<Block[]>(page_content);
     const sensors = useSensors(
@@ -45,6 +47,8 @@ export default function PageContents(props: PageContentsProps) {
         }*/
         console.log(active.id + " : " + over.id)
     }
+
+    if (!page_id || !page) return null
 
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>

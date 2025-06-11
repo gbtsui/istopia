@@ -81,6 +81,9 @@ export interface Page {
     friendly_name: string, //user-friendly name!! defaults to "page" plus first 6 chars of uuid
     id: string //uuid,
     outward_connections: string[]
+    is_first: boolean,
+
+    flow_node_data: PageNode
 }
 
 //so apparently reactflow wants me to have a certain node object type
@@ -88,7 +91,7 @@ export interface PageNode {
     id: string, //copy from page.id
     position: {x: number, y: number}, //are we persisting this...?
     data: {label: string}, //should just be friendly_name
-    type: "input" | null //only one input needed btw! entry point or first page
+    type?: "input" | undefined //only one input needed btw! entry point or first page
 }
 export interface PageNodeEdge {
 

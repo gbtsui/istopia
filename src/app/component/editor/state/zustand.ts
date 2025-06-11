@@ -9,7 +9,7 @@ interface EditorProps {
 
 export interface EditorStore extends EditorProps {
     setContent: (content: PieceContent) => void,
-    addPage: () => void,
+    addPage: (is_first: boolean, coordinates: {x: number, y: number}) => void,
     addBlock: (page_id: string, newBlock: Block) => void,
     reorderBlock: (page_id: string, block_id: string, new_parent_id: string, new_position: number) => void,
     deleteBlock: (page_id: string, block_id: string) => void,
@@ -29,7 +29,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         return set({content})
     },
 
-    addPage: () => {
+    addPage: (is_first: boolean = false, coordinates: {x: number, y: number}) => {
         const id = crypto.randomUUID()
         const {content} = get()
         const pages = content.pages
@@ -37,7 +37,15 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             blocks: {},
             id,
             friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
-            outward_connections: []
+            outward_connections: [],
+            is_first: is_first,
+
+            flow_node_data: {
+                id,
+                position: coordinates, //TODO: make this dynamic
+                data: {label: `Page ${id.split("").slice(0, 4).join("")}`},
+                type: is_first? "input" : undefined
+            }
         }
         return set({content: {pages}})
 
