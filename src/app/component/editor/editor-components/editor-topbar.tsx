@@ -11,7 +11,8 @@ type EditorTopBarProps = {
     saving: boolean
 }
 
-const formatTimeSinceLastSave = (timeMs: number): string => {
+const formatTimeSinceLastSave = (timeMs: number|undefined): string => {
+    if (timeMs === undefined) return ""
     const seconds = Math.floor(timeMs / 1000);
 
     if (seconds < 60) {
@@ -35,9 +36,11 @@ const formatTimeSinceLastSave = (timeMs: number): string => {
 export default function EditorTopBar(props: EditorTopBarProps) {
     const {currentPage, lastSaved, saving, saveThisWrld} = props
 
-    const [timeSinceLastSave, setTimeSinceLastSave] = useState(() =>
-        Date.now() - lastSaved.getTime()
-    );
+    const [timeSinceLastSave, setTimeSinceLastSave] = useState<number>();
+
+    useEffect(() => {
+        setTimeSinceLastSave(Date.now() - lastSaved.getTime())
+    }, [])
 
     useEffect(() => {
         const timer = setInterval(() => {
