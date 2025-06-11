@@ -4,9 +4,8 @@ import {useEffect, useState} from "react";
 import {PublishButton} from "@/app/component/editor/editor-components/publish-form";
 
 type EditorTopBarProps = {
-    currentPage: string,
+    currentPage: string | null,
     //totalPages: number,
-    setCurrentPage: (page_number: number) => void
     lastSaved: Date,
     saveThisWrld: () => void,
     saving: boolean

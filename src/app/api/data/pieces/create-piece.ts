@@ -5,7 +5,7 @@ import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {prisma} from "@/app/api/data/db";
 import Slugify from "@/app/api/data/pieces/slugify";
 
-const default_piece_content = {pages: []}
+const default_piece_content = {pages: {}}
 
 function CheckDataFullness(data: Partial<PieceData>) {
     return (typeof data.title === "string") && (data.title.trim().length > 0);

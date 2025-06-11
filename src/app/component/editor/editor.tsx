@@ -5,6 +5,7 @@ import {useEditorMetaDataStore, useEditorStore} from "@/app/component/editor/sta
 import {useEffect, useState} from "react";
 import PageContents from "@/app/component/editor/editor-components/page-contents";
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
+import PagesGraph from "@/app/component/editor/editor-components/pages-graph";
 
 type EditorProps = {
     initialPieceData: PieceData;
@@ -30,13 +31,13 @@ export default function Editor(props: EditorProps) {
             summary: initialPieceData.summary,
             published: initialPieceData.published,
         })
-        setCurrentPage(1)
+        setCurrentPage(null)
     }, [])
 
     return (
         <div>
             <div className={"flex"}>
-                <EditorTopBar currentPage={currentPage} setCurrentPage={setCurrentPage} lastSaved={lastSaved}
+                <EditorTopBar currentPage={currentPage} lastSaved={lastSaved}
                               saveThisWrld={() => {
                                   console.log("saving...")
                                   setSaving(true);
@@ -47,18 +48,24 @@ export default function Editor(props: EditorProps) {
                                           setSaving(false);
                                       }
                                   });
-                              }} totalPages={editor_store.content.pages.length}
+                              }}
                               saving={saving}/>
             </div>
+            <div className={"flex"}>
+                {
+                    currentPage === null && <PagesGraph/>
+                }
+            </div>
+
             {
-                Object.keys(editor_store.content.pages).length === 0 ?
+                /*Object.keys(editor_store.content.pages).length === 0 ?
                     <div className={"text-center justify-center m-4 text-xl"}>
                         looks like you don't have any pages so far... let's change that!<br/>
-                        <button onClick={() => {editor_store.addPage(); setCurrentPage(1)}}>add a blank page
+                        <button onClick={() => {editor_store.addPage(); setCurrentPage(null)}}>add a blank page
                         </button>
                     </div>
                     :
-                    <PageContents page_number={currentPage}/>
+                    <PageContents page_id={currentPage}/>*/
             }
             {/**/}
         </div>
