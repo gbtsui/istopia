@@ -5,7 +5,7 @@ import '@xyflow/react/dist/style.css';
 
 export default function PagesGraph() {
     return (
-        <div className={"h-dvh w-full"}>
+        <div className={"w-full h-full"}>
             <ReactFlow>
                 <Background/>
                 <Controls/>

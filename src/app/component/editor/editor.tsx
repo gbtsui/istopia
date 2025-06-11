@@ -36,22 +36,22 @@ export default function Editor(props: EditorProps) {
 
     return (
         <div>
-            <div className={"flex"}>
-                <EditorTopBar currentPage={currentPage} lastSaved={lastSaved}
-                              saveThisWrld={() => {
-                                  console.log("saving...")
-                                  setSaving(true);
-                                  editor_store.saveContent(username, initialPieceData.id).then((result) => {
-                                      if (result.success) {
-                                          console.log("saved successfully!")
-                                          setLastSaved(result.data);
-                                          setSaving(false);
-                                      }
-                                  });
-                              }}
-                              saving={saving}/>
-            </div>
-            <div className={"flex"}>
+            <div className={"flex flex-col h-svh w-full"}>
+                <div className={"flex"}>
+                    <EditorTopBar currentPage={currentPage} lastSaved={lastSaved}
+                                  saveThisWrld={() => {
+                                      console.log("saving...")
+                                      setSaving(true);
+                                      editor_store.saveContent(username, initialPieceData.id).then((result) => {
+                                          if (result.success) {
+                                              console.log("saved successfully!")
+                                              setLastSaved(result.data);
+                                              setSaving(false);
+                                          }
+                                      });
+                                  }}
+                                  saving={saving}/>
+                </div>
                 {
                     currentPage === null && <PagesGraph/>
                 }
