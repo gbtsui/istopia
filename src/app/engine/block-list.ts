@@ -4,7 +4,7 @@ import SimpleText from "@/app/engine/engine-components/simple-text";
 import Typewriter from "@/app/engine/engine-components/typewriter";
 import Root from "@/app/engine/engine-components/root";
 
-type BlockInfo<T extends BlockProps> = {
+type BlockInfo<T extends BlockProps | ContainerProps> = {
     block_name: string;
     block_component: (props: T) => JSX.Element;
     block_description: string;
