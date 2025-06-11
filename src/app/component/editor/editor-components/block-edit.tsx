@@ -7,13 +7,14 @@ import BlockEditFields from "@/app/component/editor/editor-components/block-edit
 
 type BlockEditProps = {
     block: Block;
-    page_number: number
+    page_id: string
 }
 
 export default function BlockEdit(props:BlockEditProps){
-    const {block, page_number} = props;
+    const {block, page_id} = props;
     const editBlock = useEditorStore((state) => state.editBlock)
     const deleteBlock = useEditorStore((state) => state.deleteBlock)
+    const page = useEditorStore((state) => state.content.pages[page_id])
 
     const updateProps = (newProps: Partial<BlockProps>) => {
         const finalProps = {
@@ -28,15 +29,15 @@ export default function BlockEdit(props:BlockEditProps){
     }
 
     const updateZustand = (newProps: BlockProps) => {
-        editBlock(page_number, block.props.id, newProps)
+        editBlock(page_id, block.props.id, newProps)
     }
 
     return (
         <Sortable id={block.props.id} content={block.type} key={block.props.id}
                   className={"p-2 m-2 bg-white rounded-lg text-black"}>
-            <BlockEditFields blockProps={block.props} updateProps={updateProps}/>
+            <BlockEditFields blockProps={block.props} page_id={page_id} page_blocks={page.blocks} updateProps={updateProps}/>
 
-            <button onClick={() => deleteBlock(page_number, block.props.id)} className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button> {/*TODO: make this work with a dialog*/}
+            <button onClick={() => deleteBlock(page_id, block.props.id)} className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button> {/*TODO: make this work with a dialog*/}
         </Sortable>
     )
 }

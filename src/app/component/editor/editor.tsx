@@ -13,7 +13,7 @@ type EditorProps = {
 
 export default function Editor(props: EditorProps) {
     const {initialPieceData, username} = props;
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState<string|null>(null);
     const [lastSaved, setLastSaved] = useState(initialPieceData.last_updated);
     const [saving, setSaving] = useState(false);
 
@@ -51,10 +51,10 @@ export default function Editor(props: EditorProps) {
                               saving={saving}/>
             </div>
             {
-                editor_store.content.pages.length == 0 ?
+                Object.keys(editor_store.content.pages).length === 0 ?
                     <div className={"text-center justify-center m-4 text-xl"}>
                         looks like you don't have any pages so far... let's change that!<br/>
-                        <button onClick={() => {editor_store.addPage({blocks: [], page_number: 1}); setCurrentPage(1)}}>add a blank page
+                        <button onClick={() => {editor_store.addPage(); setCurrentPage(1)}}>add a blank page
                         </button>
                     </div>
                     :

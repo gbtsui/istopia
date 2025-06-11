@@ -8,12 +8,12 @@ import {useState} from "react";
 type InsertBlockFormProps = {
     dialogIsOpen: boolean;
     setDialogIsOpen: (value: boolean) => void;
-    page_number: number;
+    page_id: string
 }
 
 export default function InsertBlockForm(props: InsertBlockFormProps) {
-    const {dialogIsOpen, setDialogIsOpen, page_number} = props;
-    const addBlock: (page_number: number, newBlock: Block) => void = useEditorStore((state) => state.addBlock);
+    const {dialogIsOpen, setDialogIsOpen, page_id} = props;
+    const addBlock: (page_id: string, newBlock: Block) => void = useEditorStore((state) => state.addBlock);
     const [selectedBlock, setSelectedBlock] = useState<Block | null>(null)
 
     if (!dialogIsOpen) {
@@ -44,7 +44,7 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
                     <button disabled={selectedBlock === null}
                             onClick={() => {
                                 if (selectedBlock) {
-                                    addBlock(page_number, {...selectedBlock, props: {...selectedBlock.props, id: crypto.randomUUID()}});
+                                    addBlock(page_id, {...selectedBlock, props: {...selectedBlock.props, id: crypto.randomUUID()}});
                                     setDialogIsOpen(false);
                                     setSelectedBlock(null);
                                 }
