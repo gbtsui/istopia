@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {PieceContent, Page, Block, BlockProps, Result} from "@/app/types";
+import {PieceContent, Block, BlockProps, Result} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 
@@ -11,7 +11,7 @@ export interface EditorStore extends EditorProps {
     setContent: (content: PieceContent) => void,
     addPage: () => void,
     addBlock: (page_id: string, newBlock: Block) => void,
-    reorderBlock: (page_id: string, block_id: string, new_position: number) => void,
+    reorderBlock: (page_id: string, block_id: string, new_parent_id: string, new_position: number) => void,
     deleteBlock: (page_id: string, block_id: string) => void,
     deletePage: (page_id: string) => void,
 
@@ -106,9 +106,9 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         */
     },
 
-    reorderBlock: (page_number, block_id, new_position) => {
+    reorderBlock: (page_id, block_id, new_parent_id, new_position) => {
         const {pages} = get().content;
-        const current_page = pages[page_number];
+        const current_page = pages[page_id];
         const current_block = current_page.blocks[block_id]
 
         if (!current_block) throw new Error("block not found?")
@@ -119,11 +119,21 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         const children_ids = block_parent.props.children_ids || []
         const index = children_ids.findIndex((b) => b === block_id)
         children_ids.splice(index, 1)
-        children_ids.splice(new_position, 0, block_id)
+
+        const new_parent = current_page.blocks[new_parent_id]
+        if (!new_parent) throw new Error("new parent block not found?")
+
+        if (new_parent_id === block_parent_id) {
+            children_ids.splice(new_position, 0, block_id)
+        } else {
+            (new_parent.props.children_ids || []).splice(new_position, 0, block_id)
+        }
+
 
         block_parent.props.children_ids = children_ids
         current_page.blocks[block_parent_id] = block_parent
-        pages[page_number] = current_page
+        current_page.blocks[new_parent_id] = new_parent
+        pages[page_id] = current_page
         return set({content: {pages}})
 
         /*return set((state) => {
