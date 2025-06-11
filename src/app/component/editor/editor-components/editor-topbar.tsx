@@ -4,8 +4,8 @@ import {useEffect, useState} from "react";
 import {PublishButton} from "@/app/component/editor/editor-components/publish-form";
 
 type EditorTopBarProps = {
-    currentPage: number,
-    totalPages: number,
+    currentPage: string,
+    //totalPages: number,
     setCurrentPage: (page_number: number) => void
     lastSaved: Date,
     saveThisWrld: () => void,
@@ -34,7 +34,7 @@ const formatTimeSinceLastSave = (timeMs: number): string => {
 };
 
 export default function EditorTopBar(props: EditorTopBarProps) {
-    const {currentPage, setCurrentPage, totalPages, lastSaved, saving, saveThisWrld} = props
+    const {currentPage, lastSaved, saving, saveThisWrld} = props
 
     const [timeSinceLastSave, setTimeSinceLastSave] = useState(() =>
         Date.now() - lastSaved.getTime()
@@ -50,18 +50,6 @@ export default function EditorTopBar(props: EditorTopBarProps) {
 
     const formattedTime = formatTimeSinceLastSave(timeSinceLastSave)
 
-    const prevPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1)
-        }
-    }
-
-    const nextPage = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1)
-        }
-    }
-
     return (
         <div className={"w-full h-20 m-3 p-2 rounded-xl bg-white text-black flex flex-row justify-between items-center text-center"}>
             <div className={"text-xl items-center flex-col flex"}>
@@ -69,11 +57,7 @@ export default function EditorTopBar(props: EditorTopBarProps) {
                     <button
                         className={"material-symbols-outlined text p-3 bg-gray-200 rounded-xl hover:bg-gray-300 transition-all"}>draft
                     </button>
-                    <span>{currentPage}/{totalPages}</span>
-                </div>
-                <div>
-                    <button className={"material-symbols-outlined"} onClick={prevPage}>arrow_left</button>
-                    <button className={"material-symbols-outlined"} onClick={nextPage}>arrow_right</button>
+                    <span>{currentPage}</span>
                 </div>
             </div>
             <div className={"flex flex-col text-center items-center justify-center w-1/6"}>

@@ -33,14 +33,17 @@ export default function PageContents(props: PageContentsProps) {
         })
     );
 
+
     function handleDragEnd(e: DragEndEvent) {
         const {active, over} = e
 
         if (!over) return;
 
-        if (active.id !== over.id) {
-            editor_store.reorderBlock(page_id, active.id as string, over.id);
-        }
+
+        /*if (active.id !== over.id) {
+            editor_store.reorderBlock(page_id, active.id as string, over.id); //TODO: fix this pls
+        }*/
+        console.log(active.id + " : " + over.id)
     }
 
     return (
