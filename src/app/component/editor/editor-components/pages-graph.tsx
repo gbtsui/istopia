@@ -24,8 +24,8 @@ export default function PagesGraph() {
     const {pages} = editorStore.content
     const [page_nodes, setPageNodes] = useState<PageNode[]>([])
 
-    const page_list = Object.entries(pages).map(([,v]) => v) //weird how doing [,v] actually works haha
-    const page_connections: Array<{id: string, source: string, target: string}> = page_list.map((page) => {
+    const page_list = Object.entries(pages).map(([, v]) => v) //weird how doing [,v] actually works haha
+    const page_connections: Array<{ id: string, source: string, target: string }> = page_list.map((page) => {
         return page.outward_connections.map((outwardConnection) => {
             return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection}
         })
@@ -33,22 +33,23 @@ export default function PagesGraph() {
     //console.log(page_nodes);
 
     const update_nodes = () => {
-        console.log("update_nodes running")
-        console.log("page_nodes:",page_nodes)
-        console.log("pages:", pages)
-        const pages_list = Object.entries(pages).map(([,v]) => v)
-        console.log("pages_list:", pages_list)
+        //console.log("update_nodes running")
+        //console.log("page_nodes:",page_nodes)
+        //console.log("pages:", pages)
+        const pages_list = Object.entries(pages).map(([, v]) => v)
+        //console.log("pages_list:", pages_list)
         const nodes = pages_list.map((page) => {
-            const node = page.flow_node_data;
+            /*const node = page.flow_node_data;
             console.log('Node data:', {
                 id: node?.id,
                 type: node?.type,
                 position: node?.position,
                 data: node?.data
             });
-            return node;
+            return node;*/
+            return page.flow_node_data;
         })
-        console.log("nodes data:", nodes)
+        //console.log("nodes data:", nodes)
         setPageNodes(nodes)
     }
 
@@ -57,7 +58,6 @@ export default function PagesGraph() {
         console.log("useEffect running")
         update_nodes()
     }, [editorStore.content.pages])
-
 
 
     const addPage = useEditorStore((state) => state.addPage)
@@ -81,34 +81,45 @@ export default function PagesGraph() {
             {
                 x: centerX, y: centerY
             }
-        ); console.log("button pressed")
+        );
+        console.log("button pressed")
 
         update_nodes()
         //console.log(updated_nodes)
     }, [addPage, store])
 
     const onNodesChange: OnNodesChange = useCallback(
-        (changes) => setPageNodes((nds) => applyNodeChanges(changes, nds)),
-        [],
-    );
+        (changes) => {
+            changes.forEach((change) => {
+                if (change.type === "position") {
+                    const page_id = change.id;
+                    const new_position = change.position;
+                    editorStore.setPageCoordinates(page_id, {
+                        x: new_position?.x as number,
+                        y: new_position?.y as number
+                    })
+                }
+            })
+            setPageNodes((nds) => applyNodeChanges(changes, nds))
+        }, []);
 
-    /*const onEdgesChange: OnEdgesChange = useCallback(
-        (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-        [],
-    );*/
+/*const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [],
+);*/
 
-    return (
-        <div className={"w-full h-full"}>
-            <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes} onNodesChange={onNodesChange}>
-                <Background/>
-                <Controls/>
-            </ReactFlow>
-            <div className={"fixed right-0 bottom-0"}>
-                <button onClick={onClick}
-                        className={"p-3 m-3 bg-white text-black rounded-2xl text-2xl hover:cursor-pointer"}>
-                    + Add Page
-                </button>
-            </div>
+return (
+    <div className={"w-full h-full"}>
+        <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes} onNodesChange={onNodesChange}>
+            <Background/>
+            <Controls/>
+        </ReactFlow>
+        <div className={"fixed right-0 bottom-0"}>
+            <button onClick={onClick}
+                    className={"p-3 m-3 bg-white text-black rounded-2xl text-2xl hover:cursor-pointer"}>
+                + Add Page
+            </button>
         </div>
-    )
+    </div>
+)
 }

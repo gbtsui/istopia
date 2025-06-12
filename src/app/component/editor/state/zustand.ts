@@ -1,5 +1,5 @@
 import {create} from "zustand"
-import {PieceContent, Block, BlockProps, Result} from "@/app/types";
+import {PieceContent, Block, BlockProps, Result, Page} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 
@@ -16,6 +16,8 @@ export interface EditorStore extends EditorProps {
     deletePage: (page_id: string) => void,
 
     editBlock: (page_id: string, block_id: string, new_props: BlockProps) => void,
+    editPage: (page_id: string, new_data: Partial<Page>) => void,
+    setPageCoordinates: (page_id: string, coordinates: {x: number, y: number}) => void,
 
     publishContent: (username: string, piece_id: string) => Promise<Result<null>>
 
@@ -56,6 +58,18 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 pages: [...state.content.pages, newPage]
             }
         }))*/
+    },
+
+    editPage: (page_id: string, new_data: Partial<Page>)=> {
+        const {pages} = {...get().content}
+        pages[page_id] = {...pages[page_id], ...new_data};
+        return set({content: {pages}})
+    },
+
+    setPageCoordinates: (page_id: string, coordinates: {x: number, y: number})=> {
+        const {pages} = {...get().content}
+        pages[page_id].flow_node_data.position = coordinates;
+        return set({content: {pages}})
     },
 
     addBlock: (page_id, newBlock) => {
