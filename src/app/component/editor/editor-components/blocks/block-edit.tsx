@@ -3,7 +3,7 @@
 import {Block, BlockProps} from "@/app/types";
 import Sortable from "@/app/component/editor/state/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
-import BlockEditFields from "@/app/component/editor/editor-components/block-edit-fields";
+import BlockEditFields from "@/app/component/editor/editor-components/blocks/block-edit-fields";
 
 type BlockEditProps = {
     block: Block;

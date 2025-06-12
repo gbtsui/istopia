@@ -33,23 +33,10 @@ export default function PagesGraph() {
     //console.log(page_nodes);
 
     const update_nodes = () => {
-        //console.log("update_nodes running")
-        //console.log("page_nodes:",page_nodes)
-        //console.log("pages:", pages)
         const pages_list = Object.entries(pages).map(([, v]) => v)
-        //console.log("pages_list:", pages_list)
         const nodes = pages_list.map((page) => {
-            /*const node = page.flow_node_data;
-            console.log('Node data:', {
-                id: node?.id,
-                type: node?.type,
-                position: node?.position,
-                data: node?.data
-            });
-            return node;*/
             return page.flow_node_data;
         })
-        //console.log("nodes data:", nodes)
         setPageNodes(nodes)
     }
 

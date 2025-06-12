@@ -12,8 +12,8 @@ import {
 } from "@dnd-kit/core";
 import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
-import BlockEdit from "@/app/component/editor/editor-components/block-edit";
-import InsertBlockButton from "@/app/component/editor/editor-components/insert-block-button";
+import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
+import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
 
 type PageContentsProps = {
     page_id: string|null;

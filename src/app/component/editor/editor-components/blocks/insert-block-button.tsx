@@ -2,7 +2,7 @@
 
 
 import {useState} from "react";
-import InsertBlockForm from "@/app/component/editor/editor-components/insert-block-form";
+import InsertBlockForm from "@/app/component/editor/editor-components/blocks/insert-block-form";
 
 type InsertBlockButtonProps = {
     page_id: string

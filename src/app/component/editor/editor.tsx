@@ -3,9 +3,9 @@
 import {PieceData} from "@/app/types";
 import {useEditorMetaDataStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import {useEffect, useState} from "react";
-import PageContents from "@/app/component/editor/editor-components/page-contents";
+import PageContents from "@/app/component/editor/editor-components/blocks/page-contents";
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
-import PagesGraph from "@/app/component/editor/editor-components/pages-graph";
+import PagesGraph from "@/app/component/editor/editor-components/pages-graph/pages-graph";
 import {ReactFlowProvider} from "@xyflow/react";
 
 type EditorProps = {

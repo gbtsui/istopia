@@ -2,7 +2,7 @@
 
 import {Block, BlockProps} from "@/app/types";
 import {SortableContext} from "@dnd-kit/sortable";
-import BlockEdit from "@/app/component/editor/editor-components/block-edit";
+import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
 
 type BlockEditFieldsProps = {
     blockProps: BlockProps,
