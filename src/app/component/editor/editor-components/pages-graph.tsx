@@ -1,20 +1,60 @@
 "use client";
 
-import {Background, Controls, ReactFlow, useReactFlow, useStoreApi, useViewport} from "@xyflow/react";
+import {
+    applyEdgeChanges,
+    applyNodeChanges,
+    Background,
+    Controls, OnEdgesChange, OnNodesChange,
+    ReactFlow,
+    useReactFlow,
+    useStoreApi,
+    useViewport
+} from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
 import {Page, PageNode} from "@/app/types";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
-import {useCallback} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 
 export default function PagesGraph() {
-    const {pages} = useEditorStore((state) => state.content);
-
     const store = useStoreApi()
+    //console.log(page_list);
+
+    const editorStore = useEditorStore()
+    const {pages} = editorStore.content
+    useEffect(() => console.log(pages))
+    const [page_nodes, setPageNodes] = useState<PageNode[]>([])
     const page_list = Object.entries(pages).map(([,v]) => v) //weird how doing [,v] actually works haha
-    const page_nodes: PageNode[] = page_list.map((page) => {
-        return page.flow_node_data
-    })
+
+    //console.log(page_nodes);
+
+    useEffect(() => {
+        console.log("use effect running")
+
+        const page_connections: Array<{id: string, source: string, target: string}> = page_list.map((page) => {
+            return page.outward_connections.map((outwardConnection) => {
+                return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection}
+            })
+        }).flat()
+
+        const nodes = Object.entries(editorStore.content.pages).map(([,v]) => v).map((page) => {
+            const node = page.flow_node_data;
+            console.log('Node data:', {
+                id: node?.id,
+                type: node?.type,
+                position: node?.position,
+                data: node?.data
+            });
+            return node;
+        })
+        //console.log(pages)
+        //console.log(page_list)
+        //console.log(nodes)
+
+        setPageNodes(nodes);
+    }, [editorStore.content.pages])
+
+
 
     const addPage = useEditorStore((state) => state.addPage)
 
@@ -32,15 +72,28 @@ export default function PagesGraph() {
         const centerY =
             -transformY * zoomMultiplier + (height * zoomMultiplier) / 2;
 
-        addPage(page_list.length === 0, {
-            x: centerX, y: centerY
-        }); console.log("button pressed")
-
+        addPage(
+            page_list.length === 0,
+            {
+                x: centerX, y: centerY
+            }
+        ); console.log("button pressed")
+        //console.log(updated_nodes)
     }, [addPage, store])
+
+    const onNodesChange: OnNodesChange = useCallback(
+        (changes) => setPageNodes((nds) => applyNodeChanges(changes, nds)),
+        [],
+    );
+
+    /*const onEdgesChange: OnEdgesChange = useCallback(
+        (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+        [],
+    );*/
 
     return (
         <div className={"w-full h-full"}>
-            <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes}>
+            <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes} onNodesChange={onNodesChange}>
                 <Background/>
                 <Controls/>
             </ReactFlow>
