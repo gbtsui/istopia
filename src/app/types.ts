@@ -58,7 +58,6 @@ export interface BlockProps<T extends Record<string, string|boolean|number> = Re
     className?: string; //maybe create a tailwind parser in the future?
     listeners: Array<EngineEventListener>
 
-    //children?: Array<Block>
     children_ids?: string[], //makes shallow structure easier. also ordered!
     parent_id?: string, //if it's in the top level then this should be "root". root should have a nulled value
     additional_props?: T //additional props can be any {[k: string]: v} :3
@@ -75,9 +74,7 @@ export interface Block {
 }
 
 export interface Page {
-    //blocks: Array<Block>,
     blocks: Record<string, Block> //Always initialize with an immutable "root" block so that every block has a parent and the system doesn't explode on itself!
-    //page_number: number, //not sure if this can just be substituted for index tbh
     friendly_name: string, //user-friendly name!! defaults to "page" plus first 6 chars of uuid
     id: string //uuid,
     outward_connections: string[]
@@ -98,7 +95,6 @@ export interface PageNodeEdge {
 } //stop edging pls
 
 export interface PieceContent {
-    //pages: Array<Page>
     pages: Record<string, Page>
 }
 

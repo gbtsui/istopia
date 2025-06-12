@@ -24,7 +24,7 @@ export default function RenderBlock({block}: {block:Block}) {
             if ('page_blocks' in blockInfo.block_props) {
                 return blockInfo.block_component(block.props as ContainerProps);
             } else {
-                //@ts-ignore
+                // @ts-expect-error I KNOW THAT THIS WILL WORK. but i guess i should put in more type safety in the future ig
                 return blockInfo.block_component(block.props as BlockProps);
             }
         }
