@@ -1,7 +1,7 @@
 "use server";
 
 import {z} from "zod"
-import {Block, BlockProps, Page, PageNode, PieceContent} from "@/app/types";
+import {Block, BlockProps, Page, PageNodeData, PieceContent} from "@/app/types";
 import {Condition, EngineEventListener, LogicalCondition} from "@/app/engine/engine";
 
 const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
@@ -54,7 +54,7 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     })
 )
 
-const PageNodeSchema: z.ZodType<PageNode> = z.object({
+const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
     id: z.string(),
     position: z.object({
         x: z.number(),

@@ -11,7 +11,7 @@ import {
     useViewport
 } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
-import {Page, PageNode} from "@/app/types";
+import {Page, PageNodeData} from "@/app/types";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {useCallback, useEffect, useState} from "react";
 
@@ -22,7 +22,7 @@ export default function PagesGraph() {
 
     const editorStore = useEditorStore()
     const {pages} = editorStore.content
-    const [page_nodes, setPageNodes] = useState<PageNode[]>([])
+    const [page_nodes, setPageNodes] = useState<PageNodeData[]>([])
 
     const page_list = Object.entries(pages).map(([, v]) => v) //weird how doing [,v] actually works haha
     const page_connections: Array<{ id: string, source: string, target: string }> = page_list.map((page) => {

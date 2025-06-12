@@ -83,11 +83,11 @@ export interface Page {
     outward_connections: string[]
     is_first: boolean,
 
-    flow_node_data: PageNode
+    flow_node_data: PageNodeData
 }
 
 //so apparently reactflow wants me to have a certain node object type
-export interface PageNode {
+export interface PageNodeData {
     id: string, //copy from page.id
     position: {x: number, y: number}, //are we persisting this...?
     data: Record<string, unknown>, //should just be friendly_name
