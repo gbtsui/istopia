@@ -90,8 +90,8 @@ export interface Page {
 export interface PageNode {
     id: string, //copy from page.id
     position: {x: number, y: number}, //are we persisting this...?
-    data: {label: string}, //should just be friendly_name
-    type?: "input" | undefined //only one input needed btw! entry point or first page
+    data: Record<string, unknown>, //should just be friendly_name
+    type?: string | undefined //only one input needed btw! entry point or first page
 }
 export interface PageNodeEdge {
 

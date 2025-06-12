@@ -22,22 +22,23 @@ export default function PagesGraph() {
 
     const editorStore = useEditorStore()
     const {pages} = editorStore.content
-    useEffect(() => console.log(pages))
     const [page_nodes, setPageNodes] = useState<PageNode[]>([])
-    const page_list = Object.entries(pages).map(([,v]) => v) //weird how doing [,v] actually works haha
 
+    const page_list = Object.entries(pages).map(([,v]) => v) //weird how doing [,v] actually works haha
+    const page_connections: Array<{id: string, source: string, target: string}> = page_list.map((page) => {
+        return page.outward_connections.map((outwardConnection) => {
+            return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection}
+        })
+    }).flat()
     //console.log(page_nodes);
 
-    useEffect(() => {
-        console.log("use effect running")
-
-        const page_connections: Array<{id: string, source: string, target: string}> = page_list.map((page) => {
-            return page.outward_connections.map((outwardConnection) => {
-                return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection}
-            })
-        }).flat()
-
-        const nodes = Object.entries(editorStore.content.pages).map(([,v]) => v).map((page) => {
+    const update_nodes = () => {
+        console.log("update_nodes running")
+        console.log("page_nodes:",page_nodes)
+        console.log("pages:", pages)
+        const pages_list = Object.entries(pages).map(([,v]) => v)
+        console.log("pages_list:", pages_list)
+        const nodes = pages_list.map((page) => {
             const node = page.flow_node_data;
             console.log('Node data:', {
                 id: node?.id,
@@ -47,11 +48,14 @@ export default function PagesGraph() {
             });
             return node;
         })
-        //console.log(pages)
-        //console.log(page_list)
-        //console.log(nodes)
+        console.log("nodes data:", nodes)
+        setPageNodes(nodes)
+    }
 
-        setPageNodes(nodes);
+
+    useEffect(() => {
+        console.log("useEffect running")
+        update_nodes()
     }, [editorStore.content.pages])
 
 
@@ -78,6 +82,8 @@ export default function PagesGraph() {
                 x: centerX, y: centerY
             }
         ); console.log("button pressed")
+
+        update_nodes()
         //console.log(updated_nodes)
     }, [addPage, store])
 

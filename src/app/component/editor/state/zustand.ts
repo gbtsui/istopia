@@ -30,9 +30,10 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     addPage: (is_first: boolean = false, coordinates: {x: number, y: number}) => {
+        console.log("addPage run")
         const id = crypto.randomUUID()
         const {content} = get()
-        const pages = content.pages
+        const pages = {...content.pages}
         pages[id] = {
             blocks: {},
             id,
@@ -47,6 +48,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 type: is_first? "input" : undefined
             }
         }
+        console.log("zustand pages:", pages)
         return set({content: {pages}})
 
         /*return set((state) => ({
