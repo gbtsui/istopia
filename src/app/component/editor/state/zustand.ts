@@ -32,7 +32,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     addPage: (is_first: boolean = false, coordinates: {x: number, y: number}) => {
         console.log("addPage run")
         const id = crypto.randomUUID()
-        const {content} = get()
+        const {content} = {...get()}
         const pages = {...content.pages}
         pages[id] = {
             blocks: {},
@@ -59,7 +59,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     addBlock: (page_id, newBlock) => {
-        const {pages} = get().content
+        const {pages} = {...get().content}
         const current_page = pages[page_id]
         current_page.blocks[newBlock.props.id] = newBlock
         pages[current_page.id] = current_page
@@ -86,7 +86,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     editBlock: (page_id, block_id, new_props) => {
-        const {pages} = get().content
+        const {pages} = {...get().content}
         const block = pages[page_id].blocks[block_id]
         if (!block) throw new Error("block not found?")
         block.props = new_props
@@ -117,7 +117,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     reorderBlock: (page_id, block_id, new_parent_id, new_position) => {
-        const {pages} = get().content;
+        const {pages} = {...get().content};
         const current_page = pages[page_id];
         const current_block = current_page.blocks[block_id]
 
@@ -172,7 +172,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     deleteBlock: (page_id: string, block_id: string) => {
-        const {pages} = get().content;
+        const {pages} = {...get().content};
         const page = pages[page_id];
         delete page.blocks[block_id];
         //pages[page_id] = {...page, [block_id]: undefined};
@@ -194,7 +194,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     deletePage: (page_id: string) => {
-        const {pages} = get().content;
+        const {pages} = {...get().content};
         delete pages[page_id];
         return set({content: {pages}})
 
@@ -220,7 +220,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     publishContent: async (username: string, piece_id: string): Promise<Result<null>> => {
-        const {content} = get()
+        const {content} = {...get()}
         try {
             await UpdatePieceContent({username, piece_id, piece_content: content, published: true})
             return {success: true, data: null}
