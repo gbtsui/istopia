@@ -73,7 +73,7 @@ export default function PagesGraph() {
 
         update_nodes()
         //console.log(updated_nodes)
-    }, [addPage, store])
+    }, [addPage, store, update_nodes, page_list.length])
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {

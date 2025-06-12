@@ -70,7 +70,7 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
                         {blockProps.children_ids.length > 0 ?
                             blockProps.children_ids.map((id) => {
                                 const block = page_blocks[id]
-                                return <BlockEdit block={block} page_id={page_id}/>
+                                return <BlockEdit block={block} page_id={page_id} key={block.props.id}/>
                             })
                         :
                             "no blocks found here!" //TODO: finish multiple contexts and nested sortables

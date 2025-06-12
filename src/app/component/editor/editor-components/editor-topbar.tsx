@@ -40,7 +40,7 @@ export default function EditorTopBar(props: EditorTopBarProps) {
 
     useEffect(() => {
         setTimeSinceLastSave(Date.now() - lastSaved.getTime())
-    }, [])
+    }, [lastSaved])
 
     useEffect(() => {
         const timer = setInterval(() => {
