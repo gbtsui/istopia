@@ -7,38 +7,35 @@ import {
     Background,
     Controls, OnConnect, OnEdgesChange, OnNodesChange,
     ReactFlow,
-    useReactFlow,
     useStoreApi,
-    useViewport
 } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
-import {Page, PageNodeData, PageNodeEdge} from "@/app/types";
+import {PageNodeData, PageNodeEdge} from "@/app/types";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {useCallback, useEffect, useState} from "react";
 
 
 export default function PagesGraph() {
     const store = useStoreApi()
-    //console.log(page_list);
 
     const editorStore = useEditorStore()
     const {pages} = editorStore.content
     const [page_nodes, setPageNodes] = useState<PageNodeData[]>([]);
     const [edges, setEdges] = useState<PageNodeEdge[]>([]);
 
-    const page_list = Object.entries(pages).map(([, v]) => v) //weird how doing [,v] actually works haha
-    const page_connections: Array<{ id: string, source: string, target: string }> = page_list.map((page) => {
-        return page.outward_connections.map((outwardConnection) => {
-            return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection}
-        })
-    }).flat()
-    //console.log(page_nodes);
-
     const update_nodes = () => {
+        if (!Object.keys(pages).length) return
+
         const pages_list = Object.entries(pages).map(([, v]) => v)
         const nodes = pages_list.map((page) => {
             return page.flow_node_data;
         })
+        const edges = pages_list.map((page) => {
+            return page.outward_connections.map((outwardConnection) => {
+                return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection} as PageNodeEdge
+            })
+        }).flat()
+        setEdges(edges)
         setPageNodes(nodes)
     }
 
@@ -66,7 +63,7 @@ export default function PagesGraph() {
             -transformY * zoomMultiplier + (height * zoomMultiplier) / 2;
 
         addPage(
-            page_list.length === 0,
+            page_nodes.length === 0,
             {
                 x: centerX, y: centerY
             }
@@ -75,7 +72,7 @@ export default function PagesGraph() {
 
         update_nodes()
         //console.log(updated_nodes)
-    }, [addPage, store, update_nodes, page_list.length])
+    }, [addPage, store, update_nodes, page_nodes.length])
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {
@@ -98,8 +95,18 @@ export default function PagesGraph() {
     );
 
     const onConnect: OnConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)), //deal with updating connections here!
-        [setEdges],
+        (change) => {
+            console.log(change)
+            console.log({...editorStore.content.pages})
+            console.log({...pages})
+            const source = {...editorStore.content.pages}[change.source]
+            console.log(source)
+            if (!source) return setEdges((eds) => addEdge(change, eds))
+            source.outward_connections.push(change.target)
+            pages[change.source] = source
+            setEdges((eds) => addEdge(change, eds))
+        },
+        [setEdges, editorStore],
     );
 
     return (
