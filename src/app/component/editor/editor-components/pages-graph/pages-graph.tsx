@@ -1,17 +1,18 @@
 "use client";
 
 import {
+    addEdge,
     applyEdgeChanges,
     applyNodeChanges,
     Background,
-    Controls, OnEdgesChange, OnNodesChange,
+    Controls, OnConnect, OnEdgesChange, OnNodesChange,
     ReactFlow,
     useReactFlow,
     useStoreApi,
     useViewport
 } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
-import {Page, PageNodeData} from "@/app/types";
+import {Page, PageNodeData, PageNodeEdge} from "@/app/types";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {useCallback, useEffect, useState} from "react";
 
@@ -22,7 +23,8 @@ export default function PagesGraph() {
 
     const editorStore = useEditorStore()
     const {pages} = editorStore.content
-    const [page_nodes, setPageNodes] = useState<PageNodeData[]>([])
+    const [page_nodes, setPageNodes] = useState<PageNodeData[]>([]);
+    const [edges, setEdges] = useState<PageNodeEdge[]>([]);
 
     const page_list = Object.entries(pages).map(([, v]) => v) //weird how doing [,v] actually works haha
     const page_connections: Array<{ id: string, source: string, target: string }> = page_list.map((page) => {
@@ -88,25 +90,30 @@ export default function PagesGraph() {
                 }
             })
             setPageNodes((nds) => applyNodeChanges(changes, nds))
-        }, []);
+        }, [setPageNodes]);
 
-/*const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [],
-);*/
+    const onEdgesChange: OnEdgesChange = useCallback(
+        (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+        [setEdges],
+    );
 
-return (
-    <div className={"w-full h-full"}>
-        <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes} onNodesChange={onNodesChange}>
-            <Background/>
-            <Controls/>
-        </ReactFlow>
-        <div className={"fixed right-0 bottom-0"}>
-            <button onClick={onClick}
-                    className={"p-3 m-3 bg-white text-black rounded-2xl text-2xl hover:cursor-pointer"}>
-                + Add Page
-            </button>
+    const onConnect: OnConnect = useCallback(
+        (params) => setEdges((eds) => addEdge(params, eds)), //deal with updating connections here!
+        [setEdges],
+    );
+
+    return (
+        <div className={"w-full h-full"}>
+            <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}>
+                <Background/>
+                <Controls/>
+            </ReactFlow>
+            <div className={"fixed right-0 bottom-0"}>
+                <button onClick={onClick}
+                        className={"p-3 m-3 bg-white text-black rounded-2xl text-2xl hover:cursor-pointer"}>
+                    + Add Page
+                </button>
+            </div>
         </div>
-    </div>
-)
+    )
 }

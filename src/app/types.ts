@@ -91,8 +91,10 @@ export interface PageNodeData {
     type?: string | undefined //only one input needed btw! entry point or first page
 }
 export interface PageNodeEdge {
-
-} //stop edging pls
+    id: string, //should be Id1+"-"+Id2
+    source: string, //Id1
+    target: string, //Id2 (grab from outward_connections)
+}
 
 export interface PieceContent {
     pages: Record<string, Page>
