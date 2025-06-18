@@ -13,7 +13,11 @@ import '@xyflow/react/dist/style.css';
 import {PageNodeData, PageNodeEdge} from "@/app/types";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {useCallback, useEffect, useState} from "react";
+import PageFlowNode from "@/app/component/editor/editor-components/pages-graph/page-node";
 
+const nodeTypes = {
+    pageNode: PageFlowNode
+}
 
 export default function PagesGraph() {
     const store = useStoreApi()
@@ -111,7 +115,7 @@ export default function PagesGraph() {
 
     return (
         <div className={"w-full h-full"}>
-            <ReactFlow proOptions={{hideAttribution: true}} nodes={page_nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}>
+            <ReactFlow proOptions={{hideAttribution: true}} nodeTypes={nodeTypes} nodes={page_nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}>
                 <Background/>
                 <Controls/>
             </ReactFlow>
