@@ -32,7 +32,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     addPage: (is_first: boolean = false, coordinates: {x: number, y: number}) => {
-        console.log("addPage run")
         const id = crypto.randomUUID()
         const {content} = {...get()}
         const pages = {...content.pages}
@@ -70,9 +69,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
         const new_flow_node_data = {friendly_name, is_first, id: pages[page_id].id}
         pages[page_id] = {...new_data, ...pages[page_id], friendly_name, is_first, flow_node_data: {...pages[page_id].flow_node_data, data: new_flow_node_data}};
-        console.log(page_id)
-        console.log(new_data)
-        console.log(pages[page_id]);
         return set({content: {pages}})
     }, //this is some of the worst code i've ever written; Lord Jesus Christ Son of God have mercy upon me a sinner
 
@@ -257,7 +253,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     saveContent: async (username: string, piece_id: string) => {
         console.log("zustand save content called")
         const {content} = get()
-        console.log(content)
         const result = await UpdatePieceContent({username, piece_id, piece_content: content});
         console.log(result)
         return result
@@ -266,7 +261,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     //will probably never have to use this actually
     fetchContent: async (id) => {
         const result = await FetchPieceData({id})
-        console.log(result)
         return set(() => {
             return {...result}
         })
