@@ -53,9 +53,9 @@ export default function PageContents(props: PageContentsProps) {
         console.log(active.id + " : " + over.id)
     }
 
-    if (!page_id || !page) return null
-
     useEffect(() => {
+        if (!page_id || !page) return
+
         if (Object.keys(page.blocks).length === 0) {
             console.log("root block not found! regenerating...")
             addBlock(page_id, {
@@ -68,7 +68,9 @@ export default function PageContents(props: PageContentsProps) {
             })
         }
         setLoading(false)
-    }, [page.blocks, addBlock, setLoading])
+    }, [page, page_id, addBlock, setLoading])
+
+    if (!page_id || !page) return null
 
     if (loading) return <div>loading...</div>
 
