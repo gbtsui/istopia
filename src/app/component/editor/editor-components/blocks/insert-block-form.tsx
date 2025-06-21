@@ -25,7 +25,9 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
             <div className={"w-1/2 m-3 p-3 bg-gray-700 rounded-2xl"}>
                 <button onClick={() => setDialogIsOpen(false)} className={"p-4 bg-black rounded-2xl"}>x</button>
                 <div className={"overflow-auto h-60 flex flex-wrap"}>
-                    {BlockList.map((block) => (
+                    {BlockList.map((block) => {
+                        if (!block.visible) return null
+                        return (
 
                         <button onClick={() => setSelectedBlock({
                             type: block.block_name,
@@ -37,7 +39,7 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
                                 <p className={"text-sm"}>{block.block_description}</p>
                             </div>
                         </button>
-                    ))}
+                    )})}
                 </div>
                 <div>
                     <p>{selectedBlock ? selectedBlock.type : "select a block"}</p>

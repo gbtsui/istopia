@@ -14,6 +14,7 @@ import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrateg
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
 import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
+import {useEffect, useState} from "react";
 
 type PageContentsProps = {
     page_id: string|null;
@@ -23,6 +24,7 @@ export default function PageContents(props: PageContentsProps) {
     const {page_id} = props;
 
     const addBlock = useEditorStore((state) => state.addBlock);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const page = useEditorStore(
         (state) => {
@@ -53,18 +55,23 @@ export default function PageContents(props: PageContentsProps) {
 
     if (!page_id || !page) return null
 
-    if (Object.keys(page.blocks).length === 0) {
-        console.log("root block not found! regenerating...")
-        addBlock(page_id, {
-            type: "root",
-            props: {
-                id: "root",
-                friendly_name: "root",
-                listeners: []
-            }
-        })
-        return <div>loading...</div>
-    }
+    useEffect(() => {
+        if (Object.keys(page.blocks).length === 0) {
+            console.log("root block not found! regenerating...")
+            addBlock(page_id, {
+                type: "root",
+                props: {
+                    id: "root",
+                    friendly_name: "root",
+                    listeners: []
+                }
+            })
+        }
+        setLoading(false)
+    }, [page.blocks, addBlock, setLoading])
+
+    if (loading) return <div>loading...</div>
+
 
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
