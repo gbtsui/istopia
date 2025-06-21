@@ -75,7 +75,6 @@ export default function PagesGraph() {
                 x: centerX, y: centerY
             }
         );
-        console.log("button pressed")
 
         update_nodes()
         //console.log(updated_nodes)
@@ -103,17 +102,13 @@ export default function PagesGraph() {
 
     const onConnect: OnConnect = useCallback(
         (change) => {
-            console.log(change)
-            console.log({...editorStore.content.pages})
-            console.log({...pages})
             const source = {...editorStore.content.pages}[change.source]
-            console.log(source)
             if (!source) return setEdges((eds) => addEdge(change, eds))
             source.outward_connections.push(change.target)
             pages[change.source] = source
             setEdges((eds) => addEdge(change, eds))
         },
-        [setEdges, editorStore],
+        [setEdges, editorStore.content.pages],
     );
 
     const confirmDelete: () => Promise<boolean> = async () => {
@@ -137,8 +132,6 @@ export default function PagesGraph() {
             if (!confirmed) return false;
 
             const {nodes, edges} = change
-            console.log(nodes)
-            console.log(edges)
             edges.forEach((edge) => {
                 const sourcePage = editorStore.content.pages[edge.source]
                 sourcePage.outward_connections = sourcePage.outward_connections.filter((outwardConnection) => outwardConnection !== edge.target)
