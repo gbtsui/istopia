@@ -5,7 +5,7 @@ import {
     applyEdgeChanges,
     applyNodeChanges,
     Background,
-    Controls, OnConnect, OnEdgesChange, OnNodesChange,
+    Controls, OnBeforeDelete, OnConnect, OnEdgesChange, OnNodesChange,
     ReactFlow,
     useStoreApi,
 } from "@xyflow/react";
@@ -14,6 +14,7 @@ import {PageNodeData, PageNodeEdge} from "@/app/types";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {useCallback, useEffect, useState} from "react";
 import PageFlowNode from "@/app/component/editor/editor-components/pages-graph/page-node";
+import DeletePageDialog from "@/app/component/editor/editor-components/pages-graph/delete-page-dialog";
 
 const nodeTypes = {
     pageNode: PageFlowNode
@@ -26,6 +27,8 @@ export default function PagesGraph() {
     const {pages} = editorStore.content
     const [page_nodes, setPageNodes] = useState<PageNodeData[]>([]);
     const [edges, setEdges] = useState<PageNodeEdge[]>([]);
+    const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
+    const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null);
 
     const update_nodes = () => {
         if (!Object.keys(pages).length) return
@@ -113,9 +116,34 @@ export default function PagesGraph() {
         [setEdges, editorStore],
     );
 
+    const onBeforeDelete: OnBeforeDelete = useCallback(
+        async (change): Promise<false|{nodes: PageNodeData[], edges: PageNodeEdge[]}> => {
+            const confirmed = await confirmDelete()
+            if (!confirmed) return false;
+
+            return change
+        },
+        [setEdges, setPageNodes, editorStore],
+    )
+
+    const confirmDelete: () => Promise<boolean> = async () => {
+        setDeleteDialogIsOpen(true);
+        return new Promise<boolean>((resolve) => {
+            setResolver(() => resolve)
+        })
+    }
+
+    const handleResponse = (arg: boolean) => {
+        if (resolver) {
+            resolver(arg);
+            setResolver(null);
+        }
+        setDeleteDialogIsOpen(false)
+    }
+
     return (
         <div className={"w-full h-full"}>
-            <ReactFlow proOptions={{hideAttribution: true}} nodeTypes={nodeTypes} nodes={page_nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect}>
+            <ReactFlow proOptions={{hideAttribution: true}} nodeTypes={nodeTypes} nodes={page_nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} onBeforeDelete={onBeforeDelete}>
                 <Background/>
                 <Controls/>
             </ReactFlow>
@@ -125,6 +153,7 @@ export default function PagesGraph() {
                     + Add Page
                 </button>
             </div>
+            <DeletePageDialog visible={deleteDialogIsOpen} handleResponse={handleResponse}/>
         </div>
     )
 }
