@@ -104,6 +104,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         const {pages} = {...get().content}
         const current_page = pages[page_id]
         current_page.blocks[newBlock.props.id] = newBlock
+        current_page.blocks[newBlock.props.id].props.parent_id = "root"
         const root = current_page.blocks["root"]
         root.props.children_ids?.push(newBlock.props.id)
         current_page.blocks["root"] = root
@@ -219,8 +220,13 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     deleteBlock: (page_id: string, block_id: string) => {
         const {pages} = {...get().content};
         const page = pages[page_id];
-        delete page.blocks[block_id];
+        const block = page.blocks[block_id];
+        const parent_id = block.props.parent_id as string;
+        console.log(parent_id)
+        const parent_children = page.blocks[parent_id].props.children_ids as string[]
+        page.blocks[parent_id].props.children_ids = parent_children.filter((id) => id !== block_id)
         //pages[page_id] = {...page, [block_id]: undefined};
+        delete page.blocks[block_id];
         pages[page_id] = page
         return set({content: {pages}})
         /*return set((state) => {
