@@ -116,16 +116,6 @@ export default function PagesGraph() {
         [setEdges, editorStore],
     );
 
-    const onBeforeDelete: OnBeforeDelete = useCallback(
-        async (change): Promise<false|{nodes: PageNodeData[], edges: PageNodeEdge[]}> => {
-            const confirmed = await confirmDelete()
-            if (!confirmed) return false;
-
-            return change
-        },
-        [setEdges, setPageNodes, editorStore],
-    )
-
     const confirmDelete: () => Promise<boolean> = async () => {
         setDeleteDialogIsOpen(true);
         return new Promise<boolean>((resolve) => {
@@ -140,6 +130,27 @@ export default function PagesGraph() {
         }
         setDeleteDialogIsOpen(false)
     }
+
+    const onBeforeDelete: OnBeforeDelete = useCallback(
+        async (change: {nodes: PageNodeData[], edges: PageNodeEdge[]}): Promise<false|{nodes: PageNodeData[], edges: PageNodeEdge[]}> => {
+            const confirmed = await confirmDelete()
+            if (!confirmed) return false;
+
+            const {nodes, edges} = change
+            console.log(nodes)
+            console.log(edges)
+            edges.forEach((edge) => {
+                const sourcePage = editorStore.content.pages[edge.source]
+                sourcePage.outward_connections = sourcePage.outward_connections.filter((outwardConnection) => outwardConnection !== edge.target)
+                editorStore.editPage(edge.source, sourcePage)
+            })
+            nodes.forEach((node) => {
+                editorStore.deletePage(node.id)
+            })
+            return change
+        },
+        [setEdges, setPageNodes, editorStore.editPage, editorStore.deletePage, confirmDelete],
+    )
 
     return (
         <div className={"w-full h-full"}>
