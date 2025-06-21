@@ -21,6 +21,9 @@ type PageContentsProps = {
 
 export default function PageContents(props: PageContentsProps) {
     const {page_id} = props;
+
+    const addBlock = useEditorStore((state) => state.addBlock);
+
     const page = useEditorStore(
         (state) => {
                 if (page_id) return state.content.pages[page_id]
@@ -49,6 +52,19 @@ export default function PageContents(props: PageContentsProps) {
     }
 
     if (!page_id || !page) return null
+
+    if (Object.keys(page.blocks).length === 0) {
+        console.log("root block not found! regenerating...")
+        addBlock(page_id, {
+            type: "root",
+            props: {
+                id: "root",
+                friendly_name: "root",
+                listeners: []
+            }
+        })
+        return <div>loading...</div>
+    }
 
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>

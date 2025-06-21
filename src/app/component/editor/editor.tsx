@@ -57,13 +57,7 @@ export default function Editor(props: EditorProps) {
                                   saving={saving}/>
                 </div>
                 {
-                    currentPage === null && <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
-                }
-                {
-                    currentPage &&
-                    <div>
-                        <PageContents page_id={currentPage}/>
-                    </div>
+                    currentPage === null || currentPage === undefined ? <ReactFlowProvider><PagesGraph/></ReactFlowProvider> : <PageContents page_id={currentPage}/>
                 }
             </div>
 
