@@ -62,6 +62,8 @@ const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
     }),
     data: z.object({
         friendly_name: z.string(),
+        id: z.string(),
+        is_first: z.boolean()
     }),
     type: z.union([z.literal("pageNode"), z.undefined()]) //can be further expanded eventually later
 })

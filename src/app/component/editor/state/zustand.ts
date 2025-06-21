@@ -46,7 +46,11 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             flow_node_data: {
                 id,
                 position: coordinates, //TODO: make this dynamic
-                data: {friendly_name: `Page ${id.split("").slice(0, 4).join("")}`},
+                data: {
+                    friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
+                    page_id: id,
+                    is_first: is_first,
+                },
                 type: "pageNode"
             }
         }
@@ -62,9 +66,15 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
     editPage: (page_id: string, new_data: Partial<Page>)=> {
         const {pages} = {...get().content}
-        pages[page_id] = {...pages[page_id], ...new_data};
+        const friendly_name = new_data.friendly_name ?? pages[page_id].friendly_name
+        const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
+        const new_flow_node_data = {friendly_name, is_first, id: pages[page_id].id}
+        pages[page_id] = {...new_data, ...pages[page_id], friendly_name, is_first, flow_node_data: {...pages[page_id].flow_node_data, data: new_flow_node_data}};
+        console.log(page_id)
+        console.log(new_data)
+        console.log(pages[page_id]);
         return set({content: {pages}})
-    },
+    }, //this is some of the worst code i've ever written; Lord Jesus Christ Son of God have mercy upon me a sinner
 
     setPageCoordinates: (page_id: string, coordinates: {x: number, y: number})=> {
         const {pages} = {...get().content}
@@ -247,6 +257,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     saveContent: async (username: string, piece_id: string) => {
         console.log("zustand save content called")
         const {content} = get()
+        console.log(content)
         const result = await UpdatePieceContent({username, piece_id, piece_content: content});
         console.log(result)
         return result
@@ -255,6 +266,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     //will probably never have to use this actually
     fetchContent: async (id) => {
         const result = await FetchPieceData({id})
+        console.log(result)
         return set(() => {
             return {...result}
         })
@@ -290,5 +302,17 @@ export const useEditorMetaDataStore = create<EditorMetaDataStore>((set, get) => 
 
     setData: (data: Partial<EditorMetaDataProps>) => {
         return set({...data})
+    }
+}))
+
+export type EditorStateStore = {
+    current_page?: string | null,
+    setPage: (page: string|null) => void,
+}
+
+export const useEditorStateStore = create<EditorStateStore>((set, get) => ({
+    current_page: null,
+    setPage: (page: string|null) => {
+        set({current_page: page})
     }
 }))

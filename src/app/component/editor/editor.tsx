@@ -1,7 +1,7 @@
 "use client";
 
 import {PieceData} from "@/app/types";
-import {useEditorMetaDataStore, useEditorStore} from "@/app/component/editor/state/zustand";
+import {useEditorMetaDataStore, useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import {useEffect, useState} from "react";
 import PageContents from "@/app/component/editor/editor-components/blocks/page-contents";
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
@@ -15,7 +15,10 @@ type EditorProps = {
 
 export default function Editor(props: EditorProps) {
     const {initialPieceData, username} = props;
-    const [currentPage, setCurrentPage] = useState<string|null>(null);
+    //const [currentPage, setCurrentPage] = useState<string|null>(null);
+
+    const currentPage = useEditorStateStore((state) => state.current_page);
+    const setCurrentPage = useEditorStateStore((state) => state.setPage)
     const [lastSaved, setLastSaved] = useState(initialPieceData.last_updated);
     const [saving, setSaving] = useState(false);
 
@@ -55,6 +58,12 @@ export default function Editor(props: EditorProps) {
                 </div>
                 {
                     currentPage === null && <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
+                }
+                {
+                    currentPage &&
+                    <div>
+                        <PageContents page_id={currentPage}/>
+                    </div>
                 }
             </div>
 

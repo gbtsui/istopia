@@ -24,7 +24,7 @@ export default function PagesGraph() {
     const store = useStoreApi()
 
     const editorStore = useEditorStore()
-    const {pages} = editorStore.content
+    const pages = useEditorStore((state) => state.content.pages)
     const [page_nodes, setPageNodes] = useState<PageNodeData[]>([]);
     const [edges, setEdges] = useState<PageNodeEdge[]>([]);
     const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function PagesGraph() {
     useEffect(() => {
         console.log("useEffect running")
         update_nodes()
-    }, [editorStore.content.pages])
+    }, [pages])
 
 
     const addPage = useEditorStore((state) => state.addPage)
