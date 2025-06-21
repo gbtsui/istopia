@@ -3,24 +3,30 @@
 import {Page} from "@/app/types";
 import {ChangeEventHandler, useCallback, useState} from "react";
 import {Node, NodeProps, Handle, Position} from "@xyflow/react";
+import {useEditorStore} from "@/app/component/editor/state/zustand";
 
-type PageFlowNode = Node<{page: Page}, "page">
+type PageFlowNode = Node<{friendly_name: string, is_first: boolean, page_id: string}, "page">
+
 
 export default function PageFlowNode({data}: NodeProps<PageFlowNode>) {
-    const {page} = data;
-    const [friendlyName, setFriendlyName] = useState<string>(page.friendly_name);
+    const [friendlyName, setFriendlyName] = useState<string>(data.friendly_name);
+    const editPage = useEditorStore((state) => state.editPage);
     const onChange: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
         setFriendlyName(event.target.value);
+        editPage(data.page_id, {friendly_name: event.target.value});
         //also handle updating to zustand here btw :)
-    }, [setFriendlyName]);
+    }, [setFriendlyName, editPage]);
 
     return (
         <div>
             {
-                !page.is_first && <Handle type={"target"} position={Position.Left}/>
+                !data.is_first && <Handle type={"target"} position={Position.Left}/>
             }
-            <div>
-                <input value={friendlyName} placeholder={"page name"} onChange={onChange} type="text" className={"nodrag"}/>
+            <div className={"p-3 bg-gray-200 w-48 h-36 flex text-black text-center rounded-lg "}>
+                <div>
+                    <input value={friendlyName} placeholder={"page name"} onChange={onChange} type="text"
+                           className={"nodrag w-full text-center bg-white outline-none p-2 border-1 border-gray-300 rounded-sm"} />
+                </div>
             </div>
             <Handle type={"source"} position={Position.Right}/>
         </div>

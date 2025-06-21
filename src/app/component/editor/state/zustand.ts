@@ -46,8 +46,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             flow_node_data: {
                 id,
                 position: coordinates, //TODO: make this dynamic
-                data: {label: `Page ${id.split("").slice(0, 4).join("")}`},
-                type: is_first? "input" : undefined
+                data: {friendly_name: `Page ${id.split("").slice(0, 4).join("")}`},
+                type: "pageNode"
             }
         }
         console.log("zustand pages:", pages)

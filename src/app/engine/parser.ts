@@ -61,9 +61,9 @@ const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
         y: z.number()
     }),
     data: z.object({
-        label: z.string()
+        friendly_name: z.string(),
     }),
-    type: z.union([z.literal("input"), z.undefined()])
+    type: z.union([z.literal("pageNode"), z.undefined()]) //can be further expanded eventually later
 })
 
 const PageSchema: z.ZodType<Page> = z.object({
