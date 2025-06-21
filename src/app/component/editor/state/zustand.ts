@@ -9,9 +9,14 @@ interface EditorProps {
 
 export interface EditorStore extends EditorProps {
     setContent: (content: PieceContent) => void,
+
     addPage: (is_first: boolean, coordinates: {x: number, y: number}) => void,
+
+    addRootBlock: (page_id: string) => void,
     addBlock: (page_id: string, newBlock: Block) => void,
+
     reorderBlock: (page_id: string, block_id: string, new_parent_id: string, new_position: number) => void,
+
     deleteBlock: (page_id: string, block_id: string) => void,
     deletePage: (page_id: string) => void,
 
@@ -78,10 +83,30 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         return set({content: {pages}})
     },
 
+    addRootBlock: (page_id: string) => {
+        const {pages} = {...get().content}
+        const current_page = pages[page_id]
+        current_page.blocks["root"] = {
+            type: "root",
+            props: {
+                id: "root",
+                friendly_name: "root",
+                listeners: [],
+                children_ids: []
+            }
+        }
+
+        pages[current_page.id] = current_page
+        return set({content: {pages}})
+    },
+
     addBlock: (page_id, newBlock) => {
         const {pages} = {...get().content}
         const current_page = pages[page_id]
         current_page.blocks[newBlock.props.id] = newBlock
+        const root = current_page.blocks["root"]
+        root.props.children_ids?.push(newBlock.props.id)
+        current_page.blocks["root"] = root
         pages[current_page.id] = current_page
         return set({content: {pages}})
         /*return set((state) => {

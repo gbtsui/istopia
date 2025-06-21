@@ -1,11 +1,10 @@
 "use client";
 
-import {Page} from "@/app/types";
 import {ChangeEventHandler, useCallback, useState} from "react";
 import {Node, NodeProps, Handle, Position} from "@xyflow/react";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 
-type PageFlowNode = Node<{friendly_name: string, is_first: boolean, id: string}, "page">
+type PageFlowNode = Node<{friendly_name: string, is_first: boolean, page_id: string}, "page">
 
 
 export default function PageFlowNode({data}: NodeProps<PageFlowNode>) {
@@ -14,13 +13,13 @@ export default function PageFlowNode({data}: NodeProps<PageFlowNode>) {
     const setCurrentPage = useEditorStateStore((state) => state.setPage)
     const onChange: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
         setFriendlyName(event.target.value);
-        editPage(data.id, {friendly_name: event.target.value});
+        editPage(data.page_id, {friendly_name: event.target.value});
         //also handle updating to zustand here btw :)
     }, [setFriendlyName, editPage]);
 
     const onClick = () => {
-        console.log("onClick running, args:", data.id)
-        setCurrentPage(data.id)
+        console.log("onClick running, args:", data.page_id)
+        setCurrentPage(data.page_id)
     }
 
     return (

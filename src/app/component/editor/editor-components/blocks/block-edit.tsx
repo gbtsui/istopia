@@ -37,7 +37,7 @@ export default function BlockEdit(props:BlockEditProps){
                   className={"p-2 m-2 bg-white rounded-lg text-black"}>
             <BlockEditFields blockProps={block.props} page_id={page_id} page_blocks={page.blocks} updateProps={updateProps}/>
 
-            <button onClick={() => deleteBlock(page_id, block.props.id)} className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button> {/*TODO: make this work with a dialog*/}
+            {block.type !== "root" && <button onClick={() => deleteBlock(page_id, block.props.id)} className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button>} {/*TODO: make this work with a dialog*/}
         </Sortable>
     )
 }

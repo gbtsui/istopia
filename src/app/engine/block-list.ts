@@ -19,7 +19,7 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
         block_component: Root,
         block_description: "the root of a page.",
         block_props: {
-            id: "",
+            id: "root",
             friendly_name: "root",
             content: [],
             className: "",

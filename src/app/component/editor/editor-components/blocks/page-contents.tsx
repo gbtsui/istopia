@@ -1,6 +1,5 @@
 "use client";
 
-import {Page} from "@/app/types";
 import {
     closestCenter,
     DndContext,
@@ -10,7 +9,7 @@ import {
     useSensor,
     useSensors
 } from "@dnd-kit/core";
-import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import {sortableKeyboardCoordinates} from "@dnd-kit/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
 import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
@@ -23,7 +22,7 @@ type PageContentsProps = {
 export default function PageContents(props: PageContentsProps) {
     const {page_id} = props;
 
-    const addBlock = useEditorStore((state) => state.addBlock);
+    const addRootBlock = useEditorStore((state) => state.addRootBlock);
     const [loading, setLoading] = useState<boolean>(true);
 
     const page = useEditorStore(
@@ -58,17 +57,10 @@ export default function PageContents(props: PageContentsProps) {
 
         if (Object.keys(page.blocks).length === 0) {
             console.log("root block not found! regenerating...")
-            addBlock(page_id, {
-                type: "root",
-                props: {
-                    id: "root",
-                    friendly_name: "root",
-                    listeners: []
-                }
-            })
+            addRootBlock(page_id)
         }
         setLoading(false)
-    }, [page, page_id, addBlock, setLoading])
+    }, [page, page_id, addRootBlock, setLoading])
 
     if (!page_id || !page) return null
 
