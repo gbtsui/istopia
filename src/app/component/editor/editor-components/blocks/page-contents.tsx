@@ -9,11 +9,12 @@ import {
     useSensor,
     useSensors
 } from "@dnd-kit/core";
-import {sortableKeyboardCoordinates} from "@dnd-kit/sortable";
+import {SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from "@dnd-kit/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
 import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
 import {useEffect, useState} from "react";
+import {Block} from "@/app/types";
 
 type PageContentsProps = {
     page_id: string|null;
@@ -23,6 +24,7 @@ export default function PageContents(props: PageContentsProps) {
     const {page_id} = props;
 
     const addRootBlock = useEditorStore((state) => state.addRootBlock);
+    const reorderBlock = useEditorStore((state) => state.reorderBlock);
     const [loading, setLoading] = useState<boolean>(true);
 
     const page = useEditorStore(
@@ -46,9 +48,9 @@ export default function PageContents(props: PageContentsProps) {
         if (!over) return;
 
 
-        /*if (active.id !== over.id) {
-            editor_store.reorderBlock(page_id, active.id as string, over.id); //TODO: fix this pls
-        }*/
+        if (active.id !== over.id) {
+            //reorderBlock(page_id, active.id as string, over.id); //TODO: fix this pls
+        }
         console.log(active.id + " : " + over.id)
     }
 
@@ -66,11 +68,30 @@ export default function PageContents(props: PageContentsProps) {
 
     if (loading) return <div>loading...</div>
 
+    function flattenBlocks(blocks: Record<string, Block>): Block[] { //this does actually sort and flatten the block record :D
+        return Object.values(blocks).reduce<Block[]>((acc, block) => {
+            if (acc.find((b) => b === block)) return acc;
+            if (block.type !== "root") acc.push(block);
+            if (block.props.children_ids) {
+                const children = block.props.children_ids.map(id => blocks[id]);
+                acc.push(...flattenBlocks(
+                    Object.fromEntries(children.map(child => [child.props.id, child]))
+                ));
+            }
+            return acc;
+        }, []);
+    }
+
+    const flat_blocks = flattenBlocks(page.blocks);
 
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
             <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
-                <BlockEdit block={page.blocks["root"]} page_id={page_id}/>
+                <SortableContext items={flat_blocks.map((block) => block.props.id)}
+                                 strategy={verticalListSortingStrategy}>
+                    {flat_blocks.map((block) => <BlockEdit key={block.props.id} block={block} page_id={page_id}/> )}
+                </SortableContext>
+                {/*<BlockEdit block={page.blocks["root"]} page_id={page_id}/>*/}
                 {/*<SortableContext
                     items={
                     //zustand_page?.blocks.map(block => block.props.id)
@@ -89,3 +110,5 @@ export default function PageContents(props: PageContentsProps) {
         </div>
     )
 }
+
+//i live, i learn

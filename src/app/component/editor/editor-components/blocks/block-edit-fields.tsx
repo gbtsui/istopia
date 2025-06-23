@@ -14,9 +14,10 @@ type BlockEditFieldsProps = {
 export default function BlockEditFields(props: BlockEditFieldsProps) {
     const {blockProps, page_blocks, page_id, updateProps} = props
 
+
     return (
-        <div className={"flex flex-row "}>
-            <div>
+        <div className={"flex flex-col "}>
+            <div className={"flex flex-row"}>
                 <div className={`${blockProps.additional_props ? "w-1/2" : "w-full"}`}>
                     {blockProps.content !== undefined &&
                         <textarea className={"p-1 bg-gray-200 rounded-xl outline-0 w-full resize-none"}
@@ -72,26 +73,27 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
                 </div>
             </div>
             <div className={"w-full"}>
-                {blockProps.children_ids &&
+                {/*
+                    blockProps.children_ids &&
                     <div className={"p-4 bg-gray-200 rounded-xl"}>
-                        <SortableContext items={blockProps.children_ids} strategy={verticalListSortingStrategy}>
-                            {blockProps.children_ids.length > 0 ?
-                                blockProps.children_ids.map((id) => {
-                                    const block = page_blocks[id]
-                                    return <BlockEdit block={block} page_id={page_id} key={block.props.id}/>
-                                })
-                                :
-                                "empty" //TODO: finish multiple contexts and nested sortables
-                            }
-                            {
-                                //blockProps.children_ids.map((id) => <div key={id}>{id}</div>)
-                            }
-                        </SortableContext>
+                        {
+                            <SortableContext items={blockProps.children_ids} strategy={verticalListSortingStrategy}>
+                                {blockProps.children_ids.length > 0 ?
+                                    blockProps.children_ids.map((id) => {
+                                        const block = page_blocks[id]
+                                        return <BlockEdit block={block} page_id={page_id} key={block.props.id}/>
+                                    })
+                                    :
+                                    "empty" //TODO: finish multiple contexts and nested sortables
+                                }
+                                {
+                                    //blockProps.children_ids.map((id) => <div key={id}>{id}</div>)
+                                }
+                            </SortableContext>
+                        }
                     </div>
+                    */
                 }
-                {/*blockProps.children !== undefined && blockProps.children.map(block => (
-                    <BlockEdit block={block} key={block.props.id} page_number={page_number}/>
-                )) */}
             </div>
         </div>
     )
