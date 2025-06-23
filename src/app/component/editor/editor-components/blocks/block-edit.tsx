@@ -10,11 +10,20 @@ type BlockEditProps = {
     page_id: string
 }
 
+function calculateDepth(block: Block, page_blocks: Record<string, Block>): number { //i love recursion and functional programming
+    if (!block.props.parent_id) return -1; //peak design
+    if (block.props.parent_id === "root") return 0;
+    const parent = page_blocks[block.props.parent_id];
+    return 1+calculateDepth(parent, page_blocks)
+}
+
 export default function BlockEdit(props:BlockEditProps){
     const {block, page_id} = props;
     const editBlock = useEditorStore((state) => state.editBlock)
     const deleteBlock = useEditorStore((state) => state.deleteBlock)
     const page = useEditorStore((state) => state.content.pages[page_id])
+
+    const depth = calculateDepth(block, page.blocks)
 
     const updateProps = (newProps: Partial<BlockProps>) => {
         const finalProps = {
@@ -34,7 +43,7 @@ export default function BlockEdit(props:BlockEditProps){
 
     return (
         <Sortable id={block.props.id} content={block.type} key={block.props.id}
-                  className={"p-2 m-2 bg-white rounded-lg text-black"}>
+                  className={"p-2 m-2 bg-white rounded-lg text-black"} left_margin={depth}>
             <BlockEditFields blockProps={block.props} page_id={page_id} page_blocks={page.blocks} updateProps={updateProps}/>
 
             {block.type !== "root" && <button onClick={() => deleteBlock(page_id, block.props.id)} className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button>} {/*TODO: make this work with a dialog*/}

@@ -3,6 +3,7 @@ import {BlockProps, ContainerProps} from "@/app/types";
 import SimpleText from "@/app/engine/engine-components/simple-text";
 import Typewriter from "@/app/engine/engine-components/typewriter";
 import Root from "@/app/engine/engine-components/root";
+import SimpleContainer from "@/app/engine/engine-components/simple-container";
 
 type BlockInfo<T extends BlockProps | ContainerProps> = {
     block_name: string;
@@ -58,6 +59,22 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
                 lineDelay: 1000,
                 manual: false,
             },
+        },
+        visible: true
+    },
+    {
+        block_name: "simple_container",
+        block_component: SimpleContainer,
+        block_description: "a silly little container for putting other blocks in",
+        block_props: {
+            id: "",
+            friendly_name: "simple container",
+            className: "",
+            listeners: [],
+            children_ids: [],
+            additional_props: {},
+
+            page_blocks: {} //idk why i have this in here...
         },
         visible: true
     }

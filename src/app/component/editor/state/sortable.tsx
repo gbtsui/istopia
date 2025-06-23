@@ -2,13 +2,14 @@
 
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
-import {ReactNode} from "react";
+import {CSSProperties, ReactNode} from "react";
 
 export type SortableProps = {
     children?: ReactNode;
     content: string,
     className?: string,
     id: string,
+    left_margin?: number,
 }
 
 export default function Sortable(props: SortableProps) {
@@ -20,9 +21,10 @@ export default function Sortable(props: SortableProps) {
         transition
     } = useSortable({id: props.id})
 
-    const style = {
+    const style: CSSProperties = {
         transform: CSS.Transform.toString(transform),
-        transition
+        transition,
+        marginLeft: props.left_margin && `calc(${props.left_margin} * 1rem)`,
     }
 
     return (
