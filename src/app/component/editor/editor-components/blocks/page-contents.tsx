@@ -15,6 +15,7 @@ import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edi
 import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
 import {useEffect, useState} from "react";
 import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
+import {Block} from "@/app/types";
 
 type PageContentsProps = {
     page_id: string|null;
@@ -68,7 +69,7 @@ export default function PageContents(props: PageContentsProps) {
 
     if (loading) return <div>loading...</div>
 
-    const flat_blocks = flattenBlocks(page.blocks);
+    const flat_blocks = flattenBlocks(page.blocks, (page.blocks["root"].props.children_ids || []).map((id) => page.blocks[id] as Block));
 
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>

@@ -1,37 +1,33 @@
 import {Block} from "@/app/types";
 
 export function flattenBlocks(
-    blocks: Record<string, Block>,
+    //blocks: Record<string, Block>,
+    blocks_map: Record<string, Block>,
+    blocks: Block[],
     visited = new Set<string>()
 ): Block[] {
     const result: Block[] = [];
 
-    for (const block of Object.values(blocks)) {
+    for (const block of blocks) {
         if (visited.has(block.props.id)) continue;
         visited.add(block.props.id);
         result.push(block);
         //if (block.type !== "root") result.push(block);
 
         if (block.props.children_ids) {
+            console.log("block has children, ", block.props.children_ids)
             const children = block.props.children_ids
-                .map(id => blocks[id])
+                .map(id => blocks_map[id])
                 .filter((child): child is Block => child !== undefined);
-            children.forEach(child => {console.log(JSON.stringify(child));});
+            children.forEach(child => {console.log("child ", child);});
             const childBlocks = flattenBlocks(
-                Object.fromEntries(children.map(child => [child.props.id, child])),
+                blocks_map,
+                children,
                 visited
             );
             result.push(...childBlocks);
         }
     }
 
-    return result;
-}
-
-export function deflattenBlocks(blocks: Array<Block>): Record<string, Block> {
-    const result: Record<string, Block> = {};
-    for (const block of blocks) {
-        result[block.props.id] = block;
-    }
     return result;
 }

@@ -2,7 +2,7 @@ import {create} from "zustand"
 import {PieceContent, Block, BlockProps, Result, Page} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
-import {flattenBlocks, deflattenBlocks} from "@/app/api/utils/flatten-blocks";
+import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
 import getAncestryOfBlock from "@/app/api/utils/get-ancestry-of-block";
 import findActiveItem from "@/app/api/utils/find-active-item";
 import {insertActiveItemWithNesting} from "@/app/api/utils/insert-active-item";
@@ -169,7 +169,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     reorderBlock: (page_id, active_id, over_id) => {
         const {pages} = {...get().content}
         const page = pages[page_id]
-        const flattened_blocks = flattenBlocks(page.blocks)
+        const flattened_blocks = flattenBlocks(page.blocks, (page.blocks["root"].props.children_ids || []).map((id) => page.blocks[id]))
 
         const active_index = flattened_blocks.findIndex((block) => block.props.id === active_id)
         const over_index = flattened_blocks.findIndex((block) => block.props.id === over_id)
@@ -207,8 +207,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         if (!active_item) { console.log("no active item :("); return }
 
         console.log(insertFirst)
-        const new_items = insertActiveItemWithNesting(page.blocks, active_id, over_id, insertFirst)
-        page.blocks = new_items//deflattenBlocks(new_items)
+        page.blocks = insertActiveItemWithNesting(page.blocks, active_id, over_id, insertFirst)
         pages[page_id] = page
 
         return set({content: {pages}})
