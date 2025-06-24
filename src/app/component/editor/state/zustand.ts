@@ -2,9 +2,10 @@ import {create} from "zustand"
 import {PieceContent, Block, BlockProps, Result, Page} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
-import flattenBlocks from "@/app/api/utils/flatten-blocks";
+import {flattenBlocks, deflattenBlocks} from "@/app/api/utils/flatten-blocks";
 import getAncestryOfBlock from "@/app/api/utils/get-ancestry-of-block";
 import findActiveItem from "@/app/api/utils/find-active-item";
+import insertActiveItem from "@/app/api/utils/insert-active-item";
 
 interface EditorProps {
     content: PieceContent,
@@ -187,9 +188,22 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             }
         }
 
-        let active_item = findActiveItem(flattened_blocks, active_id)
-        //UNFINISHED
-        //need to figure out how to return the actual active item
+        const active_item = findActiveItem(flattened_blocks, active_id)
+        if (!active_item) return
+
+        const new_items = insertActiveItem(
+            flattened_blocks,
+            active_id,
+            active_index,
+            active_item,
+            over_id,
+            over_index,
+            insertFirst
+        )
+        page.blocks = deflattenBlocks(new_items)
+        pages[page_id] = page
+
+        return set({content: {pages}})
     },
 
     /*

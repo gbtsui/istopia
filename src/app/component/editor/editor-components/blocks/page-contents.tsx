@@ -14,7 +14,7 @@ import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
 import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
 import {useEffect, useState} from "react";
-import flattenBlocks from "@/app/api/utils/flatten-blocks";
+import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
 
 type PageContentsProps = {
     page_id: string|null;
@@ -49,7 +49,7 @@ export default function PageContents(props: PageContentsProps) {
 
 
         if (active.id !== over.id) {
-            //reorderBlock(page_id, active.id as string, over.id); //TODO: fix this pls
+            reorderBlock(page_id as string, active.id as string, over.id as string); //TODO: fix this pls
         }
         console.log(active.id + " : " + over.id)
     }

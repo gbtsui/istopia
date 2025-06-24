@@ -1,6 +1,6 @@
 import {Block} from "@/app/types";
 
-export default function flattenBlocks(blocks: Record<string, Block>): Block[] { //this does actually sort and flatten the block record :D
+export function flattenBlocks(blocks: Record<string, Block>): Block[] { //this does actually sort and flatten the block record :D
     return Object.values(blocks).reduce<Block[]>((acc, block) => {
         if (acc.find((b) => b === block)) return acc;
         if (block.type !== "root") acc.push(block);
@@ -12,4 +12,12 @@ export default function flattenBlocks(blocks: Record<string, Block>): Block[] { 
         }
         return acc;
     }, []);
+}
+
+export function deflattenBlocks(blocks: Array<Block>): Record<string, Block> {
+    const result: Record<string, Block> = {};
+    for (const block of blocks) {
+        result[block.props.id] = block;
+    }
+    return result;
 }
