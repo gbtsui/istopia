@@ -3,7 +3,7 @@ import {PieceContent, Block, BlockProps, Result, Page} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
-import getAncestryOfBlock from "@/app/api/utils/get-ancestry-of-block";
+import getAncestryOfBlock, {getDescendantsOfBlock} from "@/app/api/utils/get-ancestry-of-block";
 import findActiveItem from "@/app/api/utils/find-active-item";
 import {insertActiveItemWithNesting} from "@/app/api/utils/insert-active-item";
 
@@ -169,6 +169,13 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     reorderBlock: (page_id, active_id, over_id) => {
         const {pages} = {...get().content}
         const page = pages[page_id]
+
+        const isInvalidDrop = getDescendantsOfBlock(active_id, page.blocks).includes(over_id);
+        if (isInvalidDrop) {
+            console.warn("Can't drop a parent onto one of its own children.");
+            return;
+        }
+
         const flattened_blocks = flattenBlocks(page.blocks, (page.blocks["root"].props.children_ids || []).map((id) => page.blocks[id]))
 
         const active_index = flattened_blocks.findIndex((block) => block.props.id === active_id)
