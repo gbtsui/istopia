@@ -14,7 +14,7 @@ import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
 import InsertBlockButton from "@/app/component/editor/editor-components/blocks/insert-block-button";
 import {useEffect, useState} from "react";
-import {Block} from "@/app/types";
+import flattenBlocks from "@/app/api/utils/flatten-blocks";
 
 type PageContentsProps = {
     page_id: string|null;
@@ -67,20 +67,6 @@ export default function PageContents(props: PageContentsProps) {
     if (!page_id || !page) return null
 
     if (loading) return <div>loading...</div>
-
-    function flattenBlocks(blocks: Record<string, Block>): Block[] { //this does actually sort and flatten the block record :D
-        return Object.values(blocks).reduce<Block[]>((acc, block) => {
-            if (acc.find((b) => b === block)) return acc;
-            if (block.type !== "root") acc.push(block);
-            if (block.props.children_ids) {
-                const children = block.props.children_ids.map(id => blocks[id]);
-                acc.push(...flattenBlocks(
-                    Object.fromEntries(children.map(child => [child.props.id, child]))
-                ));
-            }
-            return acc;
-        }, []);
-    }
 
     const flat_blocks = flattenBlocks(page.blocks);
 

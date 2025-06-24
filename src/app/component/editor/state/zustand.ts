@@ -2,6 +2,9 @@ import {create} from "zustand"
 import {PieceContent, Block, BlockProps, Result, Page} from "@/app/types";
 import FetchPieceData from "@/app/engine/fetcher";
 import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
+import flattenBlocks from "@/app/api/utils/flatten-blocks";
+import getAncestryOfBlock from "@/app/api/utils/get-ancestry-of-block";
+import findActiveItem from "@/app/api/utils/find-active-item";
 
 interface EditorProps {
     content: PieceContent,
@@ -15,7 +18,7 @@ export interface EditorStore extends EditorProps {
     addRootBlock: (page_id: string) => void,
     addBlock: (page_id: string, newBlock: Block) => void,
 
-    reorderBlock: (page_id: string, block_id: string, new_parent_id: string, new_position: number) => void,
+    reorderBlock: (page_id: string, action_id: string, over_id: string) => void,
 
     deleteBlock: (page_id: string, block_id: string) => void,
     deletePage: (page_id: string) => void,
@@ -162,6 +165,34 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         */
     },
 
+    reorderBlock: (page_id, active_id, over_id) => {
+        const {pages} = {...get().content}
+        const page = pages[page_id]
+        const flattened_blocks = flattenBlocks(page.blocks)
+
+        const active_index = flattened_blocks.findIndex((block) => block.props.id === active_id)
+        const over_index = flattened_blocks.findIndex((block) => block.props.id === over_id)
+
+        let insertFirst = false
+        if (active_index < over_index) {
+            const over_block = flattened_blocks[over_index]
+            const next_over = flattened_blocks[over_index + 1]
+
+            if (next_over) {
+                const next_over_ancestry_ids = getAncestryOfBlock(next_over, page.blocks)
+                if (next_over_ancestry_ids.includes(over_block.props.id)) {
+                    over_id = next_over.props.id
+                    insertFirst = true
+                }
+            }
+        }
+
+        let active_item = findActiveItem(flattened_blocks, active_id)
+        //UNFINISHED
+        //need to figure out how to return the actual active item
+    },
+
+    /*
     reorderBlock: (page_id, block_id, new_parent_id, new_position) => {
         const {pages} = {...get().content};
         const current_page = pages[page_id];
@@ -214,8 +245,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                     pages: updatedPages
                 }
             }
-        })*/
-    },
+        })
+    },*/
 
     deleteBlock: (page_id: string, block_id: string) => {
         const {pages} = {...get().content};
