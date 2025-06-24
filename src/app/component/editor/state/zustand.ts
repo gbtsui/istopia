@@ -284,6 +284,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         console.log(parent_id)
         const parent_children = page.blocks[parent_id].props.children_ids as string[]
         page.blocks[parent_id].props.children_ids = parent_children.filter((id) => id !== block_id)
+
+        block.props.children_ids && block.props.children_ids.forEach((id) => delete page.blocks[id])
         //pages[page_id] = {...page, [block_id]: undefined};
         delete page.blocks[block_id];
         pages[page_id] = page
