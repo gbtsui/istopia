@@ -13,7 +13,10 @@ export function flattenBlocks(
         //if (block.type !== "root") result.push(block);
 
         if (block.props.children_ids) {
-            const children = block.props.children_ids.map(id => blocks[id]);
+            const children = block.props.children_ids
+                .map(id => blocks[id])
+                .filter((child): child is Block => child !== undefined);
+            children.forEach(child => {console.log(JSON.stringify(child));});
             const childBlocks = flattenBlocks(
                 Object.fromEntries(children.map(child => [child.props.id, child])),
                 visited

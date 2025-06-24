@@ -49,6 +49,7 @@ export function insertActiveItemWithNesting(
     if (!active || !over || active_id === "root") return blocks;
 
     const canNestIntoOver = over.props.children_ids !== undefined;
+    console.log("canNestIntoOver: ", canNestIntoOver);
     const new_parent_id = canNestIntoOver ? over_id : over.props.parent_id ?? "root";
 
     // Remove active from old parent
