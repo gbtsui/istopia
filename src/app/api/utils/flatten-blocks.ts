@@ -14,8 +14,7 @@ export function flattenBlocks(
         result.push(block);
         //if (block.type !== "root") result.push(block);
 
-        if (block.props.children_ids) {
-            console.log("block has children, ", block.props.children_ids)
+        if (block.props.children_ids && !block.props.is_collapsed) {
             const children = block.props.children_ids
                 .map(id => blocks_map[id])
                 .filter((child): child is Block => child !== undefined);

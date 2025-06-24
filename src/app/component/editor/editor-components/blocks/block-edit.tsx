@@ -4,6 +4,7 @@ import {Block, BlockProps} from "@/app/types";
 import Sortable from "@/app/component/editor/state/sortable";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEditFields from "@/app/component/editor/editor-components/blocks/block-edit-fields";
+import {useState} from "react";
 
 type BlockEditProps = {
     block: Block;
@@ -43,7 +44,15 @@ export default function BlockEdit(props:BlockEditProps){
 
     return (
         <Sortable id={block.props.id} content={block.type} key={block.props.id}
-                  className={"p-2 m-2 bg-white rounded-lg text-black"} left_margin={depth}>
+                  className={"p-2 m-2 bg-white rounded-lg text-black"} left_margin={depth} is_collapsed={block.props.is_collapsed}>
+            {block.props.children_ids && (
+                <button
+                    onClick={() => updateProps({ is_collapsed: !block.props.is_collapsed })}
+                    className="text-xs p-1 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                    {block.props.is_collapsed ? "▶" : "▼"}
+                </button>
+            )}
             <BlockEditFields blockProps={block.props} page_id={page_id} page_blocks={page.blocks} updateProps={updateProps}/>
             <p>{depth}</p>
             <p>{block.props.parent_id}</p>

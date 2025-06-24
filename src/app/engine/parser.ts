@@ -13,7 +13,8 @@ const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
     listeners: z.array(z.lazy(() => EngineEventListenerSchema)),
     children_ids: z.array(z.string()).optional(),
     parent_id: z.string().optional(),
-    additional_props: z.record(z.string(), z.union([z.string(), z.boolean(), z.number()])).optional()
+    additional_props: z.record(z.string(), z.union([z.string(), z.boolean(), z.number()])).optional(),
+    is_collapsed: z.boolean().optional(),
 })
 
 const EngineEventListenerSchema: z.ZodType<EngineEventListener> = z.object({

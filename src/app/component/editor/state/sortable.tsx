@@ -10,6 +10,7 @@ export type SortableProps = {
     className?: string,
     id: string,
     left_margin?: number,
+    is_collapsed?: boolean,
 }
 
 export default function Sortable(props: SortableProps) {
@@ -30,9 +31,12 @@ export default function Sortable(props: SortableProps) {
     return (
         <div ref={setNodeRef} style={style} className={props.className} {...attributes}>
             <div className={"flex gap-5 flex-row w-full"}>
-                <div className={"material-symbols-outlined select-none cursor-grab"} {...listeners}>
-                    menu
-                </div>
+                {
+                    props.is_collapsed === false || props.is_collapsed === undefined &&
+                    <div className={"material-symbols-outlined select-none cursor-grab"} {...listeners}>
+                        menu
+                    </div>
+                }
                 <p>{props.content}</p>
             </div>
 
