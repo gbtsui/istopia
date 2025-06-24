@@ -1,17 +1,28 @@
 import {Block} from "@/app/types";
 
-export function flattenBlocks(blocks: Record<string, Block>): Block[] { //this does actually sort and flatten the block record :D
-    return Object.values(blocks).reduce<Block[]>((acc, block) => {
-        if (acc.find((b) => b === block)) return acc;
-        if (block.type !== "root") acc.push(block);
+export function flattenBlocks(
+    blocks: Record<string, Block>,
+    visited = new Set<string>()
+): Block[] {
+    const result: Block[] = [];
+
+    for (const block of Object.values(blocks)) {
+        if (visited.has(block.props.id)) continue;
+        visited.add(block.props.id);
+
+        if (block.type !== "root") result.push(block);
+
         if (block.props.children_ids) {
             const children = block.props.children_ids.map(id => blocks[id]);
-            acc.push(...flattenBlocks(
-                Object.fromEntries(children.map(child => [child.props.id, child]))
-            ));
+            const childBlocks = flattenBlocks(
+                Object.fromEntries(children.map(child => [child.props.id, child])),
+                visited
+            );
+            result.push(...childBlocks);
         }
-        return acc;
-    }, []);
+    }
+
+    return result;
 }
 
 export function deflattenBlocks(blocks: Array<Block>): Record<string, Block> {

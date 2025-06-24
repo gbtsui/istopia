@@ -169,6 +169,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     reorderBlock: (page_id, active_id, over_id) => {
         const {pages} = {...get().content}
         const page = pages[page_id]
+        const root = page.blocks["root"]
         const flattened_blocks = flattenBlocks(page.blocks)
 
         const active_index = flattened_blocks.findIndex((block) => block.props.id === active_id)
@@ -201,6 +202,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
             insertFirst
         )
         page.blocks = deflattenBlocks(new_items)
+        page.blocks["root"] = root
         pages[page_id] = page
 
         return set({content: {pages}})
