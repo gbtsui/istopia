@@ -5,7 +5,7 @@ import UpdatePieceContent from "@/app/api/data/pieces/update-piece-content";
 import {flattenBlocks, deflattenBlocks} from "@/app/api/utils/flatten-blocks";
 import getAncestryOfBlock from "@/app/api/utils/get-ancestry-of-block";
 import findActiveItem from "@/app/api/utils/find-active-item";
-import insertActiveItem from "@/app/api/utils/insert-active-item";
+import {insertActiveItemWithNesting} from "@/app/api/utils/insert-active-item";
 
 interface EditorProps {
     content: PieceContent,
@@ -169,7 +169,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     reorderBlock: (page_id, active_id, over_id) => {
         const {pages} = {...get().content}
         const page = pages[page_id]
-        const root = page.blocks["root"]
         const flattened_blocks = flattenBlocks(page.blocks)
 
         const active_index = flattened_blocks.findIndex((block) => block.props.id === active_id)
@@ -177,6 +176,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
         let insertFirst = false
         if (active_index < over_index) {
+            console.log("active < over")
             const over_block = flattened_blocks[over_index]
             const next_over = flattened_blocks[over_index + 1]
 
@@ -187,22 +187,28 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                     insertFirst = true
                 }
             }
+        } else if (active_index > over_index) {
+            console.log("active > over");
+            const over_block = flattened_blocks[over_index];
+            const prev_over = flattened_blocks[over_index - 1];
+
+            insertFirst = true;
+
+            if (prev_over) {
+                const prev_over_ancestry_ids = getAncestryOfBlock(prev_over, page.blocks);
+                if (prev_over_ancestry_ids.includes(over_block.props.id)) {
+                    over_id = prev_over.props.id;
+                    insertFirst = false;
+                }
+            }
         }
 
         const active_item = findActiveItem(flattened_blocks, active_id)
-        if (!active_item) return
+        if (!active_item) { console.log("no active item :("); return }
 
-        const new_items = insertActiveItem(
-            flattened_blocks,
-            active_id,
-            active_index,
-            active_item,
-            over_id,
-            over_index,
-            insertFirst
-        )
-        page.blocks = deflattenBlocks(new_items)
-        page.blocks["root"] = root
+        console.log(insertFirst)
+        const new_items = insertActiveItemWithNesting(page.blocks, active_id, over_id, insertFirst)
+        page.blocks = new_items//deflattenBlocks(new_items)
         pages[page_id] = page
 
         return set({content: {pages}})

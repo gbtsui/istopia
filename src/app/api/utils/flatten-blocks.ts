@@ -9,8 +9,8 @@ export function flattenBlocks(
     for (const block of Object.values(blocks)) {
         if (visited.has(block.props.id)) continue;
         visited.add(block.props.id);
-
-        if (block.type !== "root") result.push(block);
+        result.push(block);
+        //if (block.type !== "root") result.push(block);
 
         if (block.props.children_ids) {
             const children = block.props.children_ids.map(id => blocks[id]);
