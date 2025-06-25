@@ -53,5 +53,7 @@ export async function MakePfpPermanent(temp_file_url: string | null, username: s
 
     console.log(publicUrl)
 
+    await supabase.storage.from("pfp").remove([temp_file_path])
+
     return publicUrl
 }
