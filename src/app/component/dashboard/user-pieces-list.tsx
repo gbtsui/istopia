@@ -48,10 +48,15 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
     const pieces_metadata: Array<PieceMetaData> = pieces.map((data) => {return {...data, author_name: user.name as string}})
 
     return (
-        <div className={"w-full p-2 bg-black rounded-2xl border-1 border-gray-800"}>
+        <div className={"w-full p-3 bg-black rounded-2xl border-1 border-gray-800 flex-row flex flex-1/2 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-gray-100  scrollbar-track-gray-700 transition-all"}>
             {pieces_metadata.map((metadata) => (
-                <div key={metadata.id}>{metadata.title}</div>
+                <div key={metadata.id} className={"w-1/2 m-2 p-1 rounded-xl h-full flex-shrink-0"}>
+                    <h1>{metadata.title}</h1>
+                </div>
             ))}
+            <div key={"test morbil"} className={"w-1/2 m-2 p-1 rounded-xl h-full flex-shrink-0"}>
+                <h1>test morbil</h1>
+            </div>
         </div>
     )
 }
