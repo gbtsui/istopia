@@ -48,7 +48,6 @@ export interface PieceMetaData {
 export interface ViewData {
     id: string,
     user_id: string,
-    user: PublicUser,
     timestamp: Date,
     piece_id: string
 }
