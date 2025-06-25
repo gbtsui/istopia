@@ -30,7 +30,7 @@ export default async function Dashboard(props: DashboardProps) {
                 <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
                     <h1 className={"text-xl font-bold mb-3"}>my pieces</h1>
                     <Suspense fallback={<div>loading pieces...</div>}>
-                        <UserPiecesList user={user as PublicUser}/>
+                        <UserPiecesList user={user as PublicUser} is_user={true} />
                     </Suspense>
                     <Link href={"/editor/create"} className={"p-2 bg-gray-700 rounded-xl"}>+ create new</Link>
                 </div>
