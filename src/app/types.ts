@@ -29,6 +29,7 @@ export interface PieceData {
     created_at: Date,
     last_updated: Date,
     content: PieceContent,
+    cover_image_link: string | null | undefined,
 }
 
 export interface PieceMetaData {
@@ -38,6 +39,7 @@ export interface PieceMetaData {
     title: string,
     slug: string,
     summary: string,
+    cover_image_link: string | null | undefined,
 }
 
 export interface CommentData {
