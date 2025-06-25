@@ -5,6 +5,8 @@ import {PublishButton} from "@/app/component/editor/editor-components/publish-fo
 
 type EditorTopBarProps = {
     currentPage: string | null | undefined,
+    friendly_name: string | null | undefined,
+    setCurrentPage: (page: string | null) => void,
     //totalPages: number,
     lastSaved: Date,
     saveThisWrld: () => void,
@@ -34,7 +36,7 @@ const formatTimeSinceLastSave = (timeMs: number|undefined): string => {
 };
 
 export default function EditorTopBar(props: EditorTopBarProps) {
-    const {currentPage, lastSaved, saving, saveThisWrld} = props
+    const {currentPage, setCurrentPage, friendly_name, lastSaved, saving, saveThisWrld} = props
 
     const [timeSinceLastSave, setTimeSinceLastSave] = useState<number>();
 
@@ -57,9 +59,10 @@ export default function EditorTopBar(props: EditorTopBarProps) {
             <div className={"text-xl items-center flex-col flex"}>
                 <div>
                     <button
-                        className={"material-symbols-outlined text p-3 bg-gray-200 rounded-xl hover:bg-gray-300 transition-all"}>draft
+                        className={"material-symbols-outlined text p-3 bg-gray-200 rounded-xl hover:bg-gray-300 transition-all cursor-pointer"}
+                        onClick={() => setCurrentPage(null)}>arrow_back
                     </button>
-                    <span>{currentPage}</span>
+                    <span className={"items-center text-center p-1"}>{friendly_name || currentPage || "Pages"}</span>
                 </div>
             </div>
             <div className={"flex flex-col text-center items-center justify-center w-1/6"}>

@@ -54,10 +54,13 @@ export default function Editor(props: EditorProps) {
                                           }
                                       });
                                   }}
-                                  saving={saving}/>
+                                  saving={saving}
+                                  friendly_name={currentPage && editor_store.content.pages[currentPage].friendly_name}
+                                  setCurrentPage={setCurrentPage}/>
                 </div>
                 {
-                    currentPage === null || currentPage === undefined ? <ReactFlowProvider><PagesGraph/></ReactFlowProvider> : <PageContents page_id={currentPage}/>
+                    currentPage === null || currentPage === undefined ?
+                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider> : <PageContents page_id={currentPage}/>
                 }
             </div>
 
