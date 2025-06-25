@@ -41,7 +41,6 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
             slug: title_slug,
             summary: data.summary as string,
             published: false,
-            views: 0,
             content: default_piece_content //as InputJsonObject
         }
     })
@@ -49,5 +48,7 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
     return {
         ...untyped_result,
         content: default_piece_content as PieceContent,
+        view_number: 0,
+        views: []
     }
 }
