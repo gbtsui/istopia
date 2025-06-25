@@ -22,7 +22,8 @@ export default function Sortable(props: SortableProps) {
         listeners,
         setNodeRef,
         transform,
-        transition
+        transition,
+        isDragging
     } = useSortable({id: props.id})
 
     const style: CSSProperties = {
@@ -32,7 +33,7 @@ export default function Sortable(props: SortableProps) {
     }
 
     return (
-        <div ref={setNodeRef} style={style} className={props.className} {...attributes}>
+        <div ref={setNodeRef} style={style} className={props.className + `${isDragging ? "opacity-50" : ""}`} {...attributes}>
             <div className={"flex gap-5 flex-row w-full"}>
                 {
                     ((!props.has_children) || (props.is_collapsed)) &&
@@ -52,6 +53,7 @@ export default function Sortable(props: SortableProps) {
             </div>
 
             {props.children}
+            {isDragging && <div className="absolute inset-0" />}
         </div>
     )
 }

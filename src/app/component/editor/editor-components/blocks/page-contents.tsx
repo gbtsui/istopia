@@ -3,7 +3,7 @@
 import {
     closestCenter,
     DndContext,
-    DragEndEvent,
+    DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent,
     KeyboardSensor,
     PointerSensor,
     useSensor,
@@ -18,7 +18,7 @@ import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
 import {Block} from "@/app/types";
 
 type PageContentsProps = {
-    page_id: string|null;
+    page_id: string | null;
 }
 
 export default function PageContents(props: PageContentsProps) {
@@ -27,11 +27,13 @@ export default function PageContents(props: PageContentsProps) {
     const addRootBlock = useEditorStore((state) => state.addRootBlock);
     const reorderBlock = useEditorStore((state) => state.reorderBlock);
     const [loading, setLoading] = useState<boolean>(true);
+    const [overId, setOverId] = useState<string | null>(null);
+    const [activeId, setActiveId] = useState<string | null>(null);
 
     const page = useEditorStore(
         (state) => {
-                if (page_id) return state.content.pages[page_id]
-                return null
+            if (page_id) return state.content.pages[page_id]
+            return null
         }
     )
     //const [blocks, setBlocks] = useState<Block[]>(page_content);
@@ -46,6 +48,7 @@ export default function PageContents(props: PageContentsProps) {
     function handleDragEnd(e: DragEndEvent) {
         const {active, over} = e
 
+        setOverId(null)
         if (!over) return;
 
 
@@ -53,6 +56,18 @@ export default function PageContents(props: PageContentsProps) {
             reorderBlock(page_id as string, active.id as string, over.id as string); //TODO: fix this pls
         }
         console.log(active.id + " : " + over.id)
+    }
+
+    function handleDragOver(e: DragOverEvent) {
+        const {over} = e
+        if (!over) return
+        setOverId(over.id as string) //it's joever
+    }
+
+    function handleDragStart(e: DragStartEvent) {
+        const {active} = e
+        if (!active) return
+        setActiveId(active.id as string) //we're so barack
     }
 
     useEffect(() => {
@@ -71,12 +86,24 @@ export default function PageContents(props: PageContentsProps) {
 
     const flat_blocks = flattenBlocks(page.blocks, (page.blocks["root"].props.children_ids || []).map((id) => page.blocks[id] as Block));
 
+    const activeIndex = flat_blocks.findIndex(b => b.props.id === activeId);
+    const overIndex = flat_blocks.findIndex(b => b.props.id === overId);
+
     return (
         <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
-            <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
+            <DndContext onDragEnd={handleDragEnd}
+                        onDragOver={handleDragOver}
+                        onDragStart={handleDragStart}
+                        sensors={sensors}
+                        collisionDetection={closestCenter}>
                 <SortableContext items={flat_blocks.map((block) => block.props.id)}
                                  strategy={verticalListSortingStrategy}>
-                    {flat_blocks.map((block) => <BlockEdit key={block.props.id} block={block} page_id={page_id}/> )}
+                    {flat_blocks.map((block) => (
+                    <div key={block.props.id} className={"relative"}>
+                        <BlockEdit block={block} page_id={page_id} overId={overId}
+                                   activeIndex={activeIndex} overIndex={overIndex}/>
+                    </div>
+                    ))}
                 </SortableContext>
                 {/*<BlockEdit block={page.blocks["root"]} page_id={page_id}/>*/}
                 {/*<SortableContext
@@ -99,3 +126,5 @@ export default function PageContents(props: PageContentsProps) {
 }
 
 //i live, i learn
+
+//all hope that was, all hope that is, all hope to be
