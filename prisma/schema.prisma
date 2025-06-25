@@ -19,19 +19,20 @@ model User {
 }
 
 model Piece {
-  id           String    @id @default(uuid())
-  author_id    String
-  author       User      @relation(fields: [author_id], references: [id])
-  title        String    @db.VarChar(1023)
-  slug         String
-  summary      String    @db.VarChar(2057)
-  published    Boolean
-  rating       Float?
-  views        Int
-  created_at   DateTime  @default(now())
-  last_updated DateTime  @default(now())
-  content      Json
-  comments     Comment[]
+  id               String    @id @default(uuid())
+  author_id        String
+  author           User      @relation(fields: [author_id], references: [id])
+  title            String    @db.VarChar(1023)
+  slug             String
+  summary          String    @db.VarChar(2057)
+  published        Boolean
+  rating           Float?
+  views            Int
+  created_at       DateTime  @default(now())
+  last_updated     DateTime  @default(now())
+  content          Json
+  comments         Comment[]
+  cover_image_link String?
 
   @@unique([author_id, slug])
 }
