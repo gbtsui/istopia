@@ -26,7 +26,7 @@ export default async function Dashboard(props: DashboardProps) {
                 <h1 className={"text-3xl"}>dashboard</h1>
                 <h1>Welcome back, {user.display_name}.</h1>
             </div>
-            <div className={"w-full flex flex-row justify-evenly items-center gap-3 mt-5"}>
+            <div className={"w-full flex flex-row justify-evenly items-start gap-3 mt-5"}>
                 <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
                     <h1 className={"text-xl font-bold mb-3"}>my pieces</h1>
                     <Suspense fallback={<div>loading pieces...</div>}>

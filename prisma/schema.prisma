@@ -16,6 +16,16 @@ model User {
   pieces               Piece[]
   comments             Comment[]
   profile_picture_link String?
+  views                View[]
+}
+
+model View {
+  id        String   @id @default(uuid())
+  user_id   String
+  user      User     @relation(fields: [user_id], references: [id])
+  timestamp DateTime @default(now())
+  piece_id  String
+  piece     Piece    @relation(fields: [piece_id], references: [id])
 }
 
 model Piece {
@@ -27,7 +37,7 @@ model Piece {
   summary          String    @db.VarChar(2057)
   published        Boolean
   rating           Float?
-  views            Int
+  views            View[]
   created_at       DateTime  @default(now())
   last_updated     DateTime  @default(now())
   content          Json

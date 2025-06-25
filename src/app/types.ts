@@ -25,7 +25,8 @@ export interface PieceData {
     summary: string,
     published: boolean,
     rating?: number | null,
-    views: number,
+    view_number: number,
+    views: Array<ViewData>,
     created_at: Date,
     last_updated: Date,
     content: PieceContent,
@@ -40,6 +41,16 @@ export interface PieceMetaData {
     slug: string,
     summary: string,
     cover_image_link: string | null | undefined,
+    view_number: number,
+    views: Array<ViewData>
+}
+
+export interface ViewData {
+    id: string,
+    user_id: string,
+    user: PublicUser,
+    timestamp: Date,
+    piece_id: string
 }
 
 export interface CommentData {
