@@ -16,7 +16,7 @@ export interface EngineEventListener {
     action: string; //what action will the listener trigger?
     //conditions: Condition[] //what conditions are needed to run the event?
     logical_conditions: LogicalCondition[] //what combinations of conditions are needed to run the event?
-}
+} //can only listen within a page!!! very important
 
 export interface Condition {
     key: string;
@@ -35,6 +35,8 @@ export interface ExternalValueRef {
     target_block_id: string; //what block's data are you trying to get?
     target_value: string; //what data field are you trying to get?
 }
+
+export type EngineVariable = Record<string, any>
 
 export type IstopiaEngine = (setBlock: (id: string) => void) => {
     handleEvent: (event: EngineEvent) => void; //what happens when an event occurs?

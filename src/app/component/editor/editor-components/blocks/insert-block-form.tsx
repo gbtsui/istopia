@@ -8,12 +8,12 @@ import {useState} from "react";
 type InsertBlockFormProps = {
     dialogIsOpen: boolean;
     setDialogIsOpen: (value: boolean) => void;
-    page_number: number;
+    page_id: string
 }
 
 export default function InsertBlockForm(props: InsertBlockFormProps) {
-    const {dialogIsOpen, setDialogIsOpen, page_number} = props;
-    const addBlock: (page_number: number, newBlock: Block) => void = useEditorStore((state) => state.addBlock);
+    const {dialogIsOpen, setDialogIsOpen, page_id} = props;
+    const addBlock: (page_id: string, newBlock: Block) => void = useEditorStore((state) => state.addBlock);
     const [selectedBlock, setSelectedBlock] = useState<Block | null>(null)
 
     if (!dialogIsOpen) {
@@ -25,7 +25,9 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
             <div className={"w-1/2 m-3 p-3 bg-gray-700 rounded-2xl"}>
                 <button onClick={() => setDialogIsOpen(false)} className={"p-4 bg-black rounded-2xl"}>x</button>
                 <div className={"overflow-auto h-60 flex flex-wrap"}>
-                    {BlockList.map((block) => (
+                    {BlockList.map((block) => {
+                        if (!block.visible) return null
+                        return (
 
                         <button onClick={() => setSelectedBlock({
                             type: block.block_name,
@@ -37,14 +39,14 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
                                 <p className={"text-sm"}>{block.block_description}</p>
                             </div>
                         </button>
-                    ))}
+                    )})}
                 </div>
                 <div>
                     <p>{selectedBlock ? selectedBlock.type : "select a block"}</p>
                     <button disabled={selectedBlock === null}
                             onClick={() => {
                                 if (selectedBlock) {
-                                    addBlock(page_number, {...selectedBlock, props: {...selectedBlock.props, id: crypto.randomUUID()}});
+                                    addBlock(page_id, {...selectedBlock, props: {...selectedBlock.props, id: crypto.randomUUID()}});
                                     setDialogIsOpen(false);
                                     setSelectedBlock(null);
                                 }
