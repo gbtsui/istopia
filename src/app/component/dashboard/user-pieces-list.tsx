@@ -60,7 +60,7 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
             {pieces_metadata.map((metadata) => (
                 <div key={metadata.id}
                      className={"w-1/2 m-2 p-2 rounded-xl h-48 flex-shrink-0 border-1 border-gray-800"}>
-                    <Link href={"/profile"}>
+                    <Link href={`/u/${user.name}/${metadata.slug}`}>
                         <div className={"relative w-full p-1 rounded-xl h-2/3"}>
                             <Image
                                 src={typeof metadata.cover_image_link === "string" ? metadata.cover_image_link : "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/cover-image//default.png"}
@@ -71,17 +71,6 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
                     </Link>
                 </div>
             ))}
-            <div key={"test morbil"} className={"w-1/2 m-2 p-2 rounded-xl h-48 flex-shrink-0 border-1 border-gray-800"}>
-                <Link href={"/profile"}>
-                    <div className={"relative w-full p-1 rounded-xl h-2/3"}>
-                        <Image
-                            src={"https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/cover-image//default.png"}
-                            alt={"test"} fill={true} objectFit={"cover"} className={"pointer-events-none"}/>
-                    </div>
-                    <div className={"text-lg"}>test morbil</div>
-                    <div>summary</div>
-                </Link>
-            </div>
         </div>
     )
 }
