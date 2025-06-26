@@ -16,6 +16,7 @@ import {useCallback, useEffect, useState} from "react";
 import CreateUser from "@/app/api/data/user-management/create-user";
 import {signIn} from "next-auth/react";
 import {SendConfirmationEmail} from "@/app/api/send/send-confirmation-email";
+import Link from "next/link";
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(true);
@@ -146,6 +147,7 @@ export default function SignUpPage() {
                         </div>
                     }
                 </form>
+                <Link href={`/signin`}>Have an account? Sign in instead</Link>
             </div>
         </div>
     )
