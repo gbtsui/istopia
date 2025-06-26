@@ -5,7 +5,7 @@ import {User} from "@/generated/prisma";
 import bcrypt from "bcrypt"
 import ValidateUserCredentials from "@/app/api/data/user-management/validate-user-credentials";
 import {PublicUser, Result} from "@/app/types";
-import SendConfirmationEmail from "@/app/api/send/send-confirmation-email";
+import {SendWelcomeEmail} from "@/app/api/send/send-confirmation-email";
 
 
 export default async function CreateUser(credentials: {name: string, display_name: string, email: string, password: string}): Promise<Result<PublicUser>>{
@@ -51,7 +51,7 @@ export default async function CreateUser(credentials: {name: string, display_nam
 
         result = {success: true, data: user as PublicUser}
 
-        await SendConfirmationEmail(user.email)
+        await SendWelcomeEmail(user.email)
     } catch (err) {
         if (err instanceof Error) {
             result = {success: false, error: err.message}

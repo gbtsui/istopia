@@ -1,10 +1,9 @@
 "use server";
 import {Resend} from "resend";
-import {DatabaseUser} from "@/app/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export default async function SendConfirmationEmail(email: string) {
+export async function SendWelcomeEmail(email: string) {
     const result = await resend.emails.send({
         from: "do-not-reply.istopia@gbtsui.dev",
         to: email,
@@ -19,4 +18,17 @@ export default async function SendConfirmationEmail(email: string) {
     })
     console.log(result)
     return result
+}
+
+export async function SendConfirmationEmail(email: string, code: string) {
+    return await resend.emails.send({
+        from: "do-not-reply.istopia@gbtsui.dev",
+        to: email,
+        subject: "istopia: verify email",
+        html: "<h1>hi! pls verify your email</h1>" +
+            "<p>to prevent spam and other unfun things, please enter this" +
+            "one time code to finish your signup.</p>" +
+            `<p>${code}</p>` +
+            "<p>thanks for understanding!</p>"
+    })
 }

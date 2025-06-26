@@ -24,6 +24,13 @@ model User {
   save_buckets         SaveBucket[]
 }
 
+model UnconfirmedUser {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  confirmationCode String   @unique
+  createdAt        DateTime //delete all stale data points after 1 hour
+}
+
 model View {
   id        String   @id @default(uuid())
   user_id   String

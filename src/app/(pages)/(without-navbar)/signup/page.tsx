@@ -12,7 +12,7 @@
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {redirect} from "next/navigation";
 import ParticleBackdrop from "@/app/engine/engine-components/particle-backdrop";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import CreateUser from "@/app/api/data/user-management/create-user";
 import {signIn} from "next-auth/react";
 
@@ -21,6 +21,8 @@ export default function SignUpPage() {
     const [error, setError] = useState<string>("");
 
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [confirmationCode, setConfirmationCode] = useState("");
 
     useEffect(() => {
         const init = async () => {
@@ -34,7 +36,7 @@ export default function SignUpPage() {
     }, [])
 
 
-    const sign_up = (formData: FormData)=> {
+    const sign_up = useCallback((formData: FormData)=> {
         const signup = async () => {
             setLoading(true);
             const result = await CreateUser({
@@ -59,8 +61,8 @@ export default function SignUpPage() {
                 }
             }
         }
-        signup()
-    }
+        signup().then(() => console.log("sign up complete"))
+    }, [])
 
     if (loading) return <div>loading...</div>;
     //need to actually provide user feedback on input validity and stuff
@@ -80,7 +82,7 @@ export default function SignUpPage() {
                         <label>what shall you be called?</label><br/>
                         <input type="text" name={"display_name"}
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
-                               placeholder={username? username : "display name"} disabled={loading}/>
+                               placeholder={username? username : "display name"} onChange={(e) => setEmail(e.target.value)} disabled={loading}/>
                     </div>
                     <div>
                         <label>how will we reach you?</label><br/>
@@ -94,6 +96,9 @@ export default function SignUpPage() {
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
                                placeholder={"password"} disabled={loading} required/>
                     </div>
+
+
+
                     <div>
                         <button className={"p-3 bg-black rounded-xl my-2"}>submit</button>
                     </div>
