@@ -24,6 +24,8 @@ export async function SendWelcomeEmail(email: string) {
 export async function SendConfirmationEmail(email: string) {
     const code = crypto.randomUUID().slice(0, 6)
 
+    await prisma.unconfirmedUser.deleteMany({where: {email}})
+
     await prisma.unconfirmedUser.create({
         data: {
             email: email,

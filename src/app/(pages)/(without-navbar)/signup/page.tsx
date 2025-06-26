@@ -38,12 +38,17 @@ export default function SignUpPage() {
     }, [])
 
     useEffect(() => {
-        if (timeToNextResend === 0) return;
+        console.log("useEffect called")
+        if (timeToNextResend === 0) {
+            console.log("time = 0")
+            return;
+        }
 
-        setTimeToNextResend(60)
+        console.log("okay well we got this far")
 
         const interval = setInterval(() => {
             setTimeToNextResend((prevState) => prevState - 1);
+            console.log("interval called")
         }, 1000)
 
         return clearInterval(interval)
@@ -59,6 +64,7 @@ export default function SignUpPage() {
                 display_name: formData.get("display_name") as string ?? formData.get("username") as string,
                 email: formData.get("email") as string,
                 password: formData.get("password") as string,
+                code: formData.get("code") as string,
             })
             if (!result.success) {
                 setError(result.error)
@@ -80,9 +86,10 @@ export default function SignUpPage() {
     }, [])
 
     const send_code = useCallback(async () => {
+        console.log("send_code triggered")
         if (email) {
             await SendConfirmationEmail(email)
-            setTimeToNextResend(60)
+            setTimeToNextResend(5)
         }
     }, [email, SendConfirmationEmail, setTimeToNextResend])
 
@@ -107,13 +114,15 @@ export default function SignUpPage() {
                         <input type="text" name={"display_name"}
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
                                placeholder={username ? username : "display name"}
-                               onChange={(e) => setEmail(e.target.value)} disabled={loading}/>
+                               disabled={loading}/>
                     </div>
                     <div>
                         <label>how will we reach you?</label><br/>
                         <input type="text" name={"email"}
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
-                               placeholder={"email"} disabled={loading} required/>
+                               placeholder={"email"}
+                               onChange={(e) => setEmail(e.target.value)}
+                               disabled={loading} required/>
                     </div>
                     <div>
                         <label>set some secret words.</label><br/>
@@ -124,8 +133,8 @@ export default function SignUpPage() {
 
                     {email &&
                         <div>
-                            <label>enter email confirmation code...</label>
-                            <button onClick={send_code} disabled={timeToNextResend>0} className={"underline"}>send code</button>
+                            <label>enter email confirmation code...</label><br/>
+                            <button onClick={send_code} disabled={timeToNextResend>0} className={"underline disabled:text-gray-200 disabled:no-underline hover:cursor-pointer"} type={"button"}>{timeToNextResend>0? <p>wait {timeToNextResend} seconds to resend...</p>:<p>send code!</p> }</button><br/>
                             <input type={"text"} name={"confirmation"}
                                    className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
                                    placeholder={"123abc"} disabled={loading} required/>

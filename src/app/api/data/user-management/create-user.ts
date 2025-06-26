@@ -8,14 +8,14 @@ import {PublicUser, Result} from "@/app/types";
 import {SendWelcomeEmail} from "@/app/api/send/send-confirmation-email";
 
 
-export default async function CreateUser(credentials: {name: string, display_name: string, email: string, password: string}): Promise<Result<PublicUser>>{
+export default async function CreateUser(credentials: {name: string, display_name: string, email: string, password: string, code: string}): Promise<Result<PublicUser>>{
     let result: Result<PublicUser>;
     try {
         const validation_result = await ValidateUserCredentials(credentials);
         if (validation_result instanceof Error) {
             throw validation_result;
         }
-        const {name, display_name, email, password} = validation_result;
+        const {name, display_name, email, password, code} = validation_result;
 
         const hashed_password = await bcrypt.hash(password, 12);
 
@@ -36,6 +36,14 @@ export default async function CreateUser(credentials: {name: string, display_nam
             }
         }
 
+        const unconfirmedUser = await prisma.unconfirmedUser.findUnique({
+            where: {email: email}
+        })
+
+        if (!unconfirmedUser || unconfirmedUser.confirmationCode !== code) {
+            throw new Error("Wrong confirmation code!")
+        }
+
         //if (!display_name) { display_name = name }
 
         const user: User = await prisma.user.create({
@@ -50,6 +58,8 @@ export default async function CreateUser(credentials: {name: string, display_nam
         console.log("created user" + user.name)
 
         result = {success: true, data: user as PublicUser}
+
+        await prisma.unconfirmedUser.delete({where: {email: email}})
 
         await SendWelcomeEmail(user.email)
     } catch (err) {
