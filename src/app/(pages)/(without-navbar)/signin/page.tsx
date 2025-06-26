@@ -56,7 +56,7 @@ export default function SigninPage() {
     }
 
     return (
-        <EngineProvider>
+        <EngineProvider pages={{}}>
             <div className={"flex relative"}>
                 <ParticleBackdrop id={"tsparticlespmo"}/>
                 <div className={"px-6 py-10 text-gray-500 w-1/2"}>

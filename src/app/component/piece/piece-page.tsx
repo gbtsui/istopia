@@ -21,7 +21,10 @@ export default function PiecePageComponent({props}: { props: PiecePageProps }) {
                         <h2 className={"text-lg"}>by {username}</h2>
                         <p className={"text-sm text-gray-400"}>last updated {piece_data.last_updated.toString()}</p>
                     </div>
-                    <div>
+                    <div className={"flex flex-row justify-between items-center"}>
+                        <div className={"p-3 bg-black text-2xl rounded-xl"}>
+                            <a target={"_blank"} href={`/u/${username}/${piece_data.slug}/read`}>read!</a>
+                        </div>
                         {
                             isLoggedInAsUser &&
                             <div>
@@ -30,7 +33,8 @@ export default function PiecePageComponent({props}: { props: PiecePageProps }) {
                                     edit
                                 </Link>
                                 <div>
-                                    {!piece_data.published && <p>this piece is unpublished!! no one else can see it.</p>}
+                                    {!piece_data.published &&
+                                        <p>this piece is unpublished!! no one else can see it.</p>}
                                 </div>
                             </div>
                         }

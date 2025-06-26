@@ -2,9 +2,12 @@
 
 import {ContainerProps} from "@/app/types";
 import RenderBlock from "@/app/engine/render-block";
+import {useEngineContext} from "@/app/engine/engine-context";
 
 export default function SimpleContainer(props: ContainerProps) {
-    const {children_ids, page_blocks, className} = props;
+    const {children_ids, className} = props;
+    const engine = useEngineContext()
+    const page_blocks = engine.pages[engine.currentPage.current].blocks;
     return <div className={className}>
         {
             (children_ids || []).map(id => {
