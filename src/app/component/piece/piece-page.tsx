@@ -1,6 +1,7 @@
 "use client";
 
 import {PieceData} from "@/app/types";
+import Link from "next/link";
 
 type PiecePageProps = {
     piece_data: PieceData,
@@ -14,10 +15,20 @@ export default function PiecePageComponent({props}: {props: PiecePageProps}) {
     return (
         <div className={"relative"}>
             <div className={"flex flex-row"}>
-                <div className={"p-3 m-5 bg-gray-800 rounded-xl w-full"}>
-                    <h1 className={"text-3xl"}>{piece_data.title}</h1>
-                    <h2 className={"text-lg"}>by {username}</h2>
-                    <p className={"text-sm text-gray-400"}>last updated {piece_data.last_updated.toString()}</p>
+                <div className={"p-3 m-5 bg-gray-800 rounded-xl w-full flex flex-row justify-between"}>
+                    <div>
+                        <h1 className={"text-3xl"}>{piece_data.title}</h1>
+                        <h2 className={"text-lg"}>by {username}</h2>
+                        <p className={"text-sm text-gray-400"}>last updated {piece_data.last_updated.toString()}</p>
+                    </div>
+                    <div>
+                        {
+                            isLoggedInAsUser &&
+                            <Link href={`/editor/${piece_data.id}`} className={"material-symbols-outlined p-4 rounded-xl bg-gray-400"}>
+                                edit
+                            </Link>
+                        }
+                    </div>
                 </div>
                 <div className={"p-3 m-5 bg-gray-800 rounded-xl w-1/4"}>
                     <p>{piece_data.view_number} views</p>
