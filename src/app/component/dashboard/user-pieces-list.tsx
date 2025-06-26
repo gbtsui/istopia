@@ -68,7 +68,10 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
                                 src={typeof metadata.cover_image_link === "string" ? metadata.cover_image_link : "https://qwdqjithytndumgsklyb.supabase.co/storage/v1/object/public/cover-image//default.png"}
                                 alt={metadata.title} fill={true} objectFit={"cover"} className={"pointer-events-none"}/>
                         </div>
-                        <div className={"text-lg"}>{metadata.title}</div>
+                        <div className={"flex flex-row justify-between"}>
+                            <div className={"text-lg overflow-ellipsis"}>{metadata.title}</div>
+                            <div>{metadata.view_number} views</div>
+                        </div>
                         <div className={"text-sm overflow-ellipsis"}>{metadata.summary ? metadata.summary : "this piece doesn't have a summary..."}</div>
                     </Link>
                 </div>

@@ -1,60 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-model User {
-  id                   String    @id @default(uuid())
-  name                 String    @unique @db.VarChar(255)
-  display_name         String    @db.VarChar(255)
-  email                String    @unique @db.VarChar(255)
-  created_at           DateTime  @default(now())
-  summary_text         String?   @db.VarChar(255)
-  about_me             String?   @db.VarChar(1023)
-  password             String
-  pieces               Piece[]
-  comments             Comment[]
-  profile_picture_link String?
-  views                View[]
-}
-
-model View {
-  id        String   @id @default(uuid())
-  user_id   String
-  user      User     @relation(fields: [user_id], references: [id])
-  timestamp DateTime @default(now())
-  piece_id  String
-  piece     Piece    @relation(fields: [piece_id], references: [id])
-}
-
-model Piece {
-  id               String    @id @default(uuid())
-  author_id        String
-  author           User      @relation(fields: [author_id], references: [id])
-  title            String    @db.VarChar(1023)
-  slug             String
-  summary          String    @db.VarChar(2057)
-  published        Boolean
-  rating           Float?
-  views            View[]
-  created_at       DateTime  @default(now())
-  last_updated     DateTime  @default(now())
-  content          Json
-  comments         Comment[]
-  cover_image_link String?
-
-  @@unique([author_id, slug])
-}
-
-model Comment {
-  id        String @id @default(uuid())
-  piece     Piece  @relation(fields: [piece_id], references: [id])
-  piece_id  String
-  author    User   @relation(fields: [author_id], references: [id])
-  author_id String
-}
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -63,4 +6,55 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  name                 String    @unique @db.VarChar(255)
+  display_name         String    @db.VarChar(255)
+  email                String    @unique @db.VarChar(255)
+  created_at           DateTime  @default(now())
+  password             String
+  about_me             String?   @db.VarChar(1023)
+  summary_text         String?   @db.VarChar(255)
+  profile_picture_link String?
+  comments             Comment[]
+  pieces               Piece[]
+  views                View[]
+}
+
+model View {
+  id        String   @id @default(uuid())
+  user_id   String
+  timestamp DateTime @default(now())
+  piece_id  String
+  piece     Piece    @relation(fields: [piece_id], references: [id])
+  user      User     @relation(fields: [user_id], references: [id])
+}
+
+model Piece {
+  id               String    @id @default(uuid())
+  author_id        String
+  title            String    @db.VarChar(1023)
+  slug             String
+  summary          String    @db.VarChar(2057)
+  published        Boolean
+  rating           Float?
+  created_at       DateTime  @default(now())
+  last_updated     DateTime  @default(now())
+  content          Json
+  cover_image_link String?
+  comments         Comment[]
+  author           User      @relation(fields: [author_id], references: [id])
+  views            View[]
+
+  @@unique([author_id, slug])
+}
+
+model Comment {
+  id        String @id @default(uuid())
+  piece_id  String
+  author_id String
+  author    User   @relation(fields: [author_id], references: [id])
+  piece     Piece  @relation(fields: [piece_id], references: [id])
 }
