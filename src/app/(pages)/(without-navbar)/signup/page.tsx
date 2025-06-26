@@ -38,20 +38,15 @@ export default function SignUpPage() {
     }, [])
 
     useEffect(() => {
-        console.log("useEffect called")
         if (timeToNextResend === 0) {
-            console.log("time = 0")
-            return;
+            return () => {};
         }
-
-        console.log("okay well we got this far")
 
         const interval = setInterval(() => {
             setTimeToNextResend((prevState) => prevState - 1);
-            console.log("interval called")
         }, 1000)
 
-        return clearInterval(interval)
+        return () => clearInterval(interval)
 
     }, [timeToNextResend])
 
@@ -89,7 +84,7 @@ export default function SignUpPage() {
         console.log("send_code triggered")
         if (email) {
             await SendConfirmationEmail(email)
-            setTimeToNextResend(5)
+            setTimeToNextResend(30)
         }
     }, [email, SendConfirmationEmail, setTimeToNextResend])
 

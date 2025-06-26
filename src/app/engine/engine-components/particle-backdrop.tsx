@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {loadSlim} from "@tsparticles/slim";
 import {Engine} from "@tsparticles/engine";
 import Particles, {initParticlesEngine} from "@tsparticles/react";
@@ -30,11 +30,16 @@ export default function ParticleBackdrop(
     }: ParticlesBackgroundProps,
 ) {
     const [initialized, setInitialized] = useState(false);
-    useEffect(() => {
+
+    const init = useCallback(() => {
         initParticlesEngine(async (engine: Engine) => {
             await loadSlim(engine);
         }).then(() => {setInitialized(true);});
-    }, []);
+    }, [initParticlesEngine, loadSlim]);
+
+    useEffect(() => {
+        init()
+    }, [init]);
 
     const particlesLoaded = async (container?: Container): Promise<void> => {console.log(container)}
 
