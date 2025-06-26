@@ -51,7 +51,7 @@ export default async function CreateUser(credentials: {name: string, display_nam
 
         result = {success: true, data: user as PublicUser}
 
-        await SendConfirmationEmail(user)
+        await SendConfirmationEmail(user.email)
     } catch (err) {
         if (err instanceof Error) {
             result = {success: false, error: err.message}

@@ -12,7 +12,8 @@ export default async function GetPieces(params: {amount: number, sortBy: "random
         },
         include: {
             author: true,
-            views: true
+            views: true,
+            saves: true
         }
     })
 
@@ -20,6 +21,8 @@ export default async function GetPieces(params: {amount: number, sortBy: "random
         return {
             ...piece,
             view_number: piece.views.length,
+            save_number: piece.saves.length,
+            saves: piece.saves,
             author_name: piece.author.name,
         } satisfies PieceMetaData
     })

@@ -17,7 +17,7 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
         return new Error("Unauthorized")
     }
 
-    const db_user: DatabaseUser | null = await prisma.user.findUnique({where: {name: username}});
+    const db_user: DatabaseUser | null = await prisma.user.findUnique({where: {name: username}, include: {save_buckets: {include: {saved_pieces: true}}, views: true}});
     if (!db_user) {
         return new Error("it appears that this user doesnt exist. you shouldn't have been able to get this far. how???")
     }

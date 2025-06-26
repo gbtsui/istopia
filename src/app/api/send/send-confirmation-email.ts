@@ -4,10 +4,10 @@ import {DatabaseUser} from "@/app/types";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export default async function SendConfirmationEmail(data: DatabaseUser) {
+export default async function SendConfirmationEmail(email: string) {
     const result = await resend.emails.send({
         from: "do-not-reply.istopia@gbtsui.dev",
-        to: data.email,
+        to: email,
         subject: "welcome to istopia!",
         html: "<h1>welcome to istopia!</h1>" +
             "<p>i'm really glad that you decided to try out my app." +

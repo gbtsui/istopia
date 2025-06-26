@@ -9,18 +9,19 @@ datasource db {
 }
 
 model User {
-  id                   String    @id @default(uuid())
-  name                 String    @unique @db.VarChar(255)
-  display_name         String    @db.VarChar(255)
-  email                String    @unique @db.VarChar(255)
-  created_at           DateTime  @default(now())
+  id                   String       @id @default(uuid())
+  name                 String       @unique @db.VarChar(255)
+  display_name         String       @db.VarChar(255)
+  email                String       @unique @db.VarChar(255)
+  created_at           DateTime     @default(now())
   password             String
-  about_me             String?   @db.VarChar(1023)
-  summary_text         String?   @db.VarChar(255)
+  about_me             String?      @db.VarChar(1023)
+  summary_text         String?      @db.VarChar(255)
   profile_picture_link String?
   comments             Comment[]
   pieces               Piece[]
   views                View[]
+  save_buckets         SaveBucket[]
 }
 
 model View {
@@ -47,8 +48,25 @@ model Piece {
   comments         Comment[]
   author           User      @relation(fields: [author_id], references: [id])
   views            View[]
+  saves            Save[]
 
   @@unique([author_id, slug])
+}
+
+model Save {
+  id        String     @id @default(uuid())
+  bucket_id String
+  bucket    SaveBucket @relation(fields: [bucket_id], references: [id])
+  piece_id  String
+  piece     Piece      @relation(fields: [piece_id], references: [id])
+}
+
+model SaveBucket {
+  id           String @id @default(uuid())
+  name         String @db.VarChar(255)
+  owner_id     String
+  owner        User   @relation(fields: [owner_id], references: [id])
+  saved_pieces Save[]
 }
 
 model Comment {

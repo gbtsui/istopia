@@ -27,7 +27,8 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
                     slug: true,
                     summary: true,
                     cover_image_link: true,
-                    views: true
+                    views: true,
+                    saves: true,
                 }
             }
         )
@@ -45,14 +46,15 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
                     slug: true,
                     summary: true,
                     cover_image_link: true,
-                    views: true
+                    views: true,
+                    saves: true,
                 }
             }
         )
 
 
     const pieces_metadata: Array<PieceMetaData> = pieces.map((data) => {
-        return {...data, view_number: data.views.length, author_name: user.name as string}
+        return {...data, view_number: data.views.length, save_number: data.saves.length, author_name: user.name as string}
     })
 
     console.log(pieces_metadata)

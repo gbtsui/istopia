@@ -3,6 +3,7 @@
 import {DatabaseUser, PieceMetaData, Result} from "@/app/types";
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {prisma} from "@/app/api/data/db";
+import GetUserData from "@/app/api/data/user-management/get-user-data";
 
 type UpdatePieceMetaDataParams = {
     username: string,
@@ -17,7 +18,7 @@ export default async function UpdatePieceMetaData({username, piece_id, metadata}
             throw new Error("unauthorized")
         }
 
-        const db_user: DatabaseUser | null = await prisma.user.findUnique({where: {name: username}})
+        const db_user: DatabaseUser | null = await GetUserData({name: user.name})
         if (!db_user) {
             throw new Error("it appears that this user doesnt exist. you shouldn't have been able to get this far.")
         }

@@ -6,6 +6,7 @@ import {Suspense} from "react";
 import UserPiecesList from "@/app/component/dashboard/user-pieces-list";
 import {prisma} from "@/app/api/data/db";
 import {redirect} from "next/navigation";
+import GetUserData from "@/app/api/data/user-management/get-user-data";
 
 type DashboardProps = {
     username: string;
@@ -14,7 +15,7 @@ type DashboardProps = {
 export default async function Dashboard(props: DashboardProps) {
     const {username} = props;
 
-    const user: DatabaseUser | null = await prisma.user.findFirst({where: {name: username}});
+    const user: DatabaseUser | null = await GetUserData({name: username});
     if (!user) {
         redirect("/signin");
     }

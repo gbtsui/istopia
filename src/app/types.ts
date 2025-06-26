@@ -13,6 +13,8 @@ export interface DatabaseUser extends PublicUser {
     id: string,
     email: string,
     password: string,
+    views: ViewData[],
+    save_buckets: SaveBucketData[]
     //pieces: Piece[],
     //comments: Comment[],
 }
@@ -42,7 +44,9 @@ export interface PieceMetaData {
     summary: string,
     cover_image_link: string | null | undefined,
     view_number: number,
-    views: Array<ViewData>
+    views?: Array<ViewData>,
+    saves: Array<SaveData>,
+    save_number: number,
 }
 
 export interface ViewData {
@@ -50,6 +54,19 @@ export interface ViewData {
     user_id: string,
     timestamp: Date,
     piece_id: string
+}
+
+export interface SaveData {
+    id: string,
+    piece_id: string,
+    bucket_id: string
+}
+
+export interface SaveBucketData {
+    id: string,
+    name: string,
+    owner_id: string,
+    saved_pieces: SaveData[]
 }
 
 export interface CommentData {
