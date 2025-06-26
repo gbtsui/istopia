@@ -15,7 +15,7 @@ export default function PageFlowNode({data}: NodeProps<PageFlowNode>) {
         setFriendlyName(event.target.value);
         editPage(data.page_id, {friendly_name: event.target.value});
         //also handle updating to zustand here btw :)
-    }, [setFriendlyName, editPage]);
+    }, [setFriendlyName, editPage, data.page_id]);
 
     const onClick = () => {
         console.log("onClick running, args:", data.page_id)

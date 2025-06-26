@@ -36,10 +36,16 @@ function PublishForm(props: PublishFormProps) {
     const [enteredSlug, setEnteredSlug] = useState<string>(slug);
 
     useEffect(() => {
-        setEnteredTitle(title);
-        setEnteredSummary(summary);
         setEnteredSlug(slug);
-    }, [dialogIsOpen])
+    }, [slug])
+
+    useEffect(() => {
+        setEnteredTitle(title);
+    }, [title]);
+
+    useEffect(() => {
+        setEnteredSummary(summary);
+    }, [summary]);
 
     const publish = () => {
         const save_to_db = async () => {

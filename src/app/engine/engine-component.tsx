@@ -12,18 +12,19 @@ type EngineComponentProps = {
 export default function EngineComponent(props: EngineComponentProps) {
     const piece_data = props.piece_data;
     const engine = useEngineContext()
+    const setCurrentPage = engine.setCurrentPage;
     const [loading, setLoading] = useState(true)
 
     const first_page = Object.values(piece_data.content.pages).find(page => page.is_first)
-    if (!first_page) {
-        console.error("No first page defined. Piece seems to be corrupt.")
-        return
-    }
 
     useEffect(() => {
-        engine.setCurrentPage(first_page.id);
+        if (!first_page) {
+            console.error("No first page defined. Piece seems to be corrupt.")
+            return
+        }
+        setCurrentPage(first_page.id);
         setLoading(false)
-    }, [first_page])
+    }, [first_page, setCurrentPage])
 
     if (loading) return <div>loading piece...</div> //TODO: make a better looking loading screen smh ts pmo
 

@@ -23,14 +23,18 @@ const nodeTypes = {
 export default function PagesGraph() {
     const store = useStoreApi()
 
-    const editorStore = useEditorStore()
+    //const editorStore = useEditorStore()
+    const editPage = useEditorStore((state) => state.editPage)
+    const deletePage = useEditorStore((state) => state.deletePage)
     const pages = useEditorStore((state) => state.content.pages)
+    const setPageCoordinates = useEditorStore((state) => state.setPageCoordinates)
+
     const [page_nodes, setPageNodes] = useState<PageNodeData[]>([]);
     const [edges, setEdges] = useState<PageNodeEdge[]>([]);
     const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
     const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null);
 
-    const update_nodes = () => {
+    const update_nodes = useCallback(() => {
         if (!Object.keys(pages).length) return
 
         const pages_list = Object.entries(pages).map(([, v]) => v)
@@ -44,13 +48,13 @@ export default function PagesGraph() {
         }).flat()
         setEdges(edges)
         setPageNodes(nodes)
-    }
+    }, [pages])
 
 
     useEffect(() => {
         console.log("useEffect running")
         update_nodes()
-    }, [pages])
+    }, [pages, update_nodes])
 
 
     const addPage = useEditorStore((state) => state.addPage)
@@ -86,14 +90,14 @@ export default function PagesGraph() {
                 if (change.type === "position") {
                     const page_id = change.id;
                     const new_position = change.position;
-                    editorStore.setPageCoordinates(page_id, {
+                    setPageCoordinates(page_id, {
                         x: new_position?.x as number,
                         y: new_position?.y as number
                     })
                 }
             })
             setPageNodes((nds) => applyNodeChanges(changes, nds))
-        }, [setPageNodes]);
+        }, [setPageNodes, setPageCoordinates]);
 
     const onEdgesChange: OnEdgesChange = useCallback(
         (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
@@ -102,13 +106,13 @@ export default function PagesGraph() {
 
     const onConnect: OnConnect = useCallback(
         (change) => {
-            const source = {...editorStore.content.pages}[change.source]
+            const source = {...pages}[change.source]
             if (!source) return setEdges((eds) => addEdge(change, eds))
             source.outward_connections.push(change.target)
             pages[change.source] = source
             setEdges((eds) => addEdge(change, eds))
         },
-        [setEdges, editorStore.content.pages],
+        [setEdges, pages],
     );
 
     const confirmDelete: () => Promise<boolean> = async () => {
@@ -133,16 +137,16 @@ export default function PagesGraph() {
 
             const {nodes, edges} = change
             edges.forEach((edge) => {
-                const sourcePage = editorStore.content.pages[edge.source]
+                const sourcePage = pages[edge.source]
                 sourcePage.outward_connections = sourcePage.outward_connections.filter((outwardConnection) => outwardConnection !== edge.target)
-                editorStore.editPage(edge.source, sourcePage)
+                editPage(edge.source, sourcePage)
             })
             nodes.forEach((node) => {
-                editorStore.deletePage(node.id)
+                deletePage(node.id)
             })
             return change
         },
-        [setEdges, setPageNodes, editorStore.editPage, editorStore.deletePage, confirmDelete],
+        [setEdges, setPageNodes, editPage, pages, deletePage, confirmDelete],
     )
 
     return (
