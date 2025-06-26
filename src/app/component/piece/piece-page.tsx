@@ -9,7 +9,7 @@ type PiecePageProps = {
     isLoggedInAsUser: boolean,
 }
 
-export default function PiecePageComponent({props}: {props: PiecePageProps}) {
+export default function PiecePageComponent({props}: { props: PiecePageProps }) {
     const {piece_data, username, isLoggedInAsUser} = props;
 
     return (
@@ -24,9 +24,15 @@ export default function PiecePageComponent({props}: {props: PiecePageProps}) {
                     <div>
                         {
                             isLoggedInAsUser &&
-                            <Link href={`/editor/${piece_data.id}`} className={"material-symbols-outlined p-4 rounded-xl bg-gray-400"}>
-                                edit
-                            </Link>
+                            <div>
+                                <Link href={`/editor/${piece_data.id}`}
+                                      className={"material-symbols-outlined p-4 rounded-xl bg-gray-400"}>
+                                    edit
+                                </Link>
+                                <div>
+                                    {!piece_data.published && <p>this piece is unpublished!! no one else can see it.</p>}
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>

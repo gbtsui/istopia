@@ -2,6 +2,7 @@
 
 import {useEffect, useState} from "react";
 import {PublishButton} from "@/app/component/editor/editor-components/publish-form";
+import {useRouter} from "next/navigation";
 
 type EditorTopBarProps = {
     currentPage: string | null | undefined,
@@ -36,6 +37,7 @@ const formatTimeSinceLastSave = (timeMs: number|undefined): string => {
 };
 
 export default function EditorTopBar(props: EditorTopBarProps) {
+    const router = useRouter()
     const {currentPage, setCurrentPage, friendly_name, lastSaved, saving, saveThisWrld} = props
 
     const [timeSinceLastSave, setTimeSinceLastSave] = useState<number>();
@@ -60,7 +62,10 @@ export default function EditorTopBar(props: EditorTopBarProps) {
                 <div>
                     <button
                         className={"material-symbols-outlined text p-3 bg-gray-200 rounded-xl hover:bg-gray-300 transition-all cursor-pointer"}
-                        onClick={() => setCurrentPage(null)}>arrow_back
+                        onClick={() => {
+                            if (currentPage) setCurrentPage(null);
+                            else router.push("/dashboard")
+                        }}>{currentPage? <p>arrow_back</p> : <p>home</p>}
                     </button>
                     <span className={"items-center text-center p-1"}>{friendly_name || currentPage || "Pages"}</span>
                 </div>
