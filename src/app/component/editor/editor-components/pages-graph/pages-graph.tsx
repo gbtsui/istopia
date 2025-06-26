@@ -146,7 +146,7 @@ export default function PagesGraph() {
             })
             return change
         },
-        [setEdges, setPageNodes, editPage, pages, deletePage, confirmDelete],
+        [editPage, pages, deletePage, confirmDelete],
     )
 
     return (
