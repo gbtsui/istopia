@@ -1,5 +1,6 @@
 "use server";
 import {Resend} from "resend";
+import {prisma} from "@/app/api/data/db";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -20,7 +21,16 @@ export async function SendWelcomeEmail(email: string) {
     return result
 }
 
-export async function SendConfirmationEmail(email: string, code: string) {
+export async function SendConfirmationEmail(email: string) {
+    const code = crypto.randomUUID().slice(0, 6)
+
+    await prisma.unconfirmedUser.create({
+        data: {
+            email: email,
+            confirmationCode: code,
+        }
+    })
+
     return await resend.emails.send({
         from: "do-not-reply.istopia@gbtsui.dev",
         to: email,

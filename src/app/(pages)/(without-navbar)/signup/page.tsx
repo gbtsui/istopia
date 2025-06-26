@@ -15,6 +15,7 @@ import ParticleBackdrop from "@/app/engine/engine-components/particle-backdrop";
 import {useCallback, useEffect, useState} from "react";
 import CreateUser from "@/app/api/data/user-management/create-user";
 import {signIn} from "next-auth/react";
+import {SendConfirmationEmail} from "@/app/api/send/send-confirmation-email";
 
 export default function SignUpPage() {
     const [loading, setLoading] = useState(true);
@@ -22,7 +23,8 @@ export default function SignUpPage() {
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
-    const [confirmationCode, setConfirmationCode] = useState("");
+    //const [canResend, setCanResend] = useState(false);
+    const [timeToNextResend, setTimeToNextResend] = useState(0);
 
     useEffect(() => {
         const init = async () => {
@@ -35,8 +37,21 @@ export default function SignUpPage() {
         init()
     }, [])
 
+    useEffect(() => {
+        if (timeToNextResend === 0) return;
 
-    const sign_up = useCallback((formData: FormData)=> {
+        setTimeToNextResend(60)
+
+        const interval = setInterval(() => {
+            setTimeToNextResend((prevState) => prevState - 1);
+        }, 1000)
+
+        return clearInterval(interval)
+
+    }, [timeToNextResend])
+
+
+    const sign_up = useCallback((formData: FormData) => {
         const signup = async () => {
             setLoading(true);
             const result = await CreateUser({
@@ -64,25 +79,35 @@ export default function SignUpPage() {
         signup().then(() => console.log("sign up complete"))
     }, [])
 
+    const send_code = useCallback(async () => {
+        if (email) {
+            await SendConfirmationEmail(email)
+            setTimeToNextResend(60)
+        }
+    }, [email, SendConfirmationEmail, setTimeToNextResend])
+
     if (loading) return <div>loading...</div>;
     //need to actually provide user feedback on input validity and stuff
     //not in minimum viable product though
     return (
         <div className={"flex relative items-center justify-center"}>
             <ParticleBackdrop id={"tsparticlespmo"}/>
-            <div className={"bg-gray-700 border-gray-50 m-4 p-10 rounded-2xl w-1/2 flex flex-col gap-6 items-center opacity-80"}>
+            <div
+                className={"bg-gray-700 border-gray-50 m-4 p-10 rounded-2xl w-1/2 flex flex-col gap-6 items-center opacity-80"}>
                 <form className={"flex flex-col items-center"} action={sign_up}>
                     <div>
                         <label>what shall identify you?</label><br/>
                         <input type="text" name={"username"}
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
-                               placeholder={"username"} onChange={(e) => setUsername(e.target.value)} disabled={loading} required/>
+                               placeholder={"username"} onChange={(e) => setUsername(e.target.value)} disabled={loading}
+                               required/>
                     </div>
                     <div>
                         <label>what shall you be called?</label><br/>
                         <input type="text" name={"display_name"}
                                className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
-                               placeholder={username? username : "display name"} onChange={(e) => setEmail(e.target.value)} disabled={loading}/>
+                               placeholder={username ? username : "display name"}
+                               onChange={(e) => setEmail(e.target.value)} disabled={loading}/>
                     </div>
                     <div>
                         <label>how will we reach you?</label><br/>
@@ -97,16 +122,24 @@ export default function SignUpPage() {
                                placeholder={"password"} disabled={loading} required/>
                     </div>
 
-
+                    {email &&
+                        <div>
+                            <label>enter email confirmation code...</label>
+                            <button onClick={send_code} disabled={timeToNextResend>0} className={"underline"}>send code</button>
+                            <input type={"text"} name={"confirmation"}
+                                   className={"bg-gray-600 text-white outline-0 disabled:text-gray-500 disabled:bg-gray-800 p-3 text-xl rounded-lg"}
+                                   placeholder={"123abc"} disabled={loading} required/>
+                        </div>
+                    }
 
                     <div>
                         <button className={"p-3 bg-black rounded-xl my-2"}>submit</button>
                     </div>
                     {error &&
-                    <div className={"bg-red-400"}>
-                        <h3 className={"text-2xl"}>error!</h3>
-                        <p>{error}</p>
-                    </div>
+                        <div className={"bg-red-400"}>
+                            <h3 className={"text-2xl"}>error!</h3>
+                            <p>{error}</p>
+                        </div>
                     }
                 </form>
             </div>

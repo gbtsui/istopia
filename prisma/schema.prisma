@@ -28,7 +28,7 @@ model UnconfirmedUser {
   id               String   @id @default(uuid())
   email            String   @unique
   confirmationCode String   @unique
-  createdAt        DateTime //delete all stale data points after 1 hour
+  createdAt        DateTime @default(now()) //delete all stale data points after 1 hour
 }
 
 model View {
