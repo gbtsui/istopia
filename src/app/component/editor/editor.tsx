@@ -23,14 +23,15 @@ export default function Editor(props: EditorProps) {
     const saveContent = useEditorStore((state) => state.saveContent);
     //const editor_store = useEditorStore()
     const setContent = useEditorStore((state) => state.setContent);
-    const editorMetaDataStore = useEditorMetaDataStore()
+    //const editorMetaDataStore = useEditorMetaDataStore()
+    const setData = useEditorMetaDataStore((state) => state.setData)
 
     const [lastSaved, setLastSaved] = useState(initialPieceData.last_updated);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         setContent(initialPieceData.content)
-        editorMetaDataStore.setData({
+        setData({
             author_name: username,
             author_id: initialPieceData.author_id,
             piece_id: initialPieceData.id,
@@ -40,7 +41,7 @@ export default function Editor(props: EditorProps) {
             published: initialPieceData.published,
         })
         setCurrentPage(null)
-    }, [setCurrentPage, editorMetaDataStore, initialPieceData, username, setContent])
+    }, [setCurrentPage, setData, initialPieceData, username, setContent])
 
     return (
         <div>

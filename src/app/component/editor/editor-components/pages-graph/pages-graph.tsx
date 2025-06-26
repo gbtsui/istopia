@@ -43,7 +43,11 @@ export default function PagesGraph() {
         })
         const edges = pages_list.map((page) => {
             return page.outward_connections.map((outwardConnection) => {
-                return {id: `${page.id}-${outwardConnection}`, source: page.id, target: outwardConnection} as PageNodeEdge
+                return {
+                    id: `${page.id}-${outwardConnection}`,
+                    source: page.id,
+                    target: outwardConnection
+                } as PageNodeEdge
             })
         }).flat()
         setEdges(edges)
@@ -131,7 +135,10 @@ export default function PagesGraph() {
     }
 
     const onBeforeDelete: OnBeforeDelete = useCallback(
-        async (change: {nodes: PageNodeData[], edges: PageNodeEdge[]}): Promise<false|{nodes: PageNodeData[], edges: PageNodeEdge[]}> => {
+        async (change: { nodes: PageNodeData[], edges: PageNodeEdge[] }): Promise<false | {
+            nodes: PageNodeData[],
+            edges: PageNodeEdge[]
+        }> => {
             const confirmed = await confirmDelete()
             if (!confirmed) return false;
 
@@ -151,7 +158,15 @@ export default function PagesGraph() {
 
     return (
         <div className={"w-full h-full"}>
-            <ReactFlow proOptions={{hideAttribution: true}} nodeTypes={nodeTypes} nodes={page_nodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} onBeforeDelete={onBeforeDelete}>
+            <ReactFlow proOptions={{hideAttribution: true}}
+                       nodeTypes={nodeTypes}
+                       nodes={page_nodes}
+                       edges={edges}
+                       onNodesChange={onNodesChange}
+                       onEdgesChange={onEdgesChange}
+                       onConnect={onConnect}
+                       onBeforeDelete={onBeforeDelete}
+            >
                 <Background/>
                 <Controls/>
             </ReactFlow>
