@@ -5,7 +5,7 @@ import {Page} from "@/app/types";
 export interface EngineEvent {
     event: {
         name: string; //ex. typingComplete, buttonClicked
-        value: any; //ex. the contents of a textbox
+        value: any; //ex. the contents of a textbox //TODO: we already have the value/argument getting passed just like pass it into the handler
     };
     triggering_block_id: string; //what block triggered the event?
 }
@@ -100,7 +100,7 @@ const evaluateLogicalCondition = (logicalCondition: LogicalCondition): boolean =
 export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
     const listeners = useRef<Array<EngineEventListener>>([]); //array of all listeners
     const blockValues = useRef(<Record<string, Record<string, any>>>({})); //this is gross tbh.
-    const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in
+    const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in //TODO: make this support arguments
     const currentPage = useRef<string>("")
 
     const setCurrentPage = (new_page: string) => {
@@ -153,7 +153,7 @@ export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
         if (handler) {
             handler(action) //run the block's event handler!
         }
-    }
+    } //TODO: add arguments
 
     const registerBlock = (id: string, handler: (action: string) => void)=> {
         blockHandlers.current.set(id, handler);
