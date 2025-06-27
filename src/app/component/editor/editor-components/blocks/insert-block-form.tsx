@@ -46,7 +46,8 @@ export default function InsertBlockForm(props: InsertBlockFormProps) {
                     <button disabled={selectedBlock === null}
                             onClick={() => {
                                 if (selectedBlock) {
-                                    addBlock(page_id, {...selectedBlock, props: {...selectedBlock.props, id: crypto.randomUUID()}});
+                                    const id = crypto.randomUUID()
+                                    addBlock(page_id, {...selectedBlock, props: {...selectedBlock.props, id, friendly_name: `${selectedBlock.type} ${id.slice(0, 6)}`}});
                                     setDialogIsOpen(false);
                                     setSelectedBlock(null);
                                 }
