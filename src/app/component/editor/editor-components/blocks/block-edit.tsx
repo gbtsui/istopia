@@ -2,7 +2,7 @@
 
 import {Block, BlockProps} from "@/app/types";
 import Sortable from "@/app/component/editor/state/sortable";
-import {useEditorStore} from "@/app/component/editor/state/zustand";
+import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEditFields from "@/app/component/editor/editor-components/blocks/block-edit-fields";
 
 type BlockEditProps = {
@@ -22,6 +22,7 @@ export default function BlockEdit(props: BlockEditProps & { overId: string | nul
     const editBlock = useEditorStore((state) => state.editBlock)
     const deleteBlock = useEditorStore((state) => state.deleteBlock)
     const page = useEditorStore((state) => state.content.pages[page_id])
+    const setSelectedBlock = useEditorStateStore((state) => state.setSelectedBlock)
 
     const depth = calculateDepth(block, page.blocks)
 
