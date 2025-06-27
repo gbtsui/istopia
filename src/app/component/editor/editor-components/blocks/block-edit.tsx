@@ -53,7 +53,7 @@ export default function BlockEdit(props: BlockEditProps & { overId: string | nul
                       is_collapsed={block.props.is_collapsed}
                       has_children={!!block.props.children_ids} updateProps={updateProps}>
 
-                <BlockEditFields blockProps={block.props} page_id={page_id} page_blocks={page.blocks}
+                <BlockEditFields blockProps={block.props}
                                  updateProps={updateProps}/>
                 {block.type !== "root" && <button onClick={() => deleteBlock(page_id, block.props.id)}
                                                   className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button>} {/*TODO: make this work with a dialog*/}
