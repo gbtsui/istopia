@@ -21,6 +21,7 @@ type TypewriterAdditionalProps = {
     manual?: boolean
 }
 
+export const TypewriterActions = ["nextLine", "reset"]
 export default function Typewriter(
     props: BlockProps<TypewriterAdditionalProps>
 ) {
@@ -86,6 +87,8 @@ export default function Typewriter(
                 return nextLine();
             case "reset":
                 return reset();
+            default:
+                console.warn("A nonexistent action was passed to a typewriter: ", action)
         }
     }, [nextLine, reset]);
 

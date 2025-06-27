@@ -79,3 +79,17 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
         visible: true
     }
 ] //ALWAYS INITIALIZE IDS
+
+export const BlockActionsList: Record<string, Array<string>> = {
+    "root": ["switchPage"],
+    "text": [],
+    "typewriter": ["nextLine", "reset"],
+    "simple_container": []
+}
+
+export const BlockEventsList: Record<string, Array<string>> = { //always return in the form of "<type>:<event>"
+    "root": [],
+    "text": [],
+    "typewriter": ["typingComplete"],
+    "simple_container": []
+}
