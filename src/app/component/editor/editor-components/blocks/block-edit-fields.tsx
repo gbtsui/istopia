@@ -1,18 +1,14 @@
 "use client"
 
-import {Block, BlockProps} from "@/app/types";
-import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
-import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
+import {BlockProps} from "@/app/types";
 
 type BlockEditFieldsProps = {
     blockProps: BlockProps,
-    page_id: string,
-    page_blocks: Record<string, Block>,
     updateProps: (newProps: Partial<BlockProps>) => void
 }
 
 export default function BlockEditFields(props: BlockEditFieldsProps) {
-    const {blockProps, page_blocks, page_id, updateProps} = props
+    const {blockProps, updateProps} = props
 
 
     return (
@@ -38,11 +34,11 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
                                 switch (typeof value) {
                                     case "string":
                                         return (
-                                            <div className={"p-2"} key={key}>
+                                            <div className={"p-2 gap-2"} key={key}>
                                                 <span>{key}</span>
                                                 <input type={"text"} defaultValue={value}
                                                        onChange={(e) => updateProps({additional_props: {[key]: e.target.value}})}
-                                                       name={key}/>
+                                                       name={key} className={"bg-gray-100"}/>
                                             </div>
                                         )
                                     case "number":
