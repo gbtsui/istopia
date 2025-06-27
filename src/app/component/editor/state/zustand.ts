@@ -394,11 +394,17 @@ export const useEditorMetaDataStore = create<EditorMetaDataStore>((set, get) => 
 export type EditorStateStore = {
     current_page?: string | null,
     setPage: (page: string|null) => void,
+    selected_block: string | null,
+    setSelectedBlock: (block_id: string) => void,
 }
 
 export const useEditorStateStore = create<EditorStateStore>((set, get) => ({
     current_page: null,
+    selected_block: null,
     setPage: (page: string|null) => {
         set({current_page: page})
+    },
+    setSelectedBlock: (block_id: string) => {
+        set({selected_block: block_id})
     }
 }))

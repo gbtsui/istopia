@@ -7,6 +7,7 @@ import PageContents from "@/app/component/editor/editor-components/blocks/page-c
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
 import PagesGraph from "@/app/component/editor/editor-components/pages-graph/pages-graph";
 import {ReactFlowProvider} from "@xyflow/react";
+import BlockEditSidebar from "@/app/component/editor/editor-components/blocks/sidebar/block-edit-sidebar";
 
 type EditorProps = {
     initialPieceData: PieceData;
@@ -45,8 +46,8 @@ export default function Editor(props: EditorProps) {
 
     return (
         <div>
-            <div className={"flex flex-col h-svh w-full"}>
-                <div className={"flex"}>
+            <div className={"flex flex-col h-dvh w-full"}>
+                <div className={"flex h-[10dvh]"}>
                     <EditorTopBar currentPage={currentPage} lastSaved={lastSaved}
                                   saveThisWrld={() => {
                                       console.log("saving...")
@@ -65,7 +66,12 @@ export default function Editor(props: EditorProps) {
                 </div>
                 {
                     currentPage === null || currentPage === undefined ?
-                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider> : <PageContents page_id={currentPage}/>
+                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
+                        :
+                        <div className={"flex flex-row h-[90dvh]"}>
+                            <PageContents page_id={currentPage}/>
+                            <BlockEditSidebar/>
+                        </div>
                 }
             </div>
 
