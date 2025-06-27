@@ -3,6 +3,8 @@
 import {ReactFlow, useStoreApi} from "@xyflow/react";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockFlowNode from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/block-flow-node";
+import {useCallback, useState} from "react";
+import {Block, BlockNodeData, BlockNodeEdge} from "@/app/types";
 
 const nodeTypes = {
     blockNode: BlockFlowNode
@@ -16,8 +18,30 @@ export default function TriggersGraph() {
     const currentPage = currentPageId? pages[currentPageId] : null
 
     const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
-    const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
+    //const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
 
+    const [blockNodes, setBlockNodes] = useState<BlockNodeData[]>([]);
+    const [edges, setEdges] = useState<BlockNodeEdge[]>([]); //according to the Consensus Of The Fathers edging is not beneficial
+
+    const update_nodes = useCallback(() => {
+        if (!blockNodes.length) return
+
+        const blocks_list: Block[] = Object.entries(blocks).map(([,v]) => v)
+        const new_edges = blocks_list.map((block) => {
+            return block.props.listeners.map((listener) => {
+                return {
+                    id: `${listener.target_block_id}-${listener.target_event}.${listener.action}-${listener.self_block_id}`,
+                    source: listener.target_block_id,
+                    sourceHandle: listener.target_event,
+                    target: listener.self_block_id,
+                    targetHandle: listener.action
+                } as BlockNodeEdge
+            })
+        }).flat()
+
+        setEdges(new_edges)
+        setBlockNodes(currentPage?.blockNodes || [])
+    }, [])
 
     if (!currentPage) {
         return null
@@ -27,7 +51,9 @@ export default function TriggersGraph() {
     return (
         <div className={"w-full h-full"}>
             <ReactFlow proOptions={{hideAttribution: true}}
-            nodeTypes={nodeTypes}/>
+            nodeTypes={nodeTypes}
+            nodes={blockNodes}
+            edges={edges}/>
         </div>
     )
 }

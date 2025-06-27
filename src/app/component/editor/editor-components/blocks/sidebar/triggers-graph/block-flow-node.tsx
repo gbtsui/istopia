@@ -1,6 +1,6 @@
 "use client";
 
-import {NodeProps, Node} from "@xyflow/react";
+import {Handle, Node, NodeProps, Position} from "@xyflow/react";
 
 type BlockFlowNodeProps = Node<{
     friendly_name: string,
@@ -11,7 +11,17 @@ type BlockFlowNodeProps = Node<{
 export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
     return (
         <div>
-
+            <div>{props.data.friendly_name}</div>
+            {props.data.events.map((event) => (
+                <Handle type={"source"} position={Position.Right} id={event}>
+                    <div className={"handletext"}>{event}</div>
+                </Handle>
+            ))}
+            {props.data.actions.map((action) => (
+                <Handle type={"target"} position={Position.Left} id={action}>
+                    <div className={"handletext"}>{action}</div>
+                </Handle>
+                ))}
         </div>
     )
 }

@@ -135,6 +135,13 @@ export interface BlockNodeData {
     data: Record<string, unknown>, //should list all actions (on left) and events (on right)
     type: "blockNode"
 }
+export interface BlockNodeEdge {
+    id: string,
+    source: string,
+    sourceHandle: string,
+    target: string,
+    targetHandle: string
+}
 
 export interface PieceContent {
     pages: Record<string, Page>
