@@ -43,7 +43,7 @@ export default function TriggersGraph() {
                 return {
                     id: `${listener.target_block_id}-${listener.target_event}.${listener.action}-${listener.self_block_id}`,
                     source: listener.target_block_id,
-                    sourceHandle: listener.target_event,
+                    sourceHandle: listener.target_event.split(":")[1],
                     target: listener.self_block_id,
                     targetHandle: listener.action
                 } as BlockNodeEdge
@@ -51,6 +51,7 @@ export default function TriggersGraph() {
         }).flat()
 
         setEdges(new_edges)
+        console.log("update nodes run")
         setBlockNodes(Object.values(currentPage?.blockNodes || {}))
     }, [currentPage?.blockNodes])
 
