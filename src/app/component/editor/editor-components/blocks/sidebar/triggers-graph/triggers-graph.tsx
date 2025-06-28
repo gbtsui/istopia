@@ -27,7 +27,6 @@ export default function TriggersGraph() {
 
     const update_nodes = useCallback(() => {
         //if (!blockNodes.length) return
-        console.log("page data:", currentPage)
         const blocks_list: Block[] = Object.entries(blocks).map(([,v]) => v)
         const new_edges = blocks_list.map((block) => {
             return block.props.listeners.map((listener) => {
@@ -40,12 +39,10 @@ export default function TriggersGraph() {
                 } as BlockNodeEdge
             })
         }).flat()
-        console.log("blocks_list", blocks_list)
-        console.log("blockNodes", currentPage?.blockNodes)
 
         setEdges(new_edges)
         setBlockNodes(Object.values(currentPage?.blockNodes || {}))
-    }, [currentPage])
+    }, [currentPage?.blockNodes])
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {
@@ -68,10 +65,8 @@ export default function TriggersGraph() {
     )
 
     useEffect(() => {
-        console.log("updating nodes, useEffect running")
         update_nodes()
-        console.log(blockNodes)
-    }, [currentPage, update_nodes])
+    }, [currentPage?.blockNodes, update_nodes])
 
     if (!currentPage) {
         return null

@@ -25,6 +25,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+        <head>
+            <title>istopia</title>
+            <script defer data-domain="istopia.gbtsui.dev" src="https://plausible.io/js/script.js"></script>
+        </head>
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
