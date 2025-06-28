@@ -3,7 +3,7 @@
 import {Background, Controls, MiniMap, ReactFlow, useStoreApi} from "@xyflow/react";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockFlowNode from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/block-flow-node";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Block, BlockNodeData, BlockNodeEdge} from "@/app/types";
 import '@xyflow/react/dist/style.css';
 
@@ -25,8 +25,8 @@ export default function TriggersGraph() {
     const [edges, setEdges] = useState<BlockNodeEdge[]>([]); //according to the Consensus Of The Fathers edging is not beneficial
 
     const update_nodes = useCallback(() => {
-        if (!blockNodes.length) return
-
+        //if (!blockNodes.length) return
+        console.log("page data:", currentPage)
         const blocks_list: Block[] = Object.entries(blocks).map(([,v]) => v)
         const new_edges = blocks_list.map((block) => {
             return block.props.listeners.map((listener) => {
@@ -39,10 +39,18 @@ export default function TriggersGraph() {
                 } as BlockNodeEdge
             })
         }).flat()
+        console.log("blocks_list", blocks_list)
+        console.log("blockNodes", currentPage?.blockNodes)
 
         setEdges(new_edges)
         setBlockNodes(currentPage?.blockNodes || [])
-    }, [])
+    }, [currentPage])
+
+    useEffect(() => {
+        console.log("updating nodes, useEffect running")
+        update_nodes()
+        console.log(blockNodes)
+    }, [currentPage, update_nodes])
 
     if (!currentPage) {
         return null

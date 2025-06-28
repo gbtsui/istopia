@@ -74,6 +74,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     editPage: (page_id: string, new_data: Partial<Page>)=> {
+        console.log("editPage run, new data:", new_data)
         const {pages} = {...get().content}
         const friendly_name = new_data.friendly_name ?? pages[page_id].friendly_name
         const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
