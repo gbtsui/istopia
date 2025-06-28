@@ -5,6 +5,7 @@ import {ReactFlowProvider} from "@xyflow/react";
 import TriggersGraph from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph";
 import {useCallback, useState} from "react";
 import {Block, BlockNodeData} from "@/app/types";
+import {BlockActionsList} from "@/app/engine/block-list";
 
 export default function BlockEditSidebar() {
     const selected_block = useEditorStateStore((state) => state.selected_block);
@@ -58,7 +59,11 @@ export default function BlockEditSidebar() {
                 x: 0,//centerX,
                 y: 0 //centerY //TODO: fix viewport centering for quality of life
             },
-            data: {},
+            data: {
+                friendly_name: selectedInsertableBlock.props.friendly_name,
+                actions: BlockActionsList[selectedInsertableBlock.type],
+                events: BlockActionsList[selectedInsertableBlock.type]
+            },
             type: "blockNode"
         } as BlockNodeData;
         new_block_nodes.push(new_node)
