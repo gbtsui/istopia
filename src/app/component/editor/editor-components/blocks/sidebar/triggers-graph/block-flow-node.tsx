@@ -14,18 +14,18 @@ export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
             padding: 15,
             background: "#eee",
             position: "relative"
-        }}>
+        }} className={"min-w-36 min-h-48 flex flex-row"}>
             <div style={{
                 display: "flex",
                 position: "absolute",
                 height: "100%",
-                right: 0,
+                left: 0,
                 flexDirection: "column",
                 top: 0,
-                justifyContent: "space-between"
-            }}>
+                justifyContent: "space-evenly"
+            }} className={"w-full"}>
                 {props.data.actions.map((action) => (
-                    <div key={action}>
+                    <div key={action} className={"text-black text-center flex items-center"}>
                         <Handle type={"target"} position={Position.Left} id={action}
                                 style={{
                                     position: "relative",
@@ -48,17 +48,17 @@ export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
                 right: 0,
                 flexDirection: "column",
                 top: 0,
-                justifyContent: "space-between"
+                justifyContent: "space-evenly"
             }}>
-                {props.data.events.map((event, index) => (
-                    <div key={event} className={"items-end"}>
+                {props.data.events.map((event) => (
+                    <div key={event} className={"text-black text-center flex items-center"}>
+                        <p>{event}</p>
                         <Handle type={"source"} position={Position.Right} id={event}
                                 style={{
                                     position: "relative",
                                     transform: "none",
                                     top: "auto"
                                 }}/>
-                        <p>{event}</p>
                     </div>
                 ))}
             </div>
