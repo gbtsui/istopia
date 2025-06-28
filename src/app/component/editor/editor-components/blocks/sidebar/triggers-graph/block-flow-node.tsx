@@ -10,20 +10,28 @@ type BlockFlowNodeProps = Node<{
 
 export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
     return (
-        <div>
-            <div className={"p-3 bg-gray-200 w-48 h-36 flex text-black text-center rounded-lg "}>
+        <div className={"flex flex-row-reverse relative w-48 h-36"}>
+            <div className={"flex flex-col h-full justify-between absolute text-black"}>
+                {props.data.events.map((event, index) => (
+                    <div key={event} className={"items-end"}>
+                        <Handle type={"source"} position={Position.Right} id={event}
+                                className={"relative transform-none top-auto"}/>
+                        <div>{event}</div>
+                    </div>
+            ))}
+            </div>
+            <div className={"p-3 bg-gray-200 flex text-black text-center rounded-lg "}>
                 <div>{props.data.friendly_name}</div>
             </div>
-            {props.data.events.map((event) => (
-                <Handle type={"source"} position={Position.Right} id={event} key={event}>
-                    <div className={"bg-white p-1 rounded-lg text-black"}>{event}</div>
-                </Handle>
-            ))}
-            {props.data.actions.map((action) => (
-                <Handle type={"target"} position={Position.Left} id={action} key={action}>
-                    <div className={"bg-white p-1 rounded-lg text-black text-sm"}>{action}</div>
-                </Handle>
-            ))}
+            <div className={"flex flex-col h-full justify-between absolute"}>
+                {props.data.actions.map((action) => (
+                    <div key={action}>
+                        <Handle type={"source"} position={Position.Right} id={action}
+                                className={"relative transform-none top-auto"}/>
+                        <div>{action}</div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
