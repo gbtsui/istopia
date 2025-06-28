@@ -65,7 +65,6 @@ export default function TriggersGraph() {
             edges={edges}>
                 <Background/>
                 <Controls/>
-                <MiniMap/>
             </ReactFlow>
         </div>
     )
