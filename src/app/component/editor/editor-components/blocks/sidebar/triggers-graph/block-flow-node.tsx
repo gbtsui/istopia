@@ -10,12 +10,28 @@ type BlockFlowNodeProps = Node<{
 
 export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
     return (
-        <div className={"flex flex-row relative"}>
-            <div className={"flex flex-col h-full absolute justify-evenly gap-2 p-2 bg-white left-0 top-0 grow"}>
+        <div style={{
+            padding: 15,
+            background: "#eee",
+            position: "relative"
+        }}>
+            <div style={{
+                display: "flex",
+                position: "absolute",
+                height: "100%",
+                right: 0,
+                flexDirection: "column",
+                top: 0,
+                justifyContent: "space-between"
+            }}>
                 {props.data.actions.map((action) => (
                     <div key={action}>
                         <Handle type={"target"} position={Position.Left} id={action}
-                                className={"relative transform-none top-auto"}/>
+                                style={{
+                                    position: "relative",
+                                    transform: "none",
+                                    top: "auto"
+                                }}/>
                         <p>{action}</p>
                     </div>
                 ))}
@@ -25,12 +41,23 @@ export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
                 <div>{props.data.friendly_name}</div>
             </div>
 
-            <div className={"flex flex-col h-full absolute justify-evenly gap-2 p-2 bg-white right-0 top-0"}>
+            <div style={{
+                display: "flex",
+                position: "absolute",
+                height: "100%",
+                right: 0,
+                flexDirection: "column",
+                top: 0,
+                justifyContent: "space-between"
+            }}>
                 {props.data.events.map((event, index) => (
                     <div key={event} className={"items-end"}>
                         <Handle type={"source"} position={Position.Right} id={event}
-                                className={"relative transform-none top-auto"}
-                                style={{top: index * 10}}/>
+                                style={{
+                                    position: "relative",
+                                    transform: "none",
+                                    top: "auto"
+                                }}/>
                         <p>{event}</p>
                     </div>
                 ))}
