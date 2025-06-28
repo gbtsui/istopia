@@ -10,20 +10,31 @@ type BlockFlowNodeProps = Node<{
 
 export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
     return (
-        <div>
-            <div className={"p-3 bg-gray-200 w-48 h-36 flex text-black text-center rounded-lg "}>
+        <div className={"flex flex-row relative"}>
+            <div className={"flex flex-col h-full absolute justify-evenly gap-2 p-2 bg-white left-0 top-0 grow"}>
+                {props.data.actions.map((action) => (
+                    <div key={action}>
+                        <Handle type={"target"} position={Position.Left} id={action}
+                                className={"relative transform-none top-auto"}/>
+                        <p>{action}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className={"p-3 bg-gray-200 flex text-black text-center grow rounded-lg"}>
                 <div>{props.data.friendly_name}</div>
             </div>
-            {props.data.events.map((event) => (
-                <Handle type={"source"} position={Position.Right} id={event} key={event}>
-                    <div className={"bg-white p-1 rounded-lg text-black"}>{event}</div>
-                </Handle>
-            ))}
-            {props.data.actions.map((action) => (
-                <Handle type={"target"} position={Position.Left} id={action} key={action}>
-                    <div className={"bg-white p-1 rounded-lg text-black text-sm"}>{action}</div>
-                </Handle>
-            ))}
+
+            <div className={"flex flex-col h-full absolute justify-evenly gap-2 p-2 bg-white right-0 top-0"}>
+                {props.data.events.map((event, index) => (
+                    <div key={event} className={"items-end"}>
+                        <Handle type={"source"} position={Position.Right} id={event}
+                                className={"relative transform-none top-auto"}
+                                style={{top: index * 10}}/>
+                        <p>{event}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
