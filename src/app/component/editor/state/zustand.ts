@@ -61,7 +61,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 },
                 type: "pageNode"
             },
-            blockNodes: []
+            blockNodes: {}
         }
         console.log("zustand pages:", pages)
         return set({content: {pages}})

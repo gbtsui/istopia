@@ -78,7 +78,7 @@ const BlockNodeDataSchema: z.ZodType<BlockNodeData> = z.object({
 
 const PageSchema: z.ZodType<Page> = z.object({
     blocks: z.record(z.string(), BlockSchema),
-    blockNodes: z.array(BlockNodeDataSchema),
+    blockNodes: z.record(z.string(), BlockNodeDataSchema),
     friendly_name: z.string(),
     id: z.string(),
     outward_connections: z.array(z.string()),

@@ -106,7 +106,7 @@ export interface Block {
 
 export interface Page {
     blocks: Record<string, Block> //Always initialize with an immutable "root" block so that every block has a parent and the system doesn't explode on itself!
-    blockNodes: BlockNodeData[],
+    blockNodes: Record<string, BlockNodeData>,
 
     friendly_name: string, //user-friendly name!! defaults to "page" plus first 6 chars of uuid
     id: string //uuid,

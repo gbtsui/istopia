@@ -44,24 +44,20 @@ export default function TriggersGraph() {
         console.log("blockNodes", currentPage?.blockNodes)
 
         setEdges(new_edges)
-        setBlockNodes(currentPage?.blockNodes || [])
+        setBlockNodes(Object.values(currentPage?.blockNodes || {}))
     }, [currentPage])
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {
-            const block_nodes = (currentPage?.blockNodes || [])
-                .reduce<Record<string, BlockNodeData>>((acc, cur) => {
-                    acc[cur.id] = cur;
-                    return acc
-                }, {})
-
+            if (!currentPage) return;
             changes.forEach((change) => {
                 if (change.type === "position") {
                     const block_id = change.id;
                     const new_position = change.position;
-                    const block_data = {...block_nodes[block_id]};
-                    block_data.position = new_position || block_data.position;
-                    editPage(currentPageId as string, {blockNodes: [block_data]})
+                    const page_block_nodes = {...currentPage?.blockNodes}
+                    const block_data = {...currentPage.blockNodes[block_id]};
+                    page_block_nodes[block_id].position = new_position ?? block_data.position;
+                    editPage(currentPageId as string, {blockNodes: {...page_block_nodes}})
                 }
             });
             setBlockNodes((nds: BlockNodeData[]): BlockNodeData[] => applyNodeChanges(

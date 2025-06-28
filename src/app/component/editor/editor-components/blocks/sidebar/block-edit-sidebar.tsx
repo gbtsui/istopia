@@ -38,7 +38,7 @@ export default function BlockEditSidebar() {
 
          */
 
-        const new_block_nodes = [...current_page.blockNodes];
+        const new_block_nodes = {...current_page.blockNodes};
         const new_node = {
             id: selectedInsertableBlock.props.id,
             position: {
@@ -52,7 +52,7 @@ export default function BlockEditSidebar() {
             },
             type: "blockNode"
         } as BlockNodeData;
-        new_block_nodes.push(new_node)
+        new_block_nodes[new_node.id] = new_node
         console.log("new block nodes", new_block_nodes)
 
         editPage(current_page.id, {blockNodes: new_block_nodes});
@@ -63,14 +63,8 @@ export default function BlockEditSidebar() {
     }
 
     //const existing_blocks = ((current_page?.blockNodes || []).map<[string, BlockNodeData]>((block) => [block.id, block]));
-    const existing_flow_blocks = (current_page.blockNodes || []).reduce<Record<string, BlockNodeData>>(
-        (acc, blockNode) => {
-            acc[blockNode.id] = blockNode;
-            return acc;
-        },
-        {} as Record<string, BlockNodeData>
-    );
-    const non_existing_block_ids: string[] = Object.keys(blocks).filter((blockId) => existing_flow_blocks[blockId] === undefined)
+
+    const non_existing_block_ids: string[] = Object.keys(blocks).filter((blockId) => current_page.blockNodes[blockId] === undefined)
 
     return (
         <div className={"w-1/2 p-3 m-5 bg-gray-800 rounded-2xl"}>
