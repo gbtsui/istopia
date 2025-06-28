@@ -1,10 +1,11 @@
 "use client";
 
-import {ReactFlow, useStoreApi} from "@xyflow/react";
+import {Background, Controls, MiniMap, ReactFlow, useStoreApi} from "@xyflow/react";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockFlowNode from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/block-flow-node";
 import {useCallback, useState} from "react";
 import {Block, BlockNodeData, BlockNodeEdge} from "@/app/types";
+import '@xyflow/react/dist/style.css';
 
 const nodeTypes = {
     blockNode: BlockFlowNode
@@ -53,7 +54,11 @@ export default function TriggersGraph() {
             <ReactFlow proOptions={{hideAttribution: true}}
             nodeTypes={nodeTypes}
             nodes={blockNodes}
-            edges={edges}/>
+            edges={edges}>
+                <Background/>
+                <Controls/>
+                <MiniMap/>
+            </ReactFlow>
         </div>
     )
 }
