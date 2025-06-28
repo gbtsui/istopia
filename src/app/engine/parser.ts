@@ -56,7 +56,7 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
 )
 
 const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
-    id: z.string(),
+    id: z.string(), //something broke i think.
     position: z.object({
         x: z.number(),
         y: z.number()
@@ -93,5 +93,6 @@ const PieceContentSchema: z.ZodType<PieceContent> = z.object({
 })
 
 export default async function Parse(data: unknown): Promise<PieceContent> {
+    console.log(JSON.stringify(data))
     return PieceContentSchema.parseAsync(data) //technically this is a validator i guess?
 }

@@ -1,11 +1,21 @@
 "use client";
 
-import {applyNodeChanges, Background, Controls, OnNodesChange, ReactFlow, useStoreApi} from "@xyflow/react";
+import {
+    addEdge,
+    applyEdgeChanges,
+    applyNodeChanges,
+    Background,
+    Controls, OnConnect, OnEdgesChange,
+    OnNodesChange,
+    ReactFlow,
+    useStoreApi
+} from "@xyflow/react";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockFlowNode from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/block-flow-node";
 import {useCallback, useEffect, useState} from "react";
 import {Block, BlockNodeData, BlockNodeEdge} from "@/app/types";
 import '@xyflow/react/dist/style.css';
+import {EngineEventListener} from "@/app/engine";
 
 const nodeTypes = {
     blockNode: BlockFlowNode
@@ -18,7 +28,7 @@ export default function TriggersGraph() {
     const pages = useEditorStore((state) => state.content.pages)
     const currentPage = currentPageId? pages[currentPageId] : null
     const editPage = useEditorStore((state) => state.editPage)
-
+    const editBlock = useEditorStore((state) => state.editBlock)
     const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
     //const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
 
@@ -64,6 +74,35 @@ export default function TriggersGraph() {
         [currentPage, setBlockNodes, editPage]
     )
 
+    const onEdgesChange: OnEdgesChange = useCallback(
+        (changes) => {
+            setEdges((edges) => applyEdgeChanges(changes, edges))
+        },
+        [setEdges]
+    )
+
+    const onConnect: OnConnect = useCallback(
+        (change) => {
+            if (!currentPage || !currentPageId) return;
+            const sourceBlock = {...currentPage.blocks}[change.source] //the block that triggers an event
+            const targetBlock = {...currentPage.blocks}[change.target] //the block that listens to an event
+            if (!sourceBlock) return setEdges((edges) => addEdge(change, edges))
+            const newListener: EngineEventListener = {
+                self_block_id: change.target,
+                action: change.targetHandle as string,
+                target_block_id: change.source,
+                target_event: (sourceBlock.type + ":" + change.sourceHandle),
+                logical_conditions: []
+            }
+            targetBlock.props.listeners.push(newListener);
+            console.log("sourceBlock: ", sourceBlock);
+            editBlock(currentPageId, targetBlock.props.id, targetBlock.props)
+
+            setEdges((edges) => addEdge(change, edges))
+        },
+        [editBlock, currentPage]
+    )
+
     useEffect(() => {
         update_nodes()
     }, [currentPage?.blockNodes, update_nodes])
@@ -79,7 +118,9 @@ export default function TriggersGraph() {
             nodeTypes={nodeTypes}
             nodes={blockNodes}
             edges={edges}
-            onNodesChange={onNodesChange}>
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}>
                 <Background/>
                 <Controls/>
             </ReactFlow>

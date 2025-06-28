@@ -138,9 +138,9 @@ export interface BlockNodeData {
 export interface BlockNodeEdge {
     id: string,
     source: string,
-    sourceHandle: string,
+    sourceHandle?: string | null,
     target: string,
-    targetHandle: string
+    targetHandle?: string | null
 }
 
 export interface PieceContent {
