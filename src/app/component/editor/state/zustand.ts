@@ -79,7 +79,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         const friendly_name = new_data.friendly_name ?? pages[page_id].friendly_name
         const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
         const new_flow_node_data = {friendly_name, is_first, id: pages[page_id].id}
-        const blockNodes = (new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
+        const blockNodes = new_data.blockNodes ?? pages[page_id].blockNodes//(new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
         pages[page_id] = {
             ...new_data,
             ...pages[page_id],

@@ -133,7 +133,7 @@ export interface BlockNodeData {
     id: string, //copy from block.props.id
     position: {x: number, y: number}, // we are indeed persisting this
     data: Record<string, unknown>, //should list all actions (on left) and events (on right)
-    type: "blockNode"
+    type?: string// "blockNode" //you win, typescript
 }
 export interface BlockNodeEdge {
     id: string,

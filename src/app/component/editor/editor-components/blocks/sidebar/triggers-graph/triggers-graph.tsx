@@ -1,6 +1,6 @@
 "use client";
 
-import {Background, Controls, MiniMap, ReactFlow, useStoreApi} from "@xyflow/react";
+import {applyNodeChanges, Background, Controls, OnNodesChange, ReactFlow, useStoreApi} from "@xyflow/react";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockFlowNode from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/block-flow-node";
 import {useCallback, useEffect, useState} from "react";
@@ -17,6 +17,7 @@ export default function TriggersGraph() {
     const currentPageId = useEditorStateStore((state) => state.current_page)
     const pages = useEditorStore((state) => state.content.pages)
     const currentPage = currentPageId? pages[currentPageId] : null
+    const editPage = useEditorStore((state) => state.editPage)
 
     const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
     //const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
@@ -46,6 +47,30 @@ export default function TriggersGraph() {
         setBlockNodes(currentPage?.blockNodes || [])
     }, [currentPage])
 
+    const onNodesChange: OnNodesChange = useCallback(
+        (changes) => {
+            const block_nodes = (currentPage?.blockNodes || [])
+                .reduce<Record<string, BlockNodeData>>((acc, cur) => {
+                    acc[cur.id] = cur;
+                    return acc
+                }, {})
+
+            changes.forEach((change) => {
+                if (change.type === "position") {
+                    const block_id = change.id;
+                    const new_position = change.position;
+                    const block_data = {...block_nodes[block_id]};
+                    block_data.position = new_position || block_data.position;
+                    editPage(currentPageId as string, {blockNodes: [block_data]})
+                }
+            });
+            setBlockNodes((nds: BlockNodeData[]): BlockNodeData[] => applyNodeChanges(
+                changes, nds
+            ))
+        },
+        [currentPage, setBlockNodes, editPage]
+    )
+
     useEffect(() => {
         console.log("updating nodes, useEffect running")
         update_nodes()
@@ -62,7 +87,8 @@ export default function TriggersGraph() {
             <ReactFlow proOptions={{hideAttribution: true}}
             nodeTypes={nodeTypes}
             nodes={blockNodes}
-            edges={edges}>
+            edges={edges}
+            onNodesChange={onNodesChange}>
                 <Background/>
                 <Controls/>
             </ReactFlow>
