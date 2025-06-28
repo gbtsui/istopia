@@ -11,28 +11,29 @@ type BlockFlowNodeProps = Node<{
 export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
     return (
         <div style={{
-            padding: 15,
             background: "#eee",
             position: "relative"
-        }} className={"min-w-36 min-h-48 flex flex-row"}>
+        }} className={"min-w-36 min-h-48 flex flex-row items-center rounded-2xl"}>
             <div style={{
                 display: "flex",
-                position: "absolute",
+                //position: "absolute",
                 height: "100%",
                 left: 0,
                 flexDirection: "column",
                 top: 0,
                 justifyContent: "space-evenly"
-            }} className={"w-full"}>
+            }} className={"w-full h-full items-start"}>
                 {props.data.actions.map((action) => (
                     <div key={action} className={"text-black text-center flex items-center"}>
                         <Handle type={"target"} position={Position.Left} id={action}
                                 style={{
-                                    position: "relative",
+                                    position: "absolute",
                                     transform: "none",
-                                    top: "auto"
+                                    top: "auto",
+                                    padding: 3,
+                                    left: -5,
                                 }}/>
-                        <p>{action}</p>
+                        <p className={"m-1.5"}>{action}</p>
                     </div>
                 ))}
             </div>
@@ -43,21 +44,23 @@ export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
 
             <div style={{
                 display: "flex",
-                position: "absolute",
+                //position: "absolute",
                 height: "100%",
                 right: 0,
                 flexDirection: "column",
                 top: 0,
                 justifyContent: "space-evenly"
-            }}>
+            }} className={"w-full items-end"}>
                 {props.data.events.map((event) => (
                     <div key={event} className={"text-black text-center flex items-center"}>
-                        <p>{event}</p>
+                        <p className={"m-1.5"}>{event}</p>
                         <Handle type={"source"} position={Position.Right} id={event}
                                 style={{
-                                    position: "relative",
+                                    position: "absolute",
                                     transform: "none",
-                                    top: "auto"
+                                    top: "auto",
+                                    padding: 3,
+                                    right: -5,
                                 }}/>
                     </div>
                 ))}
