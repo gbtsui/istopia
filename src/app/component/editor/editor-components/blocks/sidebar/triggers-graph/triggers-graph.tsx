@@ -127,7 +127,7 @@ export default function TriggersGraph() {
             })
             editPage(currentPageId, {blockNodes: current_page_blockNodes, blocks: current_page_blocks})
     },
-    []
+    [currentPage, editPage, currentPageId]
     )
 
     useEffect(() => {
