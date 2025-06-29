@@ -73,8 +73,8 @@ export default function BlockEditSidebar() {
                 <div className={"flex flex-col h-full"}>
                     <div className={"w-full p-2"}>
                         menus and stuff here<br/>
-                        <div>
-                            <button onClick={insert_block_into_flow}>insert into graph</button>
+                        <div className={"m-2 flex flex-row items-center"}>
+                            <button onClick={insert_block_into_flow} className={"material-symbols-outlined p-2 m-1 bg-white text-black rounded-xl"}>step_into</button>
                             <select onChange={(e) => setSelectedInsertableBlock((e.target.value ? blocks[e.target.value] : undefined))}
                                 className={"rounded-sm bg-white text-black"} value={selectedInsertableBlock && selectedInsertableBlock.props.id}>
                                 <option value={undefined} key={"nothing"}>pick a block</option>

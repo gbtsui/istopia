@@ -114,17 +114,18 @@ export default function TriggersGraph() {
                 const listeningBlock = {...currentPage.blocks[edge.target]}
                 listeningBlock.props.listeners = listeningBlock.props.listeners
                     .filter(listener =>
-                        !((listener.target_block_id === edge.source)
+                        (listener.target_block_id !== edge.source)
                             &&
-                        (listener.target_event === edge.sourceHandle))
+                        (listener.target_event !== edge.sourceHandle)
                     );
                 editBlock(currentPageId, listeningBlock.props.id, listeningBlock.props)
             })
             const current_page_blockNodes = {...currentPage.blockNodes}
+            const current_page_blocks = {...currentPage.blocks}
             nodes.forEach((node) => {
                 delete current_page_blockNodes[node.id];
             })
-            editPage(currentPageId, {blockNodes: current_page_blockNodes})
+            editPage(currentPageId, {blockNodes: current_page_blockNodes, blocks: current_page_blocks})
     },
     []
     )
@@ -154,3 +155,6 @@ export default function TriggersGraph() {
         </div>
     )
 }
+
+//TODO: add logical operators and stuff connected to edges
+//TODO: add dynamic page switching/other dynamic actions
