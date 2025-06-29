@@ -5,7 +5,7 @@ import {
     applyEdgeChanges,
     applyNodeChanges,
     Background,
-    Controls, OnConnect, OnEdgesChange,
+    Controls, OnConnect, OnDelete, OnEdgesChange,
     OnNodesChange,
     ReactFlow,
     useStoreApi
@@ -104,6 +104,31 @@ export default function TriggersGraph() {
         [editBlock, currentPage]
     )
 
+    const onDelete: OnDelete = useCallback(
+        (changes: {nodes: BlockNodeData[], edges: BlockNodeEdge[]}) => {
+            const {nodes, edges} = changes
+
+            if (!currentPage || !currentPageId) return
+
+            edges.forEach((edge) => {
+                const listeningBlock = {...currentPage.blocks[edge.target]}
+                listeningBlock.props.listeners = listeningBlock.props.listeners
+                    .filter(listener =>
+                        !((listener.target_block_id === edge.source)
+                            &&
+                        (listener.target_event === edge.sourceHandle))
+                    );
+                editBlock(currentPageId, listeningBlock.props.id, listeningBlock.props)
+            })
+            const current_page_blockNodes = {...currentPage.blockNodes}
+            nodes.forEach((node) => {
+                delete current_page_blockNodes[node.id];
+            })
+            editPage(currentPageId, {blockNodes: current_page_blockNodes})
+    },
+    []
+    )
+
     useEffect(() => {
         update_nodes()
     }, [currentPage?.blockNodes, update_nodes])
@@ -121,7 +146,8 @@ export default function TriggersGraph() {
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onConnect={onConnect}>
+            onConnect={onConnect}
+            onDelete={onDelete}>
                 <Background/>
                 <Controls/>
             </ReactFlow>

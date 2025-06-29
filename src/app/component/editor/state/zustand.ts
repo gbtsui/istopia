@@ -155,7 +155,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         if (!block) throw new Error("block not found?")
         block.props = new_props
         pages[page_id].blocks[block_id] = block
-        pages[page_id].blockNodes[block_id].data.friendly_name = block.props.friendly_name
+        if (pages[page_id].blockNodes[block_id]) pages[page_id].blockNodes[block_id].data.friendly_name = block.props.friendly_name
         return set({content: {pages}})
 
 
