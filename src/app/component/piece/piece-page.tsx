@@ -2,6 +2,7 @@
 
 import {PieceData} from "@/app/types";
 import Link from "next/link";
+import DeletePieceButton from "@/app/component/piece/delete-piece-button";
 
 type PiecePageProps = {
     piece_data: PieceData,
@@ -27,7 +28,7 @@ export default function PiecePageComponent({props}: { props: PiecePageProps }) {
                         </div>
                         {
                             isLoggedInAsUser &&
-                            <div>
+                            <div className={"w-1/3"}>
                                 <Link href={`/editor/${piece_data.id}`}
                                       className={"material-symbols-outlined p-4 rounded-xl bg-gray-400"}>
                                     edit
@@ -35,7 +36,9 @@ export default function PiecePageComponent({props}: { props: PiecePageProps }) {
                                 <div>
                                     {!piece_data.published &&
                                         <p>this piece is unpublished!! no one else can see it.</p>}
+                                    <DeletePieceButton piece_id={piece_data.id} username={username} slug={piece_data.slug}/>
                                 </div>
+
                             </div>
                         }
                     </div>
