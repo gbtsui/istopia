@@ -7,5 +7,8 @@ import RenderBlock from "@/app/engine/render-block";
 export function RenderPage({data}: {data:Page}) {
     const {blocks} = data;
 
-    return <>{blocks.map((block, i) => {return <RenderBlock block={block} key={i}/>})}</>;
+    const root = blocks["root"];
+    if (!root) throw new Error("root block not found! piece appears to be corrupt...")
+
+    return <RenderBlock block={root}/>
 }

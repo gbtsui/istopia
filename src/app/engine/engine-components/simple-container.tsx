@@ -1,9 +1,19 @@
 "use client";
 
-import {ContainerBlockProps} from "@/app/types";
+import {ContainerProps} from "@/app/types";
 import RenderBlock from "@/app/engine/render-block";
+import {useEngineContext} from "@/app/engine/engine-context";
 
-export default function SimpleContainer(props: ContainerBlockProps) {
-    const {children, className} = props;
-    return <div className={className}>{children.map((block, id) => <RenderBlock key={id} block={block}/>)}</div>;
+export default function SimpleContainer(props: ContainerProps) {
+    const {children_ids, className} = props;
+    const engine = useEngineContext()
+    const page_blocks = engine.pages[engine.currentPage.current].blocks;
+    return <div className={className}>
+        {
+            (children_ids || []).map(id => {
+                const block = page_blocks[id];
+                return <RenderBlock block={block} key={id}/>
+            })
+        }
+    </div>;
 }

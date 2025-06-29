@@ -12,19 +12,19 @@ export default async function GetPieces(params: {amount: number, sortBy: "random
         },
         include: {
             author: true,
+            views: true,
+            saves: true
         }
     })
 
     const resultAsPieceData: Array<PieceMetaData> = result.map((piece) => {
         return {
-            id: piece.id,
-            author_id: piece.author_id,
+            ...piece,
+            view_number: piece.views.length,
+            save_number: piece.saves.length,
+            saves: piece.saves,
             author_name: piece.author.name,
-            title: piece.title,
-            slug: piece.slug,
-            summary: piece.summary,
-            rating: piece.rating,
-        }
+        } satisfies PieceMetaData
     })
 
     return {success: true, data: resultAsPieceData}

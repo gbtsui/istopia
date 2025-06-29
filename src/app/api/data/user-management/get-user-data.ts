@@ -10,6 +10,10 @@ export default async function GetUserData({name, id} : {name?: string, id?: stri
                 {name},
                 {id}
             ]
+        },
+        include: {
+            save_buckets: {include: {saved_pieces: true}},
+            views: true
         }
     })
 }

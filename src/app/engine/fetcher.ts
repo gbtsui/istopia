@@ -18,7 +18,8 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
 
     if ("id" in params) {
         db_piece = await prisma.piece.findUnique({
-            where: { id: params.id }
+            where: { id: params.id },
+            include: {views: true}
         });
     } else if ("slug" in params && "username" in params) {
         db_piece = await prisma.piece.findFirst({
@@ -27,6 +28,9 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
                 author: {
                     name: params.username
                 }
+            },
+            include: {
+                views: true
             }
         });
     }
@@ -38,6 +42,7 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
     const content: PieceContent = await Parse(db_piece.content)
     return {
         ...db_piece,
+        view_number: db_piece.views.length,
         content: content,
     } as PieceData
 }

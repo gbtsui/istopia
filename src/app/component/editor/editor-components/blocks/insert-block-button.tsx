@@ -2,20 +2,20 @@
 
 
 import {useState} from "react";
-import InsertBlockForm from "@/app/component/editor/editor-components/insert-block-form";
+import InsertBlockForm from "@/app/component/editor/editor-components/blocks/insert-block-form";
 
 type InsertBlockButtonProps = {
-    page_number: number,
+    page_id: string
 }
 
 export default function InsertBlockButton(props: InsertBlockButtonProps) {
-    const {page_number} = props;
+    const {page_id} = props;
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     return (
-        <div className={"fixed bottom-0 right-0"}>
+        <div className={"fixed bottom-0 right-0 z-2"}>
             <button onClick={() => setDialogIsOpen(true)} className={"p-5 m-4 text-2xl bg-white text-black rounded-3xl"}>+ Add Block</button>
-            <InsertBlockForm setDialogIsOpen={setDialogIsOpen} dialogIsOpen={dialogIsOpen} page_number={page_number} />
+            <InsertBlockForm setDialogIsOpen={setDialogIsOpen} dialogIsOpen={dialogIsOpen} page_id={page_id} />
         </div>
     )
 }

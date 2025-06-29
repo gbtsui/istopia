@@ -5,7 +5,7 @@ import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {prisma} from "@/app/api/data/db";
 import Slugify from "@/app/api/data/pieces/slugify";
 
-const default_piece_content = {pages: []}
+const default_piece_content = {pages: {}}
 
 function CheckDataFullness(data: Partial<PieceData>) {
     return (typeof data.title === "string") && (data.title.trim().length > 0);
@@ -17,7 +17,7 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
         return new Error("Unauthorized")
     }
 
-    const db_user: DatabaseUser | null = await prisma.user.findUnique({where: {name: username}});
+    const db_user: DatabaseUser | null = await prisma.user.findUnique({where: {name: username}, include: {save_buckets: {include: {saved_pieces: true}}, views: true}});
     if (!db_user) {
         return new Error("it appears that this user doesnt exist. you shouldn't have been able to get this far. how???")
     }
@@ -41,7 +41,6 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
             slug: title_slug,
             summary: data.summary as string,
             published: false,
-            views: 0,
             content: default_piece_content //as InputJsonObject
         }
     })
@@ -49,5 +48,7 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
     return {
         ...untyped_result,
         content: default_piece_content as PieceContent,
+        view_number: 0,
+        views: []
     }
 }

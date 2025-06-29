@@ -1,10 +1,13 @@
 "use client";
 
 import {PieceData} from "@/app/types";
-import {useEditorMetaDataStore, useEditorStore} from "@/app/component/editor/state/zustand";
+import {useEditorMetaDataStore, useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import {useEffect, useState} from "react";
-import PageContents from "@/app/component/editor/editor-components/page-contents";
+import PageContents from "@/app/component/editor/editor-components/blocks/page-contents";
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
+import PagesGraph from "@/app/component/editor/editor-components/pages-graph/pages-graph";
+import {ReactFlowProvider} from "@xyflow/react";
+import BlockEditSidebar from "@/app/component/editor/editor-components/blocks/sidebar/block-edit-sidebar";
 
 type EditorProps = {
     initialPieceData: PieceData;
@@ -13,12 +16,20 @@ type EditorProps = {
 
 export default function Editor(props: EditorProps) {
     const {initialPieceData, username} = props;
-    const [currentPage, setCurrentPage] = useState(1);
+    //const [currentPage, setCurrentPage] = useState<string|null>(null);
+
+    //const pages = useEditorStore((state) => state.content.pages)
+    const currentPage = useEditorStateStore((state) => state.current_page);
+    const setCurrentPage = useEditorStateStore((state) => state.setPage)
+    //const saveContent = useEditorStore((state) => state.saveContent);
+    const editor_store = useEditorStore()
+    //const setContent = useEditorStore((state) => state.setContent);
+    const editorMetaDataStore = useEditorMetaDataStore()
+    //const setData = useEditorMetaDataStore((state) => state.setData)
+
     const [lastSaved, setLastSaved] = useState(initialPieceData.last_updated);
     const [saving, setSaving] = useState(false);
 
-    const editor_store = useEditorStore()
-    const editorMetaDataStore = useEditorMetaDataStore()
     useEffect(() => {
         editor_store.setContent(initialPieceData.content)
         editorMetaDataStore.setData({
@@ -30,35 +41,49 @@ export default function Editor(props: EditorProps) {
             summary: initialPieceData.summary,
             published: initialPieceData.published,
         })
-        setCurrentPage(1)
-    }, [])
+        setCurrentPage(null)
+    }, [setCurrentPage, editor_store.setContent, initialPieceData, username, editorMetaDataStore.setData])
 
     return (
         <div>
-            <div className={"flex"}>
-                <EditorTopBar currentPage={currentPage} setCurrentPage={setCurrentPage} lastSaved={lastSaved}
-                              saveThisWrld={() => {
-                                  console.log("saving...")
-                                  setSaving(true);
-                                  editor_store.saveContent(username, initialPieceData.id).then((result) => {
-                                      if (result.success) {
-                                          console.log("saved successfully!")
-                                          setLastSaved(result.data);
-                                          setSaving(false);
-                                      }
-                                  });
-                              }} totalPages={editor_store.content.pages.length}
-                              saving={saving}/>
+            <div className={"flex flex-col h-dvh w-full"}>
+                <div className={"flex h-[10dvh]"}>
+                    <EditorTopBar currentPage={currentPage} lastSaved={lastSaved}
+                                  saveThisWrld={() => {
+                                      console.log("saving...")
+                                      setSaving(true);
+                                      editor_store.saveContent(username, initialPieceData.id).then((result) => {
+                                          if (result.success) {
+                                              console.log("saved successfully!")
+                                              setLastSaved(result.data);
+                                              setSaving(false);
+                                          }
+                                      });
+                                  }}
+                                  saving={saving}
+                                  friendly_name={currentPage && editor_store.content.pages[currentPage].friendly_name}
+                                  setCurrentPage={setCurrentPage}/>
+                </div>
+                {
+                    currentPage === null || currentPage === undefined ?
+                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
+                        :
+                        <div className={"flex flex-row h-[90dvh]"}>
+                            <PageContents page_id={currentPage}/>
+                            <BlockEditSidebar/>
+                        </div>
+                }
             </div>
+
             {
-                editor_store.content.pages.length == 0 ?
+                /*Object.keys(editor_store.content.pages).length === 0 ?
                     <div className={"text-center justify-center m-4 text-xl"}>
                         looks like you don't have any pages so far... let's change that!<br/>
-                        <button onClick={() => {editor_store.addPage({blocks: [], page_number: 1}); setCurrentPage(1)}}>add a blank page
+                        <button onClick={() => {editor_store.addPage(); setCurrentPage(null)}}>add a blank page
                         </button>
                     </div>
                     :
-                    <PageContents page_number={currentPage}/>
+                    <PageContents page_id={currentPage}/>*/
             }
             {/**/}
         </div>

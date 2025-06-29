@@ -4,6 +4,7 @@ import {DatabaseUser, PieceContent, Result} from "@/app/types";
 import GetUserSession from "@/app/api/data/user-management/get-user-session";
 import {prisma} from "@/app/api/data/db";
 import { InputJsonValue } from "@prisma/client/runtime/library";
+import GetUserData from "@/app/api/data/user-management/get-user-data";
 
 type UpdatePieceContentParams = {
     username: string,
@@ -15,11 +16,11 @@ type UpdatePieceContentParams = {
 export default async function UpdatePieceContent({username, piece_id, piece_content, published}: UpdatePieceContentParams): Promise<Result<Date>> {
     try {
         const user = await GetUserSession()
-        if (!user || user.name != username) {
+        if (!user || user.name !== username) {
             throw new Error("unauthorized")
         }
 
-        const db_user: DatabaseUser | null = await prisma.user.findUnique({where: {name: username}});
+        const db_user: DatabaseUser | null = await GetUserData({name: user.name})
         if (!db_user) {
             throw new Error("it appears that this user doesnt exist. you shouldn't have been able to get this far. how???")
         }

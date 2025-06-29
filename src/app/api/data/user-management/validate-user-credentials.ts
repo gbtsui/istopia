@@ -12,7 +12,9 @@ const UserSchema = object({
         .email("email must be in a valid format"),
     password: string({required_error: "password is required"})
         .min(8, "password must be at least 8 characters")
-        .max(255, "password must be less than 255 characters")
+        .max(255, "password must be less than 255 characters"),
+    code: string({required_error: "code is required"})
+        .length(6, "code is 6 characters")
 })
 
 type UserCredentials = {
@@ -20,8 +22,9 @@ type UserCredentials = {
     display_name: string | undefined,
     email: string,
     password: string,
+    code: string,
 }
 
-export default async function ValidateUserCredentials(credentials: {name: string, display_name: string | undefined, email: string, password: string}): Promise<UserCredentials | ZodError> {
+export default async function ValidateUserCredentials(credentials: {name: string, display_name: string | undefined, email: string, password: string, code: string}): Promise<UserCredentials | ZodError> {
     return UserSchema.parseAsync(credentials)
 }

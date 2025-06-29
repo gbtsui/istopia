@@ -2,11 +2,12 @@
 
 import {createContext, ReactNode, useContext} from "react";
 import {useEngine, IstopiaEngine} from "@/app/engine";
+import {Page} from "@/app/types";
 
 const EngineContext = createContext<ReturnType<IstopiaEngine> | null>(null);
 
-export const EngineProvider = ({children}: {children: ReactNode}) => {
-    const engine = useEngine(() => {})
+export const EngineProvider = ({children, pages}: {children: ReactNode, pages: Record<string, Page>}) => {
+    const engine = useEngine(pages)
 
     return (
         <EngineContext.Provider value={engine}>

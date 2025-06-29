@@ -1,13 +1,13 @@
 "use server";
 import {Resend} from "resend";
-import {DatabaseUser} from "@/app/types";
+import {prisma} from "@/app/api/data/db";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export default async function SendConfirmationEmail(data: DatabaseUser) {
+export async function SendWelcomeEmail(email: string) {
     const result = await resend.emails.send({
         from: "do-not-reply.istopia@gbtsui.dev",
-        to: data.email,
+        to: email,
         subject: "welcome to istopia!",
         html: "<h1>welcome to istopia!</h1>" +
             "<p>i'm really glad that you decided to try out my app." +
@@ -19,4 +19,28 @@ export default async function SendConfirmationEmail(data: DatabaseUser) {
     })
     console.log(result)
     return result
+}
+
+export async function SendConfirmationEmail(email: string) {
+    const code = crypto.randomUUID().slice(0, 6)
+
+    await prisma.unconfirmedUser.deleteMany({where: {email}})
+
+    await prisma.unconfirmedUser.create({
+        data: {
+            email: email,
+            confirmationCode: code,
+        }
+    })
+
+    return await resend.emails.send({
+        from: "do-not-reply.istopia@gbtsui.dev",
+        to: email,
+        subject: "istopia: verify email",
+        html: "<h1>hi! pls verify your email</h1>" +
+            "<p>to prevent spam and other unfun things, please enter this" +
+            "one time code to finish your signup.</p>" +
+            `<p>${code}</p>` +
+            "<p>thanks for understanding!</p>"
+    })
 }

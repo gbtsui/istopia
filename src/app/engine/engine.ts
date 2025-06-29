@@ -1,10 +1,11 @@
 "use client";
-import {useRef} from "react";
+import {RefObject, useRef} from "react";
+import {Page} from "@/app/types";
 
 export interface EngineEvent {
     event: {
         name: string; //ex. typingComplete, buttonClicked
-        value: any; //ex. the contents of a textbox
+        value: any; //ex. the contents of a textbox //TODO: we already have the value/argument getting passed just like pass it into the handler
     };
     triggering_block_id: string; //what block triggered the event?
 }
@@ -16,7 +17,7 @@ export interface EngineEventListener {
     action: string; //what action will the listener trigger?
     //conditions: Condition[] //what conditions are needed to run the event?
     logical_conditions: LogicalCondition[] //what combinations of conditions are needed to run the event?
-}
+} //can only listen within a page!!! very important
 
 export interface Condition {
     key: string;
@@ -36,7 +37,9 @@ export interface ExternalValueRef {
     target_value: string; //what data field are you trying to get?
 }
 
-export type IstopiaEngine = (setBlock: (id: string) => void) => {
+export type EngineVariable = Record<string, any>
+
+export type IstopiaEngine = (pages: Record<string, Page>) => {
     handleEvent: (event: EngineEvent) => void; //what happens when an event occurs?
     listen: (listener: EngineEventListener) => void; //start listening to X event
     unlisten: (listener: EngineEventListener) => void; //stop listening to X event
@@ -45,6 +48,10 @@ export type IstopiaEngine = (setBlock: (id: string) => void) => {
 
     registerBlock: (id: string, handler: (action: string) => void) => void;
     unregisterBlock: (id: string) => void;
+
+    currentPage: RefObject<string>;
+    setCurrentPage: (new_id: string) => void;
+    pages: Record<string, Page>;
 }
 
 const evaluateCondition = (condition: Condition) => {
@@ -90,10 +97,16 @@ const evaluateLogicalCondition = (logicalCondition: LogicalCondition): boolean =
     }
 }
 
-export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
+export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
     const listeners = useRef<Array<EngineEventListener>>([]); //array of all listeners
     const blockValues = useRef(<Record<string, Record<string, any>>>({})); //this is gross tbh.
-    const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in
+    const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in //TODO: make this support arguments
+    const currentPage = useRef<string>("")
+
+    const setCurrentPage = (new_page: string) => {
+        currentPage.current = new_page
+    }
+
 
     const handleEvent = (event: EngineEvent)=> {
         console.log("new event just dropped gng")
@@ -132,7 +145,7 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
 
     const setBlockValue = (ref: ExternalValueRef, data: any) => {
         blockValues.current[ref.target_block_id][ref.target_value] = data
-        setBlock(ref.target_block_id)
+        //setBlock(ref.target_block_id)
     }
 
     const notifyListener = (self_block_id: string, action: string) => {
@@ -140,7 +153,7 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         if (handler) {
             handler(action) //run the block's event handler!
         }
-    }
+    } //TODO: add arguments
 
     const registerBlock = (id: string, handler: (action: string) => void)=> {
         blockHandlers.current.set(id, handler);
@@ -150,5 +163,5 @@ export const useEngine: IstopiaEngine = (setBlock: (id: string) => void) => {
         blockHandlers.current.delete(id)
     }
 
-    return {handleEvent, listen, unlisten, getBlockValue, setBlockValue, registerBlock, unregisterBlock};
+    return {handleEvent, listen, unlisten, getBlockValue, setBlockValue, registerBlock, unregisterBlock, currentPage, setCurrentPage, pages};
 }

@@ -1,16 +1,20 @@
 "use server";
 
 import {z} from "zod"
-import {Block, PieceContent} from "@/app/types";
+import {Block, BlockNodeData, BlockProps, Page, PageNodeData, PieceContent} from "@/app/types";
 import {Condition, EngineEventListener, LogicalCondition} from "@/app/engine/engine";
 
-const BlockPropsSchema = z.object({
+const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
     id: z.string(),
+    friendly_name: z.string(),
     content: z.array(z.string()).optional(),
     children: z.array(z.lazy(() => BlockSchema)).optional(),
     className: z.string().optional(),
     listeners: z.array(z.lazy(() => EngineEventListenerSchema)),
-    additional_props: z.record(z.string(), z.union([z.string(), z.boolean(), z.number()])).optional()
+    children_ids: z.array(z.string()).optional(),
+    parent_id: z.string().optional(),
+    additional_props: z.record(z.string(), z.union([z.string(), z.boolean(), z.number()])).optional(),
+    is_collapsed: z.boolean().optional(),
 })
 
 const EngineEventListenerSchema: z.ZodType<EngineEventListener> = z.object({
@@ -51,15 +55,44 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     })
 )
 
-const PageSchema = z.object({
-    blocks: z.array(BlockSchema),
-    page_number: z.number(),
+const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
+    id: z.string(), //something broke i think.
+    position: z.object({
+        x: z.number(),
+        y: z.number()
+    }),
+    data: z.object({
+        friendly_name: z.string(),
+        page_id: z.string(),
+        is_first: z.boolean()
+    }),
+    type: z.union([z.literal("pageNode"), z.undefined()]) //can be further expanded eventually later
 })
 
-const PieceContentSchema = z.object({
-    pages: z.array(PageSchema),
+const BlockNodeDataSchema: z.ZodType<BlockNodeData> = z.object({
+    id: z.string(),
+    position: z.object({x: z.number(), y: z.number()}),
+    data: z.record(z.string(), z.unknown()),
+    type: z.literal("blockNode")
+})
+
+const PageSchema: z.ZodType<Page> = z.object({
+    blocks: z.record(z.string(), BlockSchema),
+    blockNodes: z.record(z.string(), BlockNodeDataSchema),
+    friendly_name: z.string(),
+    id: z.string(),
+    outward_connections: z.array(z.string()),
+    is_first: z.boolean(),
+    flow_node_data: PageNodeSchema
+})
+
+
+
+const PieceContentSchema: z.ZodType<PieceContent> = z.object({
+    pages: z.record(z.string(), PageSchema)
 })
 
 export default async function Parse(data: unknown): Promise<PieceContent> {
+    console.log(JSON.stringify(data))
     return PieceContentSchema.parseAsync(data) //technically this is a validator i guess?
 }
