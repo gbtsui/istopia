@@ -4,7 +4,6 @@ import {DatabaseUser, PublicUser} from "@/app/types";
 import Link from "next/link";
 import {Suspense} from "react";
 import UserPiecesList from "@/app/component/dashboard/user-pieces-list";
-import {prisma} from "@/app/api/data/db";
 import {redirect} from "next/navigation";
 import GetUserData from "@/app/api/data/user-management/get-user-data";
 
@@ -35,11 +34,13 @@ export default async function Dashboard(props: DashboardProps) {
                     </Suspense>
                     <Link href={"/editor/create"} className={"p-2 bg-gray-700 rounded-xl"}>+ create new</Link>
                 </div>
-                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
+                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg grow"}>
                     <h1>keep reading</h1>
+                    <p className={"text-gray-400 bg-gray-700 w-full h-full rounded-xl"}>coming soon</p>
                 </div>
-                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
+                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg grow"}>
                     documentation
+                    <p className={"text-gray-400 bg-gray-700 w-full h-full rounded-xl"}>coming soon</p>
                 </div>
             </div>
         </div>
