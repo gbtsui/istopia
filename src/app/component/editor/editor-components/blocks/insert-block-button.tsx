@@ -13,7 +13,7 @@ export default function InsertBlockButton(props: InsertBlockButtonProps) {
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     return (
-        <div className={"fixed bottom-0 right-0"}>
+        <div className={"fixed bottom-0 right-0 z-2"}>
             <button onClick={() => setDialogIsOpen(true)} className={"p-5 m-4 text-2xl bg-white text-black rounded-3xl"}>+ Add Block</button>
             <InsertBlockForm setDialogIsOpen={setDialogIsOpen} dialogIsOpen={dialogIsOpen} page_id={page_id} />
         </div>

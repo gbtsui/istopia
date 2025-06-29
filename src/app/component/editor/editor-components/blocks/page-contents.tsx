@@ -3,7 +3,7 @@
 import {
     closestCenter,
     DndContext,
-    DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent,
+    DragEndEvent, DragOverEvent, DragStartEvent,
     KeyboardSensor,
     PointerSensor,
     useSensor,
@@ -90,7 +90,7 @@ export default function PageContents(props: PageContentsProps) {
     const overIndex = flat_blocks.findIndex(b => b.props.id === overId);
 
     return (
-        <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2"}>
+        <div className={"p-3 m-5 bg-gray-800 rounded-2xl w-1/2 max-h-full overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-gray-100  scrollbar-track-gray-700 transition-all"}>
             <DndContext onDragEnd={handleDragEnd}
                         onDragOver={handleDragOver}
                         onDragStart={handleDragStart}

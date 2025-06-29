@@ -57,7 +57,7 @@ export default function EditorTopBar(props: EditorTopBarProps) {
     const formattedTime = formatTimeSinceLastSave(timeSinceLastSave)
 
     return (
-        <div className={"w-full h-20 m-3 p-2 rounded-xl bg-white text-black flex flex-row justify-between items-center text-center"}>
+        <div className={"w-full h-full m-3 p-2 rounded-xl bg-white text-black flex flex-row justify-between items-center text-center"}>
             <div className={"text-xl items-center flex-col flex"}>
                 <div>
                     <button

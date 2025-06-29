@@ -41,7 +41,7 @@ export default function PagesGraph() {
         const nodes = pages_list.map((page) => {
             return page.flow_node_data;
         })
-        const edges = pages_list.map((page) => {
+        const new_edges = pages_list.map((page) => {
             return page.outward_connections.map((outwardConnection) => {
                 return {
                     id: `${page.id}-${outwardConnection}`,
@@ -50,7 +50,7 @@ export default function PagesGraph() {
                 } as PageNodeEdge
             })
         }).flat()
-        setEdges(edges)
+        setEdges(new_edges)
         setPageNodes(nodes)
     }, [pages])
 

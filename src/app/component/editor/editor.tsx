@@ -7,6 +7,7 @@ import PageContents from "@/app/component/editor/editor-components/blocks/page-c
 import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar";
 import PagesGraph from "@/app/component/editor/editor-components/pages-graph/pages-graph";
 import {ReactFlowProvider} from "@xyflow/react";
+import BlockEditSidebar from "@/app/component/editor/editor-components/blocks/sidebar/block-edit-sidebar";
 
 type EditorProps = {
     initialPieceData: PieceData;
@@ -17,21 +18,21 @@ export default function Editor(props: EditorProps) {
     const {initialPieceData, username} = props;
     //const [currentPage, setCurrentPage] = useState<string|null>(null);
 
-    const pages = useEditorStore((state) => state.content.pages)
+    //const pages = useEditorStore((state) => state.content.pages)
     const currentPage = useEditorStateStore((state) => state.current_page);
     const setCurrentPage = useEditorStateStore((state) => state.setPage)
-    const saveContent = useEditorStore((state) => state.saveContent);
-    //const editor_store = useEditorStore()
-    const setContent = useEditorStore((state) => state.setContent);
-    //const editorMetaDataStore = useEditorMetaDataStore()
-    const setData = useEditorMetaDataStore((state) => state.setData)
+    //const saveContent = useEditorStore((state) => state.saveContent);
+    const editor_store = useEditorStore()
+    //const setContent = useEditorStore((state) => state.setContent);
+    const editorMetaDataStore = useEditorMetaDataStore()
+    //const setData = useEditorMetaDataStore((state) => state.setData)
 
     const [lastSaved, setLastSaved] = useState(initialPieceData.last_updated);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        setContent(initialPieceData.content)
-        setData({
+        editor_store.setContent(initialPieceData.content)
+        editorMetaDataStore.setData({
             author_name: username,
             author_id: initialPieceData.author_id,
             piece_id: initialPieceData.id,
@@ -41,17 +42,17 @@ export default function Editor(props: EditorProps) {
             published: initialPieceData.published,
         })
         setCurrentPage(null)
-    }, [setCurrentPage, setData, initialPieceData, username, setContent])
+    }, [setCurrentPage, editor_store.setContent, initialPieceData, username, editorMetaDataStore.setData])
 
     return (
         <div>
-            <div className={"flex flex-col h-svh w-full"}>
-                <div className={"flex"}>
+            <div className={"flex flex-col h-dvh w-full"}>
+                <div className={"flex h-[10dvh]"}>
                     <EditorTopBar currentPage={currentPage} lastSaved={lastSaved}
                                   saveThisWrld={() => {
                                       console.log("saving...")
                                       setSaving(true);
-                                      saveContent(username, initialPieceData.id).then((result) => {
+                                      editor_store.saveContent(username, initialPieceData.id).then((result) => {
                                           if (result.success) {
                                               console.log("saved successfully!")
                                               setLastSaved(result.data);
@@ -60,12 +61,17 @@ export default function Editor(props: EditorProps) {
                                       });
                                   }}
                                   saving={saving}
-                                  friendly_name={currentPage && pages[currentPage].friendly_name}
+                                  friendly_name={currentPage && editor_store.content.pages[currentPage].friendly_name}
                                   setCurrentPage={setCurrentPage}/>
                 </div>
                 {
                     currentPage === null || currentPage === undefined ?
-                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider> : <PageContents page_id={currentPage}/>
+                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
+                        :
+                        <div className={"flex flex-row h-[90dvh]"}>
+                            <PageContents page_id={currentPage}/>
+                            <BlockEditSidebar/>
+                        </div>
                 }
             </div>
 

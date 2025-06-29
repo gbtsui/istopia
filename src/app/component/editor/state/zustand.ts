@@ -60,7 +60,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                     is_first: is_first,
                 },
                 type: "pageNode"
-            }
+            },
+            blockNodes: {}
         }
         console.log("zustand pages:", pages)
         return set({content: {pages}})
@@ -73,11 +74,24 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     editPage: (page_id: string, new_data: Partial<Page>)=> {
+        console.log("editPage run, new data:", new_data)
         const {pages} = {...get().content}
         const friendly_name = new_data.friendly_name ?? pages[page_id].friendly_name
         const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
-        const new_flow_node_data = {friendly_name, is_first, id: pages[page_id].id}
-        pages[page_id] = {...new_data, ...pages[page_id], friendly_name, is_first, flow_node_data: {...pages[page_id].flow_node_data, data: new_flow_node_data}};
+        const new_flow_node_data = {friendly_name, is_first, page_id: pages[page_id].id}
+        const blockNodes = new_data.blockNodes ?? pages[page_id].blockNodes//(new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
+        pages[page_id] = {
+            ...new_data,
+            ...pages[page_id],
+            friendly_name,
+            is_first,
+            flow_node_data: {
+                ...pages[page_id].flow_node_data,
+                data: new_flow_node_data
+            },
+            blockNodes,
+        };
+        console.log("updated page: ", pages[page_id])
         return set({content: {pages}})
     }, //this is some of the worst code i've ever written; Lord Jesus Christ Son of God have mercy upon me a sinner
 
@@ -141,6 +155,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         if (!block) throw new Error("block not found?")
         block.props = new_props
         pages[page_id].blocks[block_id] = block
+        if (pages[page_id].blockNodes[block_id]) pages[page_id].blockNodes[block_id].data.friendly_name = block.props.friendly_name
         return set({content: {pages}})
 
 
@@ -394,11 +409,17 @@ export const useEditorMetaDataStore = create<EditorMetaDataStore>((set, get) => 
 export type EditorStateStore = {
     current_page?: string | null,
     setPage: (page: string|null) => void,
+    selected_block: string | null,
+    setSelectedBlock: (block_id: string) => void,
 }
 
 export const useEditorStateStore = create<EditorStateStore>((set, get) => ({
     current_page: null,
+    selected_block: null,
     setPage: (page: string|null) => {
         set({current_page: page})
+    },
+    setSelectedBlock: (block_id: string) => {
+        set({selected_block: block_id})
     }
 }))

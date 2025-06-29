@@ -1,34 +1,44 @@
 "use client"
 
-import {Block, BlockProps} from "@/app/types";
-import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
-import BlockEdit from "@/app/component/editor/editor-components/blocks/block-edit";
+import {BlockProps} from "@/app/types";
 
 type BlockEditFieldsProps = {
     blockProps: BlockProps,
-    page_id: string,
-    page_blocks: Record<string, Block>,
     updateProps: (newProps: Partial<BlockProps>) => void
 }
 
 export default function BlockEditFields(props: BlockEditFieldsProps) {
-    const {blockProps, page_blocks, page_id, updateProps} = props
+    const {blockProps, updateProps} = props
 
 
     return (
-        <div className={"flex flex-col "}>
+        <div className={"flex flex-col gap-2"}>
+            <div>
+                <label>Label: </label>
+                <input
+                    value={blockProps.friendly_name}
+                    placeholder={"write an identifier here..."}
+                    onChange={(e) => updateProps({friendly_name: e.target.value})}
+                    className={"p-0.5 text-xl bg-gray-200 rounded-xl"}/>
+            </div>
             <div className={"flex flex-row"}>
                 <div className={`${blockProps.additional_props ? "w-1/2" : "w-full"}`}>
                     {blockProps.content !== undefined &&
-                        <textarea className={"p-1 bg-gray-200 rounded-xl outline-0 w-full resize-none"}
-                                  placeholder={"write some text..."}
-                                  value={blockProps.content.join("\n")} contentEditable={true}
-                                  onChange={(e) => updateProps({content: e.target.value.split("\n")})}/>
+                        <div className={"flex flex-col"}>
+                            <label>Content:</label>
+                            <textarea className={"p-1 bg-gray-200 rounded-xl outline-0 w-full resize-none"}
+                                      placeholder={"write some text..."}
+                                      value={blockProps.content.join("\n")} contentEditable={true}
+                                      onChange={(e) => updateProps({content: e.target.value.split("\n")})}/>
+                        </div>
                     }
                     {
                         blockProps.className !== undefined &&
-                        <input type={"text"} className={"p-0.5 w-full"} placeholder={"className..."}
-                               onChange={(e) => updateProps({className: e.target.value})}/>
+                        <div className={"flex flex-col"}>
+                            <label>Styling (Tailwind):</label>
+                            <input type={"text"} className={"p-0.5 w-full"} placeholder={"className..."}
+                                   onChange={(e) => updateProps({className: e.target.value})}/>
+                        </div>
                     }
                 </div>
                 <div>
@@ -38,29 +48,31 @@ export default function BlockEditFields(props: BlockEditFieldsProps) {
                                 switch (typeof value) {
                                     case "string":
                                         return (
-                                            <div className={"p-2"} key={key}>
+                                            <div className={"flex flex-col p-2 gap-0.5"} key={key}>
                                                 <span>{key}</span>
                                                 <input type={"text"} defaultValue={value}
                                                        onChange={(e) => updateProps({additional_props: {[key]: e.target.value}})}
-                                                       name={key}/>
+                                                       name={key} className={"p-1 bg-gray-200 rounded-xl"}/>
                                             </div>
                                         )
                                     case "number":
                                         return (
-                                            <div className={"p-2"} key={key}>
+                                            <div className={"flex flex-col p-2 gap-0.5"} key={key}>
                                                 <span>{key}</span>
                                                 <input type={"number"} defaultValue={value}
                                                        onChange={(e) => updateProps({additional_props: {[key]: e.target.value}})}
-                                                       name={key}/>
+                                                       name={key}
+                                                       className={"p-1 bg-gray-200 rounded-xl"}/>
                                             </div>
                                         )
                                     case "boolean":
                                         return (
-                                            <div className={"p-2"} key={key}>
+                                            <div className={"flex flex-row p-2 gap-0.5"} key={key}>
                                                 <span>{key}</span>
                                                 <input type={"checkbox"} checked={value}
                                                        onChange={(e) => updateProps({additional_props: {[key]: e.target.checked}})}
-                                                       name={key}/>
+                                                       name={key}
+                                                       className={"p-1 bg-gray-200 rounded-xl"}/>
                                             </div>
                                         )
                                     default:

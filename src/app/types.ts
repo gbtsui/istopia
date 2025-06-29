@@ -106,6 +106,8 @@ export interface Block {
 
 export interface Page {
     blocks: Record<string, Block> //Always initialize with an immutable "root" block so that every block has a parent and the system doesn't explode on itself!
+    blockNodes: Record<string, BlockNodeData>,
+
     friendly_name: string, //user-friendly name!! defaults to "page" plus first 6 chars of uuid
     id: string //uuid,
     outward_connections: string[]
@@ -125,6 +127,20 @@ export interface PageNodeEdge {
     id: string, //should be Id1+"-"+Id2
     source: string, //Id1
     target: string, //Id2 (grab from outward_connections)
+}
+
+export interface BlockNodeData {
+    id: string, //copy from block.props.id
+    position: {x: number, y: number}, // we are indeed persisting this
+    data: Record<string, unknown>, //should list all actions (on left) and events (on right)
+    type?: string// "blockNode" //you win, typescript
+}
+export interface BlockNodeEdge {
+    id: string,
+    source: string,
+    sourceHandle?: string | null,
+    target: string,
+    targetHandle?: string | null
 }
 
 export interface PieceContent {

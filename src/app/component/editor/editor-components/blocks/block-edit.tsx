@@ -2,7 +2,7 @@
 
 import {Block, BlockProps} from "@/app/types";
 import Sortable from "@/app/component/editor/state/sortable";
-import {useEditorStore} from "@/app/component/editor/state/zustand";
+import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockEditFields from "@/app/component/editor/editor-components/blocks/block-edit-fields";
 
 type BlockEditProps = {
@@ -22,6 +22,7 @@ export default function BlockEdit(props: BlockEditProps & { overId: string | nul
     const editBlock = useEditorStore((state) => state.editBlock)
     const deleteBlock = useEditorStore((state) => state.deleteBlock)
     const page = useEditorStore((state) => state.content.pages[page_id])
+    const setSelectedBlock = useEditorStateStore((state) => state.setSelectedBlock)
 
     const depth = calculateDepth(block, page.blocks)
 
@@ -53,7 +54,7 @@ export default function BlockEdit(props: BlockEditProps & { overId: string | nul
                       is_collapsed={block.props.is_collapsed}
                       has_children={!!block.props.children_ids} updateProps={updateProps}>
 
-                <BlockEditFields blockProps={block.props} page_id={page_id} page_blocks={page.blocks}
+                <BlockEditFields blockProps={block.props}
                                  updateProps={updateProps}/>
                 {block.type !== "root" && <button onClick={() => deleteBlock(page_id, block.props.id)}
                                                   className={"material-symbols-outlined select-none cursor-pointer rounded-xl p-2 hover:bg-red-500 transition-all"}>delete</button>} {/*TODO: make this work with a dialog*/}
