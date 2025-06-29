@@ -1,4 +1,6 @@
 "use client";
+//TODO: more triggers and events
+//TODO: multiline breaks for nextLine kinda? add a setting which lets you start it but let it keep going
 
 import {
     useState,
@@ -62,6 +64,7 @@ export default function Typewriter(
         })
     }, [hasCompleted, engine, id])
 
+    /*
     const nextLine = useCallback(() => {
         console.log("next line")
         if (!isTyping && lineIndex + 1 < content.length) {
@@ -71,6 +74,27 @@ export default function Typewriter(
             setIsTyping(true);
         }
     }, [isTyping, lineIndex, content.length]);
+     */
+
+    const nextLine = useCallback(() => {
+        console.log("next line");
+        if (!isTyping) {
+            if (lines.length === 0 && lineIndex === 0) {
+                // Starting fresh
+                setLines([""]);
+                setLineIndex(0);
+                setCharIndex(0);
+                setIsTyping(true);
+            } else if (lineIndex + 1 < content.length) {
+                setLines((prev) => [...prev, ""]);
+                setLineIndex((prev) => prev + 1);
+                setCharIndex(0);
+                setIsTyping(true);
+            } else {
+                console.log("All lines are typed; nextLine ignored.");
+            }
+        }
+    }, [isTyping, lineIndex, content.length, lines.length]);
 
     const reset = useCallback(() => {
         console.log("reset")
@@ -84,7 +108,12 @@ export default function Typewriter(
         //console.log("handling action!")
         switch (action) {
             case "nextLine":
-                return nextLine();
+                if (manual) {
+                    nextLine();
+                } else {
+                    console.log("Ignoring nextLine event because manual mode is off.");
+                }
+                return;
             case "reset":
                 return reset();
             default:
@@ -152,7 +181,8 @@ export default function Typewriter(
             content.length > 0 &&
             !hasCompleted &&
             !isTyping &&
-            lines.length === 0
+            lines.length === 0 &&
+            !manual
         ) {
             //debug
             //console.log("Initializing typewriter lines...");
