@@ -60,18 +60,20 @@ export default function SignUpPage() {
                 display_name: formData.get("display_name") as string ?? formData.get("username") as string,
                 email: formData.get("email") as string,
                 password: formData.get("password") as string,
-                code: formData.get("code") as string,
+                code: formData.get("confirmation") as string,
             })
             if (!result.success) {
                 setError(result.error)
+                setLoading(false)
             } else {
                 const signInResult = await signIn("credentials", {
                     identifier: formData.get("email"),
                     password: formData.get("password"),
                     redirect: false
                 })
-                if (signInResult?.error) {
-                    setError(signInResult?.error)
+                if (signInResult && signInResult.error) {
+                    setError(signInResult.error)
+                    console.log(signInResult.error)
                     setLoading(false);
                 } else {
                     redirect("/dashboard")
