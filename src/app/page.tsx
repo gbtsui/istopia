@@ -27,9 +27,9 @@ export default async function Home(){
                     <div>
                         {
                             user?
-                                <Link className={"px-5 py-3 rounded-xl bg-white text-black hover:text-white hover:bg-gray-700 transition-all"} href={"/signin"}>sign in.</Link>
-                            :
                                 <Link className={"px-5 py-3 rounded-xl bg-white text-black hover:text-white hover:bg-gray-700 transition-all"} href={"/dashboard"}>dashboard</Link>
+                                :
+                                <Link className={"px-5 py-3 rounded-xl bg-white text-black hover:text-white hover:bg-gray-700 transition-all"} href={"/signin"}>sign in.</Link>
                         }
                     </div>
                 </div>
