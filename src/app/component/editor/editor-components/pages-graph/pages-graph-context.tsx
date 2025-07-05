@@ -44,7 +44,10 @@ export const PagesGraphProvider = ({children}: { children: ReactNode }) => {
     }
 
     const deletePageNode = useCallback(async (id: string) => {
+        console.log(id)
+        console.log(page_nodes)
         const page = page_nodes.find((node) => node.id === id)
+        console.log(page)
         if (!page) return
         setPagesIAmAboutToDelete([page])
         const confirmed = await confirmDelete()
@@ -52,7 +55,7 @@ export const PagesGraphProvider = ({children}: { children: ReactNode }) => {
         deletePage(page.id)
         setPageNodes((prev) => prev.filter((node) => node.id !== page.id))
         setPagesIAmAboutToDelete([])
-    }, [])
+    }, [page_nodes])
 
     return (
         <PagesGraphContext.Provider value={{
