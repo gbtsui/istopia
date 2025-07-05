@@ -4,6 +4,7 @@ import {PieceData} from "@/app/types";
 import {useEngineContext} from "@/app/engine/engine-context";
 import {useEffect, useState} from "react";
 import {RenderPage} from "@/app/engine/render-page";
+import EngineErrorComponent from "@/app/engine/engine-error";
 
 type EngineComponentProps = {
     piece_data: PieceData
@@ -14,17 +15,21 @@ export default function EngineComponent(props: EngineComponentProps) {
     const engine = useEngineContext()
     const setCurrentPage = engine.setCurrentPage;
     const [loading, setLoading] = useState(true)
+    const [err, setErr] = useState("");
 
     const first_page = Object.values(piece_data.content.pages).find(page => page.is_first)
 
     useEffect(() => {
         if (!first_page) {
             console.error("No first page defined. Piece seems to be corrupt.")
+            setErr("No first page defined. Piece seems to be corrupt.")
             return
         }
         setCurrentPage(first_page.id);
         setLoading(false)
     }, [first_page, setCurrentPage])
+
+    if (err) return <EngineErrorComponent err={err}/>
 
     if (loading) return <div>loading piece...</div> //TODO: make a better looking loading screen smh ts pmo
 
