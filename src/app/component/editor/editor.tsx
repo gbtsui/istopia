@@ -8,6 +8,7 @@ import EditorTopBar from "@/app/component/editor/editor-components/editor-topbar
 import PagesGraph from "@/app/component/editor/editor-components/pages-graph/pages-graph";
 import {ReactFlowProvider} from "@xyflow/react";
 import BlockEditSidebar from "@/app/component/editor/editor-components/blocks/sidebar/block-edit-sidebar";
+import {PagesGraphProvider} from "@/app/component/editor/editor-components/pages-graph/pages-graph-context";
 
 type EditorProps = {
     initialPieceData: PieceData;
@@ -66,7 +67,7 @@ export default function Editor(props: EditorProps) {
                 </div>
                 {
                     currentPage === null || currentPage === undefined ?
-                        <ReactFlowProvider><PagesGraph/></ReactFlowProvider>
+                        <ReactFlowProvider><PagesGraphProvider><PagesGraph/></PagesGraphProvider></ReactFlowProvider>
                         :
                         <div className={"flex flex-row h-[90dvh]"}>
                             <PageContents page_id={currentPage}/>
