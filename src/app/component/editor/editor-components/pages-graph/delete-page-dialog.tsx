@@ -1,28 +1,27 @@
 "use client";
 
-import {PageNodeData, PageNodeEdge} from "@/app/types";
+import {usePagesGraph} from "@/app/component/editor/editor-components/pages-graph/pages-graph-context";
 
 type DeletePageDialogProps = {
     handleResponse: (arg: boolean) => void, //yaaargh swab the poop deck
-    deletedPages: PageNodeData[],
-    deletedConnections: PageNodeEdge[],
-    allPages: PageNodeData[],
 }
 
 export default function DeletePageDialog(props: DeletePageDialogProps) {
+    const {pagesIAmAboutToDelete: deletedPages, page_nodes: allPages, edgesIAmAboutToDelete: deletedConnections} = usePagesGraph()
+
     return (
         <div className={"fixed inset-0 items-center justify-center flex z-50 w-full h-full bg-black/75 text-white backdrop-blur-md"}>
             <div className={"w-1/2 m-3 p-3 bg-gray-700 rounded-2xl"}>
                 <div className={"text-center text-2xl"}>delete page?</div>
                 <p>are you sure you want to delete the following? you can't undo this operation!</p>
                 <ul>
-                    {props.deletedPages.map((node) => (
+                    {deletedPages.map((node) => (
                         <li key={node.id}>{node.data["friendly_name"] as string}</li>
                     ))}
-                    {props.deletedConnections.map((edge) => (
+                    {deletedConnections.map((edge) => (
                         <li key={edge.id}>
                             Connection
-                            between {props.allPages.find((pg) => pg.id === edge.source)?.data["friendly_name"] as string ?? 'edge.source'}
+                            between {allPages.find((pg) => pg.id === edge.source)?.data["friendly_name"] as string ?? 'edge.source'}
                         </li>
                     ))}
                 </ul>
