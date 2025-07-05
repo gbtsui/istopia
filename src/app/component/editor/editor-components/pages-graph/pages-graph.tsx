@@ -8,6 +8,7 @@ import {
     Controls, OnBeforeDelete, OnConnect, OnEdgesChange, OnNodesChange,
     ReactFlow,
     useStoreApi,
+
 } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
 import {PageNodeData, PageNodeEdge} from "@/app/types";
@@ -15,6 +16,7 @@ import {useEditorStore} from "@/app/component/editor/state/zustand";
 import {useCallback, useEffect, useState} from "react";
 import PageFlowNode from "@/app/component/editor/editor-components/pages-graph/page-node";
 import DeletePageDialog from "@/app/component/editor/editor-components/pages-graph/delete-page-dialog";
+import Dialog from "@/app/component/universal/dialog";
 
 const nodeTypes = {
     pageNode: PageFlowNode
@@ -33,6 +35,9 @@ export default function PagesGraph() {
     const [edges, setEdges] = useState<PageNodeEdge[]>([]);
     const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
     const [resolver, setResolver] = useState<((value: boolean) => void) | null>(null);
+
+    const [pagesIAmAboutToDelete, setPagesIAmAboutToDelete] = useState<PageNodeData[]>([]);
+    const [edgesIAmAboutToDelete, setEdgesIAmAboutToDelete] = useState<PageNodeEdge[]>([]);
 
     const update_nodes = useCallback(() => {
         if (!Object.keys(pages).length) return
@@ -139,10 +144,14 @@ export default function PagesGraph() {
             nodes: PageNodeData[],
             edges: PageNodeEdge[]
         }> => {
+            const {nodes, edges} = change
+            if (nodes.filter((n): boolean => n.data["isFirst"] as boolean)){
+                return false
+            }
+
             const confirmed = await confirmDelete()
             if (!confirmed) return false;
 
-            const {nodes, edges} = change
             edges.forEach((edge) => {
                 const sourcePage = pages[edge.source]
                 sourcePage.outward_connections = sourcePage.outward_connections.filter((outwardConnection) => outwardConnection !== edge.target)
@@ -155,6 +164,17 @@ export default function PagesGraph() {
         },
         [editPage, pages, deletePage, confirmDelete],
     )
+
+    const deletePageNode = useCallback(async (id: string) => {
+        const page = page_nodes.find((node) => node.id === id)
+        if (!page) return
+        setPagesIAmAboutToDelete([page])
+        const confirmed = await confirmDelete()
+        if (!confirmed) return;
+        deletePage(page.id)
+        setPageNodes((prev) => prev.filter((node) => node.id !== page.id))
+        setPagesIAmAboutToDelete([])
+    }, [])
 
     return (
         <div className={"w-full h-full"}>
@@ -176,7 +196,12 @@ export default function PagesGraph() {
                     + Add Page
                 </button>
             </div>
-            <DeletePageDialog visible={deleteDialogIsOpen} handleResponse={handleResponse}/>
+            <div className={"fixed right-0 top-0"}>
+                {/*notifications go here*/}
+            </div>
+            <Dialog visible={deleteDialogIsOpen}>
+                <DeletePageDialog  handleResponse={handleResponse} deletedPages={pagesIAmAboutToDelete} deletedConnections={edgesIAmAboutToDelete} allPages={page_nodes} />
+            </Dialog>
         </div>
     )
 }
