@@ -6,6 +6,9 @@ import TriggersGraph from "@/app/component/editor/editor-components/blocks/sideb
 import {useCallback, useState} from "react";
 import {Block, BlockNodeData} from "@/app/types";
 import {BlockActionsList, BlockEventsList} from "@/app/engine/block-list";
+import {
+    TriggersGraphProvider
+} from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
 
 export default function BlockEditSidebar() {
     const selected_block = useEditorStateStore((state) => state.selected_block);
@@ -87,7 +90,9 @@ export default function BlockEditSidebar() {
                         </div>
                     </div>
                     <ReactFlowProvider>
-                    <TriggersGraph/>
+                        <TriggersGraphProvider>
+                            <TriggersGraph/>
+                        </TriggersGraphProvider>
                     </ReactFlowProvider>
                 </div>
             </div>

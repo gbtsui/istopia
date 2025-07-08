@@ -16,6 +16,9 @@ import {useCallback, useEffect, useState} from "react";
 import {Block, BlockNodeData, BlockNodeEdge} from "@/app/types";
 import '@xyflow/react/dist/style.css';
 import {EngineEventListener} from "@/app/engine";
+import {
+    useTriggersGraph
+} from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
 
 const nodeTypes = {
     blockNode: BlockFlowNode
@@ -24,36 +27,22 @@ const nodeTypes = {
 export default function TriggersGraph() {
     const store = useStoreApi()
 
-    const currentPageId = useEditorStateStore((state) => state.current_page)
-    const pages = useEditorStore((state) => state.content.pages)
-    const currentPage = currentPageId? pages[currentPageId] : null
-    const editPage = useEditorStore((state) => state.editPage)
-    const editBlock = useEditorStore((state) => state.editBlock)
-    const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
+    const {
+        currentPageId,
+        pages,
+        currentPage,
+        editPage,
+        editBlock,
+        blocks,
+        blockNodes,
+        setBlockNodes,
+        edges,
+        setEdges
+    } = useTriggersGraph()
+
     //const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
 
-    const [blockNodes, setBlockNodes] = useState<BlockNodeData[]>([]);
-    const [edges, setEdges] = useState<BlockNodeEdge[]>([]); //according to the Consensus Of The Fathers edging is not beneficial
 
-    const update_nodes = useCallback(() => {
-        //if (!blockNodes.length) return
-        const blocks_list: Block[] = Object.entries(blocks).map(([,v]) => v)
-        const new_edges = blocks_list.map((block) => {
-            return block.props.listeners.map((listener) => {
-                return {
-                    id: `${listener.target_block_id}-${listener.target_event}.${listener.action}-${listener.self_block_id}`,
-                    source: listener.target_block_id,
-                    sourceHandle: listener.target_event.split(":")[1],
-                    target: listener.self_block_id,
-                    targetHandle: listener.action
-                } as BlockNodeEdge
-            })
-        }).flat()
-
-        setEdges(new_edges)
-        console.log("update nodes run")
-        setBlockNodes(Object.values(currentPage?.blockNodes || {}))
-    }, [currentPage?.blockNodes])
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {
@@ -129,10 +118,6 @@ export default function TriggersGraph() {
     },
     [currentPage, editPage, currentPageId]
     )
-
-    useEffect(() => {
-        update_nodes()
-    }, [currentPage?.blockNodes, update_nodes])
 
     if (!currentPage) {
         return null
