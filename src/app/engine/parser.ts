@@ -93,6 +93,5 @@ const PieceContentSchema: z.ZodType<PieceContent> = z.object({
 })
 
 export default async function Parse(data: unknown): Promise<PieceContent> {
-    console.log(JSON.stringify(data))
     return PieceContentSchema.parseAsync(data) //technically this is a validator i guess?
 }
