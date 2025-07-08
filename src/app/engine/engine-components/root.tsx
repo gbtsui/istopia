@@ -15,10 +15,13 @@ export default function Root(props: ContainerProps) {
         engine.setCurrentPage(page_id);
     }
 
-    const handler = useCallback((action: string) => { //TODO: add ability to have arguments...
+    const handler = useCallback((action: string, value: string | number | boolean | undefined | null) => {
         switch (action) {
             case "switchPage":
-                return switchPage(action);
+                if (typeof value === "string") {
+                    return switchPage(value);
+                }
+                return console.warn("Invalid argument of type " + (typeof value) + "(" + value + ") was passed to Root.")
             default:
                 console.warn("A nonexistent action was passed to root: ", action)
         }

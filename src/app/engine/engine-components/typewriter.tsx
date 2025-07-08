@@ -104,7 +104,7 @@ export default function Typewriter(
         setIsTyping(true);
     }, [])
 
-    const handler = useCallback((action: string) => {
+    const handler = useCallback((action: string, value:  string | number | boolean | undefined | null) => {
         //console.log("handling action!")
         switch (action) {
             case "nextLine":
