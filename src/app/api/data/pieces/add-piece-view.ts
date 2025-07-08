@@ -20,12 +20,21 @@ export default async function addPieceView(params: AddPieceViewParams): Promise<
         return {success: false, error: ("User not found in database :(")}
     }
 
-    await prisma.view.create({
-        data: {
-            user_id: db_user.id,
-            piece_id: params.piece_id
-        }
-    })
+    const existingView = await prisma.view.findFirst({where: {user_id: db_user.id, piece_id: params.piece_id}});
+
+    if (existingView) {
+        await prisma.view.update({
+            where: {id: existingView.id},
+            data: {timestamp: new Date()}
+        })
+    } else {
+        await prisma.view.create({
+            data: {
+                user_id: db_user.id,
+                piece_id: params.piece_id
+            }
+        })
+    }
 
     return {success: true, data: null}
 }
