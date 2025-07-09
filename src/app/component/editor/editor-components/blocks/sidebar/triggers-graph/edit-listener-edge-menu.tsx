@@ -25,6 +25,9 @@ export default function EditListenerEdgeMenu() {
     return (
         <div
             className={"absolute bottom-2 left-2 w-1/2 m-3 bg-gray-100 h-[85dvh] rounded-xl p-2 m-2 text-black"}>
+            <button className={"absolute top-1 right-1 m-2 p-2 rounded-full text-white bg-black"} onClick={() => triggersGraph.setSelectedEdge(null)}>
+                x
+            </button>
             <div>
                 <div className={"text-center text-2xl"}>edit listener</div>
                 <div className={"text-center text-sm text-gray-500"}>
