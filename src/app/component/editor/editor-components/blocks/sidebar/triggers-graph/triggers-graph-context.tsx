@@ -1,6 +1,15 @@
 "use client"
 
-import {createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useState} from "react";
+import {
+    createContext,
+    Dispatch,
+    ReactNode,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 import {Block, BlockNodeData, BlockNodeEdge, BlockProps, Page} from "@/app/types";
 import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import {EngineEventListener} from "@/app/engine";
@@ -34,12 +43,10 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
     const [blockNodes, setBlockNodes] = useState<BlockNodeData[]>([]);
     const [edges, setEdges] = useState<BlockNodeEdge[]>([]); //according to the Consensus Of The Fathers edging is not beneficial
 
-    const update_nodes = useCallback(() => {
-        //if (!blockNodes.length) return
-        const blocks_list: Block[] = Object.entries(blocks).map(([, v]) => v)
-        const new_edges = Array.from(
+    const new_edges = useMemo(() => {
+        return Array.from(
             new Map(
-                blocks_list
+                Object.values(blocks)
                     .flatMap((block) =>
                         block.props.listeners.map((listener) => {
                             const edgeId = `${listener.target_block_id}-${listener.target_event}.${listener.action}-${listener.self_block_id}`;
@@ -53,21 +60,31 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
                                     targetHandle: listener.action,
                                     type: "listenerEdge",
                                     data: { listener }
-                                } as BlockNodeEdge
-                            ] as [string, BlockNodeEdge];
+                                }
+                            ];
                         })
                     )
             ).values()
         );
+    }, [blocks]);
 
-        setEdges(new_edges)
-        console.log("update nodes run")
-        setBlockNodes(Object.values(currentPage?.blockNodes || {}))
-    }, [currentPage?.blockNodes])
+    const blockNodesArray = useMemo(() => {
+        return Object.values(currentPage?.blockNodes || {});
+    }, [currentPage?.blockNodes]);
+
+    const arraysAreEqual = (a: any[], b: any[]) => {
+        if (a.length !== b.length) return false;
+        return a.every((val, index) => val.id === b[index].id);
+    };
 
     useEffect(() => {
-        update_nodes()
-    }, [currentPage?.blockNodes, update_nodes])
+        setEdges((prev) =>
+            arraysAreEqual(prev, new_edges) ? prev : new_edges
+        );
+        setBlockNodes((prev) =>
+            arraysAreEqual(prev, blockNodesArray) ? prev : blockNodesArray
+        );
+    }, [new_edges, blockNodesArray]);
 
     return (
         <TriggersGraphContext.Provider value={{
