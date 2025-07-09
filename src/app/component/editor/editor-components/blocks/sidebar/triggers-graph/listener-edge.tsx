@@ -6,7 +6,7 @@ import {
     useTriggersGraph
 } from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
 
-type ListenerEdgeProps = Edge<{ eventListener: EngineEventListener }, 'custom'>;
+type ListenerEdgeProps = Edge<{ eventListener: EngineEventListener }, 'listener-edge'>;
 
 
 export default function ListenerEdge({
@@ -15,15 +15,28 @@ export default function ListenerEdge({
                                          sourceY,
                                          targetX,
                                          targetY,
+                                         data
                                      }: EdgeProps<ListenerEdgeProps>) {
     const triggersGraph = useTriggersGraph()
 
-    const [edgePath] = getStraightPath({sourceX, sourceY, targetX, targetY})
+    const [edgePath, labelX, labelY] = getStraightPath({sourceX, sourceY, targetX, targetY})
 
     return (
         <BaseEdge id={id} path={edgePath}>
             <EdgeLabelRenderer>
-                <p>thing</p>
+                <button
+                    onClick={
+                        () => console.log("clicked")
+                    //() => triggersGraph.setSelectedEdge(data?.eventListener ?? null)
+                }
+                    style={{
+                        position: 'absolute',
+                        transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+                        pointerEvents: 'all',
+                    }}
+                    className={"nodrag nopan p-2 bg-white text-black cursor-pointer"}>
+                    edit
+                </button>
             </EdgeLabelRenderer>
         </BaseEdge>
     )

@@ -19,9 +19,16 @@ import {EngineEventListener} from "@/app/engine";
 import {
     useTriggersGraph
 } from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
+import ListenerEdge from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/listener-edge";
+import EditListenerEdgeMenu
+    from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/edit-listener-edge-menu";
 
 const nodeTypes = {
     blockNode: BlockFlowNode
+}
+
+const edgeTypes = {
+    listenerEdge: ListenerEdge
 }
 
 export default function TriggersGraph() {
@@ -37,11 +44,12 @@ export default function TriggersGraph() {
         blockNodes,
         setBlockNodes,
         edges,
-        setEdges
+        setEdges,
+        selectedEdge,
+        setSelectedEdge,
     } = useTriggersGraph()
 
     //const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
-
 
 
     const onNodesChange: OnNodesChange = useCallback(
@@ -94,7 +102,7 @@ export default function TriggersGraph() {
     )
 
     const onDelete: OnDelete = useCallback(
-        (changes: {nodes: BlockNodeData[], edges: BlockNodeEdge[]}) => {
+        (changes: { nodes: BlockNodeData[], edges: BlockNodeEdge[] }) => {
             const {nodes, edges} = changes
 
             if (!currentPage || !currentPageId) return
@@ -104,7 +112,7 @@ export default function TriggersGraph() {
                 listeningBlock.props.listeners = listeningBlock.props.listeners
                     .filter(listener =>
                         (listener.target_block_id !== edge.source)
-                            &&
+                        &&
                         (listener.target_event !== edge.sourceHandle)
                     );
                 editBlock(currentPageId, listeningBlock.props.id, listeningBlock.props)
@@ -115,8 +123,8 @@ export default function TriggersGraph() {
                 delete current_page_blockNodes[node.id];
             })
             editPage(currentPageId, {blockNodes: current_page_blockNodes, blocks: current_page_blocks})
-    },
-    [currentPage, editPage, currentPageId]
+        },
+        [currentPage, editPage, currentPageId]
     )
 
     if (!currentPage) {
@@ -127,16 +135,18 @@ export default function TriggersGraph() {
     return (
         <div className={"w-full h-full"}>
             <ReactFlow proOptions={{hideAttribution: true}}
-            nodeTypes={nodeTypes}
-            nodes={blockNodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onDelete={onDelete}>
+                       nodeTypes={nodeTypes}
+                       nodes={blockNodes}
+                       edgeTypes={edgeTypes}
+                       edges={edges}
+                       onNodesChange={onNodesChange}
+                       onEdgesChange={onEdgesChange}
+                       onConnect={onConnect}
+                       onDelete={onDelete}>
                 <Background/>
                 <Controls/>
             </ReactFlow>
+            <EditListenerEdgeMenu/>
         </div>
     )
 }
