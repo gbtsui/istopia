@@ -140,7 +140,10 @@ export interface BlockNodeEdge {
     source: string,
     sourceHandle?: string | null,
     target: string,
-    targetHandle?: string | null
+    targetHandle?: string | null,
+    type?: string, //"listenerEdge"
+    data?: Record<string, unknown>
+
 }
 
 export interface PieceContent {

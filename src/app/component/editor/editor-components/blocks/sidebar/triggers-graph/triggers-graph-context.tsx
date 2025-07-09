@@ -37,19 +37,28 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
     const update_nodes = useCallback(() => {
         //if (!blockNodes.length) return
         const blocks_list: Block[] = Object.entries(blocks).map(([, v]) => v)
-        const new_edges = blocks_list.map((block) => {
-            return block.props.listeners.map((listener) => {
-                return {
-                    id: `${listener.target_block_id}-${listener.target_event}.${listener.action}-${listener.self_block_id}`,
-                    source: listener.target_block_id,
-                    sourceHandle: listener.target_event.split(":")[1],
-                    target: listener.self_block_id,
-                    targetHandle: listener.action,
-                    type: "listenerEdge",
-                    data: {listener}
-                } as BlockNodeEdge
-            })
-        }).flat()
+        const new_edges = Array.from(
+            new Map(
+                blocks_list
+                    .flatMap((block) =>
+                        block.props.listeners.map((listener) => {
+                            const edgeId = `${listener.target_block_id}-${listener.target_event}.${listener.action}-${listener.self_block_id}`;
+                            return [
+                                edgeId,
+                                {
+                                    id: edgeId,
+                                    source: listener.target_block_id,
+                                    sourceHandle: listener.target_event.split(":")[1],
+                                    target: listener.self_block_id,
+                                    targetHandle: listener.action,
+                                    type: "listenerEdge",
+                                    data: { listener }
+                                } as BlockNodeEdge
+                            ] as [string, BlockNodeEdge];
+                        })
+                    )
+            ).values()
+        );
 
         setEdges(new_edges)
         console.log("update nodes run")

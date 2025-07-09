@@ -8,12 +8,11 @@ import {
     Controls, OnConnect, OnDelete, OnEdgesChange,
     OnNodesChange,
     ReactFlow,
-    useStoreApi
+    //useStoreApi
 } from "@xyflow/react";
-import {useEditorStateStore, useEditorStore} from "@/app/component/editor/state/zustand";
 import BlockFlowNode from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/block-flow-node";
-import {useCallback, useEffect, useState} from "react";
-import {Block, BlockNodeData, BlockNodeEdge} from "@/app/types";
+import {useCallback} from "react";
+import {BlockNodeData, BlockNodeEdge} from "@/app/types";
 import '@xyflow/react/dist/style.css';
 import {EngineEventListener} from "@/app/engine";
 import {
@@ -32,21 +31,21 @@ const edgeTypes = {
 }
 
 export default function TriggersGraph() {
-    const store = useStoreApi()
+    //const store = useStoreApi()
 
     const {
         currentPageId,
-        pages,
+        //pages,
         currentPage,
         editPage,
         editBlock,
-        blocks,
+        //blocks,
         blockNodes,
         setBlockNodes,
         edges,
         setEdges,
-        selectedEdge,
-        setSelectedEdge,
+        //selectedEdge,
+        //setSelectedEdge,
     } = useTriggersGraph()
 
     //const blockNodes = (currentPage && currentPage.blockNodes) ?? [];
@@ -82,24 +81,50 @@ export default function TriggersGraph() {
     const onConnect: OnConnect = useCallback(
         (change) => {
             if (!currentPage || !currentPageId) return;
-            const sourceBlock = {...currentPage.blocks}[change.source] //the block that triggers an event
-            const targetBlock = {...currentPage.blocks}[change.target] //the block that listens to an event
-            if (!sourceBlock) return setEdges((edges) => addEdge(change, edges))
+
+            const sourceBlock = {...currentPage.blocks}[change.source];
+            const targetBlock = {...currentPage.blocks}[change.target];
+
+            if (!sourceBlock || !targetBlock) {
+                return setEdges((edges) => addEdge(change, edges));
+            }
+
             const newListener: EngineEventListener = {
                 self_block_id: change.target,
                 action: change.targetHandle as string,
                 target_block_id: change.source,
                 target_event: (sourceBlock.type + ":" + change.sourceHandle),
                 logical_conditions: []
-            }
-            targetBlock.props.listeners.push(newListener);
-            console.log("sourceBlock: ", sourceBlock);
-            editBlock(currentPageId, targetBlock.props.id, targetBlock.props)
+            };
 
-            setEdges((edges) => addEdge(change, edges))
+            // Check if identical listener already exists
+            const exists = targetBlock.props.listeners.some((listener) => {
+                return (
+                    listener.self_block_id === newListener.self_block_id &&
+                    listener.action === newListener.action &&
+                    listener.target_block_id === newListener.target_block_id &&
+                    listener.target_event === newListener.target_event
+                );
+            });
+
+            if (!exists) {
+                targetBlock.props.listeners.push(newListener);
+                editBlock(currentPageId, targetBlock.props.id, targetBlock.props);
+            }
+
+            setEdges((edges) => addEdge({
+                ...change,
+                id: `${newListener.target_block_id}-${newListener.target_event}.${newListener.action}-${newListener.self_block_id}`,
+                type: "listenerEdge",
+                source: newListener.target_block_id,
+                sourceHandle: newListener.target_event.split(":")[1],
+                target: newListener.self_block_id,
+                targetHandle: newListener.action,
+                data: { listener: newListener }
+            }, edges));
         },
-        [editBlock, currentPage]
-    )
+        [editBlock, currentPage, currentPageId]
+    );
 
     const onDelete: OnDelete = useCallback(
         (changes: { nodes: BlockNodeData[], edges: BlockNodeEdge[] }) => {
