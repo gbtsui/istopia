@@ -42,34 +42,30 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
     addPage: (is_first: boolean = false, coordinates: { x: number, y: number }) => {
         const id = crypto.randomUUID()
-        const {content} = {...get()}
-        const pages = {...content.pages}
-        pages[id] = {
-            blocks: {},
-            id,
-            friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
-            outward_connections: [],
-            is_first: is_first,
-
-            flow_node_data: {
-                id,
-                position: coordinates, //TODO: make this dynamic
-                data: {
-                    friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
-                    page_id: id,
-                    is_first: is_first,
-                },
-                type: "pageNode"
-            },
-            blockNodes: {}
-        }
-        console.log("zustand pages:", pages)
         return set(state => ({
             content: {
                 ...state.content,
                 pages: {
                     ...state.content.pages,
-                    [id]: pages[id]
+                    [id]: {
+                        blocks: {},
+                        id,
+                        friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
+                        outward_connections: [],
+                        is_first: is_first,
+
+                        flow_node_data: {
+                            id,
+                            position: coordinates,
+                            data: {
+                                friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
+                                page_id: id,
+                                is_first: is_first,
+                            },
+                            type: "pageNode"
+                        },
+                        blockNodes: {}
+                    }
                 }
             }
         }))
@@ -102,7 +98,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                 }
             }
         }))
-    }, //this is some of the worst code i've ever written; Lord Jesus Christ Son of God have mercy upon me a sinner
+    }, //merci seigneur
 
     setPageCoordinates: (page_id: string, coordinates: { x: number, y: number }) => {
         //const {pages} = {...get().content}
@@ -151,7 +147,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     },
 
     addBlock: (page_id, newBlock) => {
-        const {pages} = {...get().content}
+        /*const {pages} = {...get().content}
         const current_page = pages[page_id]
         current_page.blocks[newBlock.props.id] = newBlock
         current_page.blocks[newBlock.props.id].props.parent_id = "root"
@@ -159,17 +155,61 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         root.props.children_ids?.push(newBlock.props.id)
         current_page.blocks["root"] = root
         pages[current_page.id] = current_page
-        return set({content: {pages}})
+        return set({content: {pages}})*/
+
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [page_id]: newBlock,
+                            ["root"]: {
+                                ...state.content.pages[page_id].blocks.root,
+                                props: {
+                                    ...state.content.pages[page_id].blocks.root.props,
+                                    children_ids: [...(state.content.pages[page_id].blocks.root.props.children_ids || []), newBlock.props.id]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }))
     },
 
     editBlock: (page_id, block_id, new_props) => {
-        const {pages} = {...get().content}
+        /*const {pages} = {...get().content}
         const block = pages[page_id].blocks[block_id]
         if (!block) throw new Error("block not found?")
         block.props = new_props
         pages[page_id].blocks[block_id] = block
         if (pages[page_id].blockNodes[block_id]) pages[page_id].blockNodes[block_id].data.friendly_name = block.props.friendly_name
-        return set({content: {pages}})
+        return set({content: {pages}})*/
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [block_id]: {
+                                ...state.content.pages[page_id].blocks[block_id],
+                                props: {
+                                    ...state.content.pages[page_id].blocks[block_id].props,
+                                    ...new_props
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }))
     },
 
     reorderBlock: (page_id, active_id, over_id) => {
@@ -274,9 +314,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     //will probably never have to use this actually
     fetchContent: async (id) => {
         const result = await FetchPieceData({id})
-        return set(() => {
-            return {...result}
-        })
+        if (!result) throw new Error("Piece data not found.")
+        return set({content: result.content})
     },
 
 
