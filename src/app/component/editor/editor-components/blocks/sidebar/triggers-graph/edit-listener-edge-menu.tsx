@@ -3,13 +3,18 @@
 import {
     useTriggersGraph
 } from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
+import {useEffect} from "react";
 
 export default function EditListenerEdgeMenu() {
     const triggersGraph = useTriggersGraph();
 
-    const selectedEdge = triggersGraph.selectedEdge;
+    //const selectedEdge = triggersGraph.selectedEdge;
 
-    if (!selectedEdge) {
+    useEffect(() => {
+        console.log("selectedEdge:", triggersGraph.selectedEdge);
+    }, [triggersGraph.selectedEdge]);
+
+    if (!triggersGraph.selectedEdge) {
         return null;
     }
 

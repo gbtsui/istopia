@@ -28,7 +28,7 @@ export type TriggersGraphType = {
     edges: BlockNodeEdge[],
     setEdges: Dispatch<SetStateAction<BlockNodeEdge[]>>,
     selectedEdge: EngineEventListener | null,
-    setSelectedEdge: Dispatch<SetStateAction<EngineEventListener | null>>
+    setSelectedEdge: (newListener: EngineEventListener | null) => void//Dispatch<SetStateAction<EngineEventListener | null>>
 }
 
 export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
@@ -38,10 +38,15 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
     const editPage = useEditorStore((state) => state.editPage)
     const editBlock = useEditorStore((state) => state.editBlock)
     const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
-    const [selectedEdge, setSelectedEdge] = useState<EngineEventListener|null>(null)
+    const [selectedEdge, setSelectedEdgeInternal] = useState<EngineEventListener|null>(null)
 
     const [blockNodes, setBlockNodes] = useState<BlockNodeData[]>([]);
     const [edges, setEdges] = useState<BlockNodeEdge[]>([]); //according to the Consensus Of The Fathers edging is not beneficial
+
+    const setSelectedEdge = (newListener: EngineEventListener | null) => {
+        console.log("set selected edge (internal) called", newListener)
+        setSelectedEdgeInternal(newListener);
+    }
 
     const new_edges = useMemo(() => {
         return Array.from(
@@ -59,7 +64,7 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
                                     target: listener.self_block_id,
                                     targetHandle: listener.action,
                                     type: "listenerEdge",
-                                    data: { listener }
+                                    data: {eventListener: listener }
                                 }
                             ];
                         })

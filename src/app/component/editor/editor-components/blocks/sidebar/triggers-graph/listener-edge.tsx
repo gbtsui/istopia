@@ -26,8 +26,8 @@ export default function ListenerEdge({
             <EdgeLabelRenderer>
                 <button
                     onClick={
-                        () => console.log("clicked")
-                    //() => triggersGraph.setSelectedEdge(data?.eventListener ?? null)
+                        //() => console.log("clicked")
+                    () => triggersGraph.setSelectedEdge(data?.eventListener ?? null)
                 }
                     style={{
                         position: 'absolute',
