@@ -1,6 +1,6 @@
 "use client"
 
-import {BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getStraightPath} from "@xyflow/react"
+import {BaseEdge, Edge, EdgeLabelRenderer, EdgeProps, getBezierPath} from "@xyflow/react"
 import {EngineEventListener} from "@/app/engine";
 import {
     useTriggersGraph
@@ -19,7 +19,7 @@ export default function ListenerEdge({
                                      }: EdgeProps<ListenerEdgeProps>) {
     const triggersGraph = useTriggersGraph()
 
-    const [edgePath, labelX, labelY] = getStraightPath({sourceX, sourceY, targetX, targetY})
+    const [edgePath, labelX, labelY] = getBezierPath({sourceX, sourceY, targetX, targetY})
 
     return (
         <BaseEdge id={id} path={edgePath}>
