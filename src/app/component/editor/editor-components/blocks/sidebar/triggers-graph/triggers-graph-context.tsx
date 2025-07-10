@@ -48,7 +48,7 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
         setSelectedEdgeInternal(newListener);
     }
 
-    const new_edges = useMemo(() => {
+    const new_edges: BlockNodeEdge[] = useMemo(() => {
         return Array.from(
             new Map(
                 Object.values(blocks)
@@ -73,9 +73,27 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
         );
     }, [blocks]);
 
+    /*
     const blockNodesArray = useMemo(() => {
         return Object.values(currentPage?.blockNodes || {});
-    }, [currentPage?.blockNodes]);
+    }, [currentPage?.blockNodes]);*/
+    const blockNodesArray = useMemo(() => {
+        return Object.values(currentPage?.blocks || {})
+            .map((block): BlockNodeData | undefined => {
+                if (!block.position) return undefined
+
+                return {
+                    id: block.props.id,
+                    position: block.position,
+                    data: {
+                        friendly_name: block.props.friendly_name,
+                        type: block.type
+                    },
+                    type: "blockNode"
+                } satisfies BlockNodeData
+            })
+            .filter((block) => block !== undefined)
+    }, [currentPage?.blocks])
 
     const arraysAreEqual = (a: any[], b: any[]) => {
         if (a.length !== b.length) return false;
