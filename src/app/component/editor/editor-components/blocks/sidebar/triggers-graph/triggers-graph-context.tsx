@@ -28,7 +28,8 @@ export type TriggersGraphType = {
     edges: BlockNodeEdge[],
     setEdges: Dispatch<SetStateAction<BlockNodeEdge[]>>,
     selectedEdge: EngineEventListener | null,
-    setSelectedEdge: (newListener: EngineEventListener | null) => void//Dispatch<SetStateAction<EngineEventListener | null>>
+    setSelectedEdge: (newListener: EngineEventListener | null) => void,//Dispatch<SetStateAction<EngineEventListener | null>>
+    moveBlockCoordinates: (page_id: string, block_id: string, new_position: {x: number; y: number}|undefined) => void,
 }
 
 export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
@@ -37,6 +38,7 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
     const currentPage = currentPageId ? pages[currentPageId] : null
     const editPage = useEditorStore((state) => state.editPage)
     const editBlock = useEditorStore((state) => state.editBlock)
+    const moveBlockCoordinates = useEditorStore((state) => state.moveBlockCoordinates)
     const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
     const [selectedEdge, setSelectedEdgeInternal] = useState<EngineEventListener|null>(null)
 
@@ -123,6 +125,7 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
             setEdges,
             selectedEdge,
             setSelectedEdge,
+            moveBlockCoordinates
         }}>
             {children}
         </TriggersGraphContext.Provider>)

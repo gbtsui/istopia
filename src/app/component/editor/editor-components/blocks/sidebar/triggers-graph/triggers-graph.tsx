@@ -39,6 +39,7 @@ export default function TriggersGraph() {
         currentPage,
         editPage,
         editBlock,
+        moveBlockCoordinates,
         //blocks,
         blockNodes,
         setBlockNodes,
@@ -58,12 +59,14 @@ export default function TriggersGraph() {
                 if (change.type === "position") {
                     const block_id = change.id;
                     const new_position = change.position;
-                    const page_block_nodes = {...currentPage?.blockNodes}
-                    const block_data = {...currentPage.blockNodes[block_id]};
-                    page_block_nodes[block_id].position = new_position ?? block_data.position;
-                    editPage(currentPageId as string, {blockNodes: {...page_block_nodes}})
+                    //const page_block_nodes = {...currentPage?.blockNodes}
+                    //const block_data = {...currentPage.blockNodes[block_id]};
+                    //page_block_nodes[block_id].position = new_position ?? block_data.position;
+                    //editPage(currentPageId as string, {blockNodes: {...page_block_nodes}})
+                    moveBlockCoordinates(currentPageId as string, block_id, new_position);
                 }
             });
+            //@ts-ignore This will not break anything, hopefully. Teehee :3
             setBlockNodes((nds: BlockNodeData[]): BlockNodeData[] => applyNodeChanges(
                 changes, nds
             ))
@@ -126,6 +129,7 @@ export default function TriggersGraph() {
         [editBlock, currentPage, currentPageId]
     );
 
+    // @ts-ignore I have strict typing here with {friendly_name: string, type: string} instead of Record<string, unknown>
     const onDelete: OnDelete = useCallback(
         (changes: { nodes: BlockNodeData[], edges: BlockNodeEdge[] }) => {
             const {nodes, edges} = changes
@@ -142,12 +146,15 @@ export default function TriggersGraph() {
                     );
                 editBlock(currentPageId, listeningBlock.props.id, listeningBlock.props)
             })
-            const current_page_blockNodes = {...currentPage.blockNodes}
-            const current_page_blocks = {...currentPage.blocks}
+            //const current_page_blockNodes = {...currentPage.blockNodes}
+            //const current_page_blocks = {...currentPage.blocks}
+            //nodes.forEach((node) => {
+            //    delete current_page_blockNodes[node.id];
+            //})
+            //editPage(currentPageId, {blockNodes: current_page_blockNodes, blocks: current_page_blocks})
             nodes.forEach((node) => {
-                delete current_page_blockNodes[node.id];
+                moveBlockCoordinates(currentPageId, node.id, undefined)
             })
-            editPage(currentPageId, {blockNodes: current_page_blockNodes, blocks: current_page_blocks})
         },
         [currentPage, editPage, currentPageId]
     )
