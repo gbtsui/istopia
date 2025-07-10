@@ -80,11 +80,48 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
     }
 ] //ALWAYS INITIALIZE IDS
 
-export const BlockActionsList: Record<string, Array<string>> = {
-    "root": ["switchPage"],
-    "text": [],
-    "typewriter": ["nextLine", "reset"],
-    "simple_container": []
+export type BlockActionType = Record<string, BlockActionDescription>
+export type BlockActionDescription =
+    {
+        "arg_type": "null",
+        "arg_description": string,  //tell users what this argument actually does or changes
+
+    }
+    |
+    {
+        "arg_type": "boolean",
+        "arg_input_type": "switch",
+        "arg_description": string,  //tell users what this argument actually does or changes
+    }
+    |
+    {
+    "arg_type": "string" | "number", //what type of arbitrary argument is allowed?
+    "arg_input_type": "text" | "number" | "dropdown",     //what kind of input will be displayed
+    "arg_description": string,  //tell users what this argument actually does or changes
+    "arg_input_choices_source": string[] | undefined //will probably be something like editorStore[arg_input_choices_source]? not sure
+    }
+
+export const BlockActionsList: Record<string, BlockActionType> = {
+    "root": {
+        "switchPage": {
+            "arg_type": "string",
+            "arg_description": "Switch page to this ID",
+            "arg_input_type": "dropdown",
+            "arg_input_choices_source": ["outward_connections"]
+        }
+    },
+    "text": {},
+    "typewriter": {
+        "nextLine":{
+            "arg_type": "null",
+            "arg_description": "Trigger the next line and start typing it."
+        },
+        "reset":{
+            "arg_type": "null",
+            "arg_description": "Reset all typed lines."
+        }
+    },
+    "simple_container": {}
 }
 
 export const BlockEventsList: Record<string, Array<string>> = { //always return in the form of "<type>:<event>"
