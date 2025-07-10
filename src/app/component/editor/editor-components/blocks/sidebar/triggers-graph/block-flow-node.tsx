@@ -5,9 +5,8 @@ import {BlockActionDescription, BlockActionsList, BlockEventsList} from "@/app/e
 import {BlockFlowNodeData} from "@/app/types";
 
 export default function BlockFlowNode(props: NodeProps<Node<BlockFlowNodeData>>) {
-    const actions_record = BlockActionsList[props.type]
+    const actions_record = BlockActionsList[props.data.type]
     //const events_record = BlockEventsList[props.type]
-
     const actions_list = Object.keys(actions_record)
 
     return (

@@ -51,6 +51,10 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     z.object({
         type: z.string(),
         props: BlockPropsSchema,
+        position: z.object({
+            x: z.number(),
+            y: z.number(),
+        })
         //children: z.array(z.lazy(() => BlockSchema)).optional()
     })
 )
@@ -84,7 +88,7 @@ const BlockNodeDataSchema: z.ZodType<BlockNodeData> = z.object({
 
 const PageSchema: z.ZodType<Page> = z.object({
     blocks: z.record(z.string(), BlockSchema),
-    blockNodes: z.record(z.string(), BlockNodeDataSchema),
+    //blockNodes: z.record(z.string(), BlockNodeDataSchema),
     friendly_name: z.string(),
     id: z.string(),
     outward_connections: z.array(z.string()),

@@ -38,6 +38,7 @@ export function migratePieceContentV1_V2(content: File2PieceContent | null | und
             };
         }
 
+        /*
         const migratedBlockNodes: Record<string, BlockNodeData> = {};
         for (const [nodeId, node] of Object.entries(page.blockNodes ?? {})) {
             const rawData = node.data as Partial<BlockFlowNodeData> | undefined;
@@ -50,12 +51,17 @@ export function migratePieceContentV1_V2(content: File2PieceContent | null | und
                     ...(rawData || {}),
                 },
             };
-        }
+        }*/
 
         migratedPages[pageId] = <Page>{
-            ...page,
+            //...page,
+            friendly_name: page.friendly_name,
+            id: pageId,
+            outward_connections: page.outward_connections,
+            is_first: page.is_first,
+            flow_node_data: page.flow_node_data,
             blocks: migratedBlocks,
-            blockNodes: migratedBlockNodes,
+            //blockNodes: migratedBlockNodes,
         };
     }
 
