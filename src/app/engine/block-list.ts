@@ -80,7 +80,7 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
     }
 ] //ALWAYS INITIALIZE IDS
 
-export type BlockActionType = Record<string, BlockActionDescription>
+//export type BlockActionType = {[name: string]: BlockActionDescription}
 export type BlockActionDescription =
     {
         "arg_type": "null",
@@ -101,7 +101,7 @@ export type BlockActionDescription =
     "arg_input_choices_source": string[] | undefined //will probably be something like editorStore[arg_input_choices_source]? not sure
     }
 
-export const BlockActionsList: Record<string, BlockActionType> = {
+export const BlockActionsList: Record<string, Record<string, BlockActionDescription>> = {
     "root": {
         "switchPage": {
             "arg_type": "string",
