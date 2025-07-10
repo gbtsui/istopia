@@ -101,12 +101,13 @@ export interface ContainerProps<T extends Record<string, string|boolean|number> 
 
 export interface Block {
     type: string,
-    props: BlockProps
+    props: BlockProps,
+    position?: {x: number, y: number}, //generate BlockNodeData on the fly with this
 }
 
 export interface Page {
     blocks: Record<string, Block> //Always initialize with an immutable "root" block so that every block has a parent and the system doesn't explode on itself!
-    blockNodes: Record<string, BlockNodeData>,
+    //blockNodes: Record<string, BlockNodeData>,
 
     friendly_name: string, //user-friendly name!! defaults to "page" plus first 6 chars of uuid
     id: string //uuid,
@@ -119,7 +120,7 @@ export interface Page {
 //so apparently reactflow wants me to have a certain node object type
 export interface PageNodeData {
     id: string, //copy from page.id
-    position: {x: number, y: number}, //are we persisting this...?
+    position: {x: number, y: number},
     data: Record<string, unknown>, //should just be friendly_name
     type?: string | undefined //only one input needed btw! entry point or first page
 }
@@ -132,9 +133,15 @@ export interface PageNodeEdge {
 export interface BlockNodeData {
     id: string, //copy from block.props.id
     position: {x: number, y: number}, // we are indeed persisting this
-    data: Record<string, unknown>, //should list all actions (on left) and events (on right)
+    data: BlockFlowNodeData, //should list all actions (on left) and events (on right)
     type?: string// "blockNode" //you win, typescript
 }
+
+export interface BlockFlowNodeData extends Record<string, unknown> {
+    friendly_name: string,
+    type: string
+}
+
 export interface BlockNodeEdge {
     id: string,
     source: string,

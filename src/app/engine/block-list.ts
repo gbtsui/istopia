@@ -98,7 +98,7 @@ export type BlockActionDescription =
     "arg_type": "string" | "number", //what type of arbitrary argument is allowed?
     "arg_input_type": "text" | "number" | "dropdown",     //what kind of input will be displayed
     "arg_description": string,  //tell users what this argument actually does or changes
-    "arg_input_choices_source": string[] | undefined //will probably be something like editorStore[arg_input_choices_source]? not sure
+    "arg_input_choices_source": string[] | undefined //chain of editorStore.content.pages[page_id][property_0][subproperty_1]...
     }
 
 export const BlockActionsList: Record<string, Record<string, BlockActionDescription>> = {

@@ -25,6 +25,7 @@ export interface EditorStore extends EditorProps {
     deletePage: (page_id: string) => void,
 
     editBlock: (page_id: string, block_id: string, new_props: BlockProps) => void,
+    moveBlockCoordinates: (page_id: string, block_id: string, new_position: {x: number, y:number} | undefined) => void,
     editPage: (page_id: string, new_data: Partial<Page>) => void,
     setPageCoordinates: (page_id: string, coordinates: { x: number, y: number }) => void,
 
@@ -79,7 +80,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         const friendly_name = new_data.friendly_name ?? pages[page_id].friendly_name
         const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
         const new_flow_node_data = {friendly_name, is_first, page_id: pages[page_id].id}
-        const blockNodes = new_data.blockNodes ?? pages[page_id].blockNodes//(new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
+        //const blockNodes = new_data.blockNodes ?? pages[page_id].blockNodes//(new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
         return set(state => ({
             content: {
                 ...state.content,
@@ -93,7 +94,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                             ...state.content.pages[page_id].flow_node_data,
                             data: new_flow_node_data
                         },
-                        blockNodes
+                        //blockNodes
                     }
                 }
             }
@@ -204,6 +205,27 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                                     ...state.content.pages[page_id].blocks[block_id].props,
                                     ...new_props
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }))
+    },
+
+    moveBlockCoordinates: (page_id, block_id, new_coordinates) => {
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [block_id]: {
+                                ...state.content.pages[page_id].blocks[block_id],
+                                position: new_coordinates
                             }
                         }
                     }

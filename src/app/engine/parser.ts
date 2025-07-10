@@ -1,7 +1,7 @@
 "use server";
 
 import {z} from "zod"
-import {Block, BlockNodeData, BlockProps, Page, PageNodeData, PieceContent} from "@/app/types";
+import {Block, BlockFlowNodeData, BlockNodeData, BlockProps, Page, PageNodeData, PieceContent} from "@/app/types";
 import {Condition, EngineEventListener, LogicalCondition} from "@/app/engine/engine";
 
 const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
@@ -69,10 +69,16 @@ const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
     type: z.union([z.literal("pageNode"), z.undefined()]) //can be further expanded eventually later
 })
 
+const BlockFlowNodeDataSchema: z.ZodType<BlockFlowNodeData> = z.object({
+    friendly_name: z.string(),
+    type: z.string()
+})
+
+
 const BlockNodeDataSchema: z.ZodType<BlockNodeData> = z.object({
     id: z.string(),
     position: z.object({x: z.number(), y: z.number()}),
-    data: z.record(z.string(), z.unknown()),
+    data: BlockFlowNodeDataSchema,
     type: z.literal("blockNode")
 })
 

@@ -2,15 +2,9 @@
 
 import {Handle, Node, NodeProps, Position} from "@xyflow/react";
 import {BlockActionDescription, BlockActionsList, BlockEventsList} from "@/app/engine/block-list";
+import {BlockFlowNodeData} from "@/app/types";
 
-type BlockFlowNodeProps = Node<{
-    friendly_name: string,
-    type: string
-    //events: string[], //right side - emitted events
-    //actions: Record<string, BlockActionDescription>[] //left side - actions to take
-}>
-
-export default function BlockFlowNode(props: NodeProps<BlockFlowNodeProps>) {
+export default function BlockFlowNode(props: NodeProps<Node<BlockFlowNodeData>>) {
     const actions_record = BlockActionsList[props.type]
     //const events_record = BlockEventsList[props.type]
 
