@@ -80,53 +80,67 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
     }
 ] //ALWAYS INITIALIZE IDS
 
-//export type BlockActionType = {[name: string]: BlockActionDescription}
 export type BlockActionDescription =
-    {
-        "arg_type": "null",
-        "arg_description": string,  //tell users what this argument actually does or changes
+    { "action_description": string }
+    &
+    (
+        { "arg_type": "null", }
+        |
+        { "arg_description": string } &
+        (
+            {
+                "arg_type": "boolean", "arg_input_type": "switch"
+            }
+            |
+            {
+                "arg_type": "string" | "number", "arg_input_type": "text" | "number" | "dropdown",     //what kind of input will be displayed
+                "arg_input_choices_source": string[] | undefined //chain of editorStore.content.pages[page_id][property_0][subproperty_1]...
+            }
+        )
+    )
 
-    }
-    |
-    {
-        "arg_type": "boolean",
-        "arg_input_type": "switch",
-        "arg_description": string,  //tell users what this argument actually does or changes
-    }
-    |
-    {
-    "arg_type": "string" | "number", //what type of arbitrary argument is allowed?
-    "arg_input_type": "text" | "number" | "dropdown",     //what kind of input will be displayed
-    "arg_description": string,  //tell users what this argument actually does or changes
-    "arg_input_choices_source": string[] | undefined //chain of editorStore.content.pages[page_id][property_0][subproperty_1]...
-    }
+
+export type BlockEventDescription = {
+    "event_description": string,
+} & ({
+    "default_arg_type": "string" | "boolean" | "number",
+    "default_arg_description": string,
+} | {
+    "default_arg_type": "null"
+})
 
 export const BlockActionsList: Record<string, Record<string, BlockActionDescription>> = {
     "root": {
         "switchPage": {
+            "action_description":"Switch pages",
             "arg_type": "string",
-            "arg_description": "Switch page to this ID",
+            "arg_description": "ID of target page",
             "arg_input_type": "dropdown",
             "arg_input_choices_source": ["outward_connections"]
         }
     },
     "text": {},
     "typewriter": {
-        "nextLine":{
+        "nextLine": {
+            "action_description":"Trigger the next line and start typing it.",
             "arg_type": "null",
-            "arg_description": "Trigger the next line and start typing it."
         },
-        "reset":{
+        "reset": {
+            "action_description":"Reset all typed lines.",
             "arg_type": "null",
-            "arg_description": "Reset all typed lines."
         }
     },
     "simple_container": {}
 }
 
-export const BlockEventsList: Record<string, Array<string>> = { //always return in the form of "<type>:<event>"
-    "root": [],
-    "text": [],
-    "typewriter": ["typingComplete"],
-    "simple_container": []
+export const BlockEventsList: Record<string, Record<string, BlockEventDescription>> = { //always return in the form of "<type>:<event>"
+    "root": {},
+    "text": {},
+    "typewriter": {
+        "typingComplete": {
+            "event_description": "Fires when all lines have finished typing.",
+            "default_arg_type": "null"
+        }
+    },
+    "simple_container": {}
 }
