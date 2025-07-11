@@ -6,8 +6,9 @@ import {BlockFlowNodeData} from "@/app/types";
 
 export default function BlockFlowNode(props: NodeProps<Node<BlockFlowNodeData>>) {
     const actions_record = BlockActionsList[props.data.type]
-    //const events_record = BlockEventsList[props.type]
+    const events_record = BlockEventsList[props.data.type]
     const actions_list = Object.keys(actions_record)
+    const events_list = Object.keys(events_record)
 
     return (
         <div style={{
@@ -85,6 +86,21 @@ export default function BlockFlowNode(props: NodeProps<Node<BlockFlowNodeData>>)
                                 }}/>
                     </div>
                 ))*/}
+                {
+                    events_list.map((event) => (
+                        <div key={event} className={"text-black text-center flex items-center"}>
+                            <p className={"m-1.5"}>{event}</p>
+                            <Handle type={"source"} position={Position.Right} id={event}
+                                    style={{
+                                        position: "absolute",
+                                        transform: "none",
+                                        top: "auto",
+                                        padding: 3,
+                                        right: -5,
+                                    }}/>
+                        </div>
+                    ))
+                }
             </div>
         </div>
     )
