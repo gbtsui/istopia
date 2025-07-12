@@ -248,7 +248,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         listener_target_event: string,
         self_action: string
     }, new_args) => {
-        const listeners = structuredClone(get().content.pages[page_id].blocks[block_id].props.listeners);
+        const listeners = [...get().content.pages[page_id].blocks[block_id].props.listeners];
         const listener = listeners.find((l) => l.self_block_id === block_id && l.action === self_action && l.target_block_id === listener_target_id && l.target_event === listener_target_event);
         if (!listener) {
             return
