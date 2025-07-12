@@ -66,7 +66,7 @@ export default function TriggersGraph() {
                     moveBlockCoordinates(currentPageId as string, block_id, new_position);
                 }
             });
-            //@ts-ignore This will not break anything, hopefully. Teehee :3
+            //@ts-expect-error This will not break anything, hopefully. Teehee :3
             setBlockNodes((nds: BlockNodeData[]): BlockNodeData[] => applyNodeChanges(
                 changes, nds
             ))
@@ -129,7 +129,7 @@ export default function TriggersGraph() {
         [editBlock, currentPage, currentPageId]
     );
 
-    // @ts-ignore I have strict typing here with {friendly_name: string, type: string} instead of Record<string, unknown>
+    // @ts-expect-error I have strict typing here with {friendly_name: string, type: string} instead of Record<string, unknown>
     const onDelete: OnDelete = useCallback(
         (changes: { nodes: BlockNodeData[], edges: BlockNodeEdge[] }) => {
             const {nodes, edges} = changes

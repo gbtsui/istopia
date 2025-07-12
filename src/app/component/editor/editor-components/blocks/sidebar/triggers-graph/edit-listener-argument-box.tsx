@@ -12,11 +12,6 @@ export default function EditListenerArgumentBox() {
     //const editorStore = useEditorStore();
     const selectedEdge = triggersGraph.selectedEdge;
 
-    if (!selectedEdge) {
-        return null;
-    }
-
-
     const target_id = triggersGraph.selectedEdge?.target_block_id as string
     const self_id = triggersGraph.selectedEdge?.self_block_id as string
     const blockActionName = triggersGraph.selectedEdge?.action as string
@@ -69,6 +64,11 @@ export default function EditListenerArgumentBox() {
         triggersGraph.selectedEdge?.target_event,
         pages,
     ]);
+
+
+    if (!selectedEdge) {
+        return null;
+    }
 
     if (blockAction.arg_type === "string" &&
         blockAction.arg_input_type === "dropdown" &&

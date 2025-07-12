@@ -58,7 +58,6 @@ export default function EditListenerEdgeMenu() {
     const eventDescription = BlockEventsList[targetBlockType][eventName.split(":")[1]]
     //const eventDescription = BlockEventsList[targetBlockType][eventName.split(":")[1]]
 
-    // @ts-ignore
     return (
         <div
             className={"absolute bottom-2 left-2 w-1/2 m-3 bg-gray-100 h-[85dvh] rounded-xl p-2 m-2 text-black"}>
