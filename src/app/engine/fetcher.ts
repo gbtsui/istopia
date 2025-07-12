@@ -3,6 +3,7 @@
 import {prisma} from "@/app/api/data/db";
 import {PieceContent, PieceData} from "@/app/types";
 import Parse from "@/app/engine/parser";
+import {File2PieceContent, migratePieceContentV1_V2} from "@/app/api/data/pieces/piece-structure-migrator";
 
 type FetchBySlugParams = {
     username: string;
@@ -39,10 +40,11 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
     if (!db_piece) {
         return null
     }
-    const content: PieceContent = await Parse(db_piece.content)
+    const updated_content = migratePieceContentV1_V2(db_piece.content as unknown as File2PieceContent)
+    const content: PieceContent = await Parse(updated_content)
     return {
         ...db_piece,
         view_number: db_piece.views.length,
         content: content,
-    } as PieceData
+    }
 }

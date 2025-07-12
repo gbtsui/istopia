@@ -34,6 +34,6 @@ export default function EngineComponent(props: EngineComponentProps) {
     if (loading) return <div>loading piece...</div> //TODO: make a better looking loading screen smh ts pmo
 
     return (
-        <RenderPage data={piece_data.content.pages[engine.currentPage.current]}/>
+        <RenderPage data={piece_data.content.pages[engine.currentPage]}/>
     )
 }

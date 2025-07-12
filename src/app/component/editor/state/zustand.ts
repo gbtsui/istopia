@@ -6,6 +6,7 @@ import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
 import getAncestryOfBlock, {getDescendantsOfBlock} from "@/app/api/utils/get-ancestry-of-block";
 import findActiveItem from "@/app/api/utils/find-active-item";
 import {insertActiveItemWithNesting} from "@/app/api/utils/insert-active-item";
+import {structuredClone} from "next/dist/compiled/@edge-runtime/primitives";
 
 interface EditorProps {
     content: PieceContent,
@@ -14,7 +15,7 @@ interface EditorProps {
 export interface EditorStore extends EditorProps {
     setContent: (content: PieceContent) => void,
 
-    addPage: (is_first: boolean, coordinates: {x: number, y: number}) => void,
+    addPage: (is_first: boolean, coordinates: { x: number, y: number }) => void,
 
     addRootBlock: (page_id: string) => void,
     addBlock: (page_id: string, newBlock: Block) => void,
@@ -25,8 +26,17 @@ export interface EditorStore extends EditorProps {
     deletePage: (page_id: string) => void,
 
     editBlock: (page_id: string, block_id: string, new_props: BlockProps) => void,
+    moveBlockCoordinates: (page_id: string, block_id: string, new_position: {
+        x: number,
+        y: number
+    } | undefined) => void,
+    changeBlockListenerArguments: (page_id: string, block_id: string, data: {
+        listener_target_id: string,
+        listener_target_event: string,
+        self_action: string
+    }, new_args: string | number | boolean) => void,
     editPage: (page_id: string, new_data: Partial<Page>) => void,
-    setPageCoordinates: (page_id: string, coordinates: {x: number, y: number}) => void,
+    setPageCoordinates: (page_id: string, coordinates: { x: number, y: number }) => void,
 
     publishContent: (username: string, piece_id: string) => Promise<Result<null>>
 
@@ -40,86 +50,114 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         return set({content})
     },
 
-    addPage: (is_first: boolean = false, coordinates: {x: number, y: number}) => {
+    addPage: (is_first: boolean = false, coordinates: { x: number, y: number }) => {
         const id = crypto.randomUUID()
-        const {content} = {...get()}
-        const pages = {...content.pages}
-        pages[id] = {
-            blocks: {},
-            id,
-            friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
-            outward_connections: [],
-            is_first: is_first,
-
-            flow_node_data: {
-                id,
-                position: coordinates, //TODO: make this dynamic
-                data: {
-                    friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
-                    page_id: id,
-                    is_first: is_first,
-                },
-                type: "pageNode"
-            },
-            blockNodes: {}
-        }
-        console.log("zustand pages:", pages)
-        return set({content: {pages}})
-
-        /*return set((state) => ({
+        return set(state => ({
             content: {
-                pages: [...state.content.pages, newPage]
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [id]: {
+                        blocks: {},
+                        id,
+                        friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
+                        outward_connections: [],
+                        is_first: is_first,
+
+                        flow_node_data: {
+                            id,
+                            position: coordinates,
+                            data: {
+                                friendly_name: `Page ${id.split("").slice(0, 4).join("")}`,
+                                page_id: id,
+                                is_first: is_first,
+                            },
+                            type: "pageNode"
+                        },
+                        blockNodes: {}
+                    }
+                }
             }
-        }))*/
+        }))
     },
 
-    editPage: (page_id: string, new_data: Partial<Page>)=> {
+    editPage: (page_id: string, new_data: Partial<Page>) => {
         console.log("editPage run, new data:", new_data)
-        const {pages} = {...get().content}
+        const state = get()
+
+        const pages = state.content.pages
         const friendly_name = new_data.friendly_name ?? pages[page_id].friendly_name
         const is_first = new_data.is_first as boolean ?? pages[page_id].is_first
         const new_flow_node_data = {friendly_name, is_first, page_id: pages[page_id].id}
-        const blockNodes = new_data.blockNodes ?? pages[page_id].blockNodes//(new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
-        pages[page_id] = {
-            ...new_data,
-            ...pages[page_id],
-            friendly_name,
-            is_first,
-            flow_node_data: {
-                ...pages[page_id].flow_node_data,
-                data: new_flow_node_data
-            },
-            blockNodes,
-        };
-        console.log("updated page: ", pages[page_id])
-        return set({content: {pages}})
-    }, //this is some of the worst code i've ever written; Lord Jesus Christ Son of God have mercy upon me a sinner
+        //const blockNodes = new_data.blockNodes ?? pages[page_id].blockNodes//(new_data.blockNodes && [...pages[page_id].blockNodes, ...new_data.blockNodes]) ?? pages[page_id].blockNodes
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        friendly_name,
+                        is_first,
+                        flow_node_data: {
+                            ...state.content.pages[page_id].flow_node_data,
+                            data: new_flow_node_data
+                        },
+                        //blockNodes
+                    }
+                }
+            }
+        }))
+    }, //merci seigneur
 
-    setPageCoordinates: (page_id: string, coordinates: {x: number, y: number})=> {
-        const {pages} = {...get().content}
-        pages[page_id].flow_node_data.position = coordinates;
-        return set({content: {pages}})
+    setPageCoordinates: (page_id: string, coordinates: { x: number, y: number }) => {
+        //const {pages} = {...get().content}
+        //pages[page_id].flow_node_data.position = coordinates;
+        set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        flow_node_data: {
+                            ...state.content.pages[page_id].flow_node_data,
+                            position: coordinates
+                        }
+                    }
+                }
+            }
+        }));
     },
 
     addRootBlock: (page_id: string) => {
-        const {pages} = {...get().content}
-        const current_page = pages[page_id]
-        current_page.blocks["root"] = {
-            type: "root",
-            props: {
-                id: "root",
-                friendly_name: "root",
-                listeners: [],
-                children_ids: []
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            ["root"]: {
+                                type: "root",
+                                props: {
+                                    id: "root",
+                                    friendly_name: "root",
+                                    listeners: [],
+                                    children_ids: []
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }
-
-        pages[current_page.id] = current_page
-        return set({content: {pages}})
+        }))
     },
 
     addBlock: (page_id, newBlock) => {
-        const {pages} = {...get().content}
+        /*const {pages} = {...get().content}
         const current_page = pages[page_id]
         current_page.blocks[newBlock.props.id] = newBlock
         current_page.blocks[newBlock.props.id].props.parent_id = "root"
@@ -127,58 +165,125 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         root.props.children_ids?.push(newBlock.props.id)
         current_page.blocks["root"] = root
         pages[current_page.id] = current_page
-        return set({content: {pages}})
-        /*return set((state) => {
-            const updatedPages = state.content.pages.map((page) => {
-                if (page.page_number === page_number) {
-                    const blocks = page.blocks
-                    blocks[newBlock.props.id] = newBlock
-                    return {
-                        ...page,
-                        blocks: blocks
-                    };
-                }
-                return page;
-            });
+        return set({content: {pages}})*/
 
-            return {
-                content: {
-                    pages: updatedPages
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [newBlock.props.id]: {
+                                ...newBlock,
+                                props: {
+                                    ...newBlock.props,
+                                    parent_id: "root",
+                                }
+                            },
+                            root: {
+                                ...state.content.pages[page_id].blocks.root,
+                                props: {
+                                    ...state.content.pages[page_id].blocks.root.props,
+                                    children_ids: [...(state.content.pages[page_id].blocks.root.props.children_ids || []), newBlock.props.id]
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        })*/
+        }))
     },
 
     editBlock: (page_id, block_id, new_props) => {
-        const {pages} = {...get().content}
+        /*const {pages} = {...get().content}
         const block = pages[page_id].blocks[block_id]
         if (!block) throw new Error("block not found?")
         block.props = new_props
         pages[page_id].blocks[block_id] = block
         if (pages[page_id].blockNodes[block_id]) pages[page_id].blockNodes[block_id].data.friendly_name = block.props.friendly_name
-        return set({content: {pages}})
-
-
-        /*return set((state) => {
-            const updatedPages = state.content.pages.map((page) => {
-                if (page.page_number === page_number) {
-                    const block = page.blocks[block_id];
-                    if (!block) return page
-                    block.props = new_props
-                    const updatedPage = page
-                    updatedPage.blocks[block_id] = block
-                    return updatedPage
-                }
-                return page
-            })
-
-            return {
-                content: {
-                    pages: updatedPages
+        return set({content: {pages}})*/
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [block_id]: {
+                                ...state.content.pages[page_id].blocks[block_id],
+                                props: {
+                                    ...state.content.pages[page_id].blocks[block_id].props,
+                                    ...new_props
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        })
-        */
+        }))
+    },
+
+    moveBlockCoordinates: (page_id, block_id, new_coordinates) => {
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [block_id]: {
+                                ...state.content.pages[page_id].blocks[block_id],
+                                position: new_coordinates
+                            }
+                        }
+                    }
+                }
+            }
+        }))
+    },
+
+    changeBlockListenerArguments: (page_id, block_id, {listener_target_id, listener_target_event, self_action}: {
+        listener_target_id: string,
+        listener_target_event: string,
+        self_action: string
+    }, new_args) => {
+        const listeners = [...get().content.pages[page_id].blocks[block_id].props.listeners];
+        console.log(listeners)
+        const listenerIndex = listeners.findIndex((l) => l.self_block_id === block_id && l.action === self_action && l.target_block_id === listener_target_id && l.target_event === listener_target_event);
+        if (listenerIndex === -1) {
+            return
+        }
+        listeners[listenerIndex].arbitrary_argument = new_args
+        //listeners.splice(listenerIndex, 1, )
+        console.log(listeners)
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [block_id]: {
+                                ...state.content.pages[page_id].blocks[block_id],
+                                props: {
+                                    ...state.content.pages[page_id].blocks[block_id].props,
+                                    listeners: listeners
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }))
     },
 
     reorderBlock: (page_id, active_id, over_id) => {
@@ -226,7 +331,10 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         }
 
         const active_item = findActiveItem(flattened_blocks, active_id)
-        if (!active_item) { console.log("no active item :("); return }
+        if (!active_item) {
+            console.log("no active item :(");
+            return
+        }
 
         console.log(insertFirst)
         page.blocks = insertActiveItemWithNesting(page.blocks, active_id, over_id, insertFirst)
@@ -235,61 +343,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         return set({content: {pages}})
     },
 
-    /*
-    reorderBlock: (page_id, block_id, new_parent_id, new_position) => {
-        const {pages} = {...get().content};
-        const current_page = pages[page_id];
-        const current_block = current_page.blocks[block_id]
-
-        if (!current_block) throw new Error("block not found?")
-        if (current_block.props.id === "root") return set({content: {pages}})
-
-        const block_parent_id = current_block.props.parent_id as string
-        const block_parent = current_page.blocks[block_parent_id];
-        const children_ids = block_parent.props.children_ids || []
-        const index = children_ids.findIndex((b) => b === block_id)
-        children_ids.splice(index, 1)
-
-        const new_parent = current_page.blocks[new_parent_id]
-        if (!new_parent) throw new Error("new parent block not found?")
-
-        if (new_parent_id === block_parent_id) {
-            children_ids.splice(new_position, 0, block_id)
-        } else {
-            (new_parent.props.children_ids || []).splice(new_position, 0, block_id)
-        }
-
-
-        block_parent.props.children_ids = children_ids
-        current_page.blocks[block_parent_id] = block_parent
-        current_page.blocks[new_parent_id] = new_parent
-        pages[page_id] = current_page
-        return set({content: {pages}})
-
-        /*return set((state) => {
-            const updatedPages = state.content.pages.map((page) => {
-                if (page.page_number === page_number) {
-                    const blockIndex = page.blocks.findIndex((b) => b.props.id === block_id);
-                    if (blockIndex === -1) return page;
-
-                    const updatedBlocks = [...page.blocks];
-                    const [block] = updatedBlocks.splice(blockIndex, 1);
-                    updatedBlocks.splice(new_position, 0, block);
-                    return {
-                        ...page,
-                        blocks: updatedBlocks
-                    }
-                }
-                return page;
-            })
-
-            return {
-                content: {
-                    pages: updatedPages
-                }
-            }
-        })
-    },*/
 
     deleteBlock: (page_id: string, block_id: string) => {
         const {pages} = {...get().content};
@@ -305,45 +358,12 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         delete page.blocks[block_id];
         pages[page_id] = page
         return set({content: {pages}})
-        /*return set((state) => {
-            const updatedPages = state.content.pages.map((page) => {
-                if (page.page_number !== page_number) return page;
-
-                const updatedBlocks = page.blocks.filter((b) => b.props.id !== block_id);
-                return {...page, blocks: updatedBlocks}
-            })
-            return {
-                content: {
-                    pages: updatedPages
-                }
-            }
-        })*/
     },
 
     deletePage: (page_id: string) => {
         const {pages} = {...get().content};
         delete pages[page_id];
         return set({content: {pages}})
-
-        /*return set((state) => {
-            const pageIndex = state.content.pages.findIndex((p) => p.page_number === page_number);
-            if (pageIndex === -1) return {};
-            const updatedPages: Array<Page> = [...state.content.pages];
-            const removed_pages: Array<Page> = updatedPages.splice(pageIndex);
-            removed_pages.shift()
-            const updatedRemovedPages: Array<Page> = removed_pages.map((p: Page) => {
-                return {
-                    ...p,
-                    page_number: p.page_number - 1
-                }
-            })
-            const final = updatedPages.concat(updatedRemovedPages)
-            return {
-                content: {
-                    pages: final
-                }
-            }
-        })*/
     },
 
     publishContent: async (username: string, piece_id: string): Promise<Result<null>> => {
@@ -368,9 +388,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     //will probably never have to use this actually
     fetchContent: async (id) => {
         const result = await FetchPieceData({id})
-        return set(() => {
-            return {...result}
-        })
+        if (!result) throw new Error("Piece data not found.")
+        return set({content: result.content})
     },
 
 
@@ -408,7 +427,7 @@ export const useEditorMetaDataStore = create<EditorMetaDataStore>((set, get) => 
 
 export type EditorStateStore = {
     current_page?: string | null,
-    setPage: (page: string|null) => void,
+    setPage: (page: string | null) => void,
     selected_block: string | null,
     setSelectedBlock: (block_id: string) => void,
 }
@@ -416,7 +435,7 @@ export type EditorStateStore = {
 export const useEditorStateStore = create<EditorStateStore>((set, get) => ({
     current_page: null,
     selected_block: null,
-    setPage: (page: string|null) => {
+    setPage: (page: string | null) => {
         set({current_page: page})
     },
     setSelectedBlock: (block_id: string) => {

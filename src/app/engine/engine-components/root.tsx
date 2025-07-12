@@ -9,7 +9,7 @@ export const RootActions = ["switchPage"]
 export default function Root(props: ContainerProps) {
     const {children_ids} = props;
     const engine = useEngineContext()
-    const page_blocks = engine.pages[engine.currentPage.current].blocks;
+    const page_blocks = engine.pages[engine.currentPage].blocks;
 
     const switchPage = (page_id: string) => {
         engine.setCurrentPage(page_id);

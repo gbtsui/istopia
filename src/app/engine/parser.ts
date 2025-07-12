@@ -1,7 +1,7 @@
 "use server";
 
 import {z} from "zod"
-import {Block, BlockNodeData, BlockProps, Page, PageNodeData, PieceContent} from "@/app/types";
+import {Block, BlockFlowNodeData, BlockNodeData, BlockProps, Page, PageNodeData, PieceContent} from "@/app/types";
 import {Condition, EngineEventListener, LogicalCondition} from "@/app/engine/engine";
 
 const BlockPropsSchema: z.ZodType<BlockProps> = z.object({
@@ -22,6 +22,7 @@ const EngineEventListenerSchema: z.ZodType<EngineEventListener> = z.object({
     target_block_id: z.string(),
     target_event: z.string(),
     action: z.string(),
+    arbitrary_argument: z.union([z.string(), z.number(), z.boolean()]).optional(),
     logical_conditions: z.array(z.lazy(() => LogicalConditionSchema))
 })
 
@@ -51,6 +52,10 @@ const BlockSchema: z.ZodType<Block> = z.lazy(() =>
     z.object({
         type: z.string(),
         props: BlockPropsSchema,
+        position: z.object({
+            x: z.number(),
+            y: z.number(),
+        })
         //children: z.array(z.lazy(() => BlockSchema)).optional()
     })
 )
@@ -69,16 +74,22 @@ const PageNodeSchema: z.ZodType<PageNodeData> = z.object({
     type: z.union([z.literal("pageNode"), z.undefined()]) //can be further expanded eventually later
 })
 
+const BlockFlowNodeDataSchema: z.ZodType<BlockFlowNodeData> = z.object({
+    friendly_name: z.string(),
+    type: z.string()
+})
+
+
 const BlockNodeDataSchema: z.ZodType<BlockNodeData> = z.object({
     id: z.string(),
     position: z.object({x: z.number(), y: z.number()}),
-    data: z.record(z.string(), z.unknown()),
+    data: BlockFlowNodeDataSchema,
     type: z.literal("blockNode")
 })
 
 const PageSchema: z.ZodType<Page> = z.object({
     blocks: z.record(z.string(), BlockSchema),
-    blockNodes: z.record(z.string(), BlockNodeDataSchema),
+    //blockNodes: z.record(z.string(), BlockNodeDataSchema),
     friendly_name: z.string(),
     id: z.string(),
     outward_connections: z.array(z.string()),
@@ -89,7 +100,8 @@ const PageSchema: z.ZodType<Page> = z.object({
 
 
 const PieceContentSchema: z.ZodType<PieceContent> = z.object({
-    pages: z.record(z.string(), PageSchema)
+    pages: z.record(z.string(), PageSchema),
+    data_version: z.string().optional()
 })
 
 export default async function Parse(data: unknown): Promise<PieceContent> {

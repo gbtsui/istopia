@@ -6,6 +6,9 @@ import TriggersGraph from "@/app/component/editor/editor-components/blocks/sideb
 import {useCallback, useState} from "react";
 import {Block, BlockNodeData} from "@/app/types";
 import {BlockActionsList, BlockEventsList} from "@/app/engine/block-list";
+import {
+    TriggersGraphProvider
+} from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
 
 export default function BlockEditSidebar() {
     const selected_block = useEditorStateStore((state) => state.selected_block);
@@ -16,7 +19,7 @@ export default function BlockEditSidebar() {
     //const existingFlowBlocks = current_page?.blockNodes || []
     const [selectedInsertableBlock, setSelectedInsertableBlock] = useState<Block>();
 
-    const editPage = useEditorStore((state) => state.editPage);
+    const moveBlockCoordinates = useEditorStore((state) => state.moveBlockCoordinates)
 
     const insert_block_into_flow = useCallback(() => {
         console.log("button pressed, current block: ", selectedInsertableBlock)
@@ -38,6 +41,7 @@ export default function BlockEditSidebar() {
 
          */
 
+        /*
         const new_block_nodes = {...current_page.blockNodes};
         const new_node = {
             id: selectedInsertableBlock.props.id,
@@ -56,6 +60,9 @@ export default function BlockEditSidebar() {
         console.log("new block nodes", new_block_nodes)
 
         editPage(current_page.id, {blockNodes: new_block_nodes});
+         */
+
+        moveBlockCoordinates(current_page.id, selectedInsertableBlock.props.id, {x: 0, y: 0});
     }, [current_page, selectedInsertableBlock]);
 
     if (!current_page || !blocks) {
@@ -64,7 +71,8 @@ export default function BlockEditSidebar() {
 
     //const existing_blocks = ((current_page?.blockNodes || []).map<[string, BlockNodeData]>((block) => [block.id, block]));
 
-    const non_existing_block_ids: string[] = Object.keys(blocks).filter((blockId) => current_page.blockNodes[blockId] === undefined)
+    //const non_existing_block_ids: string[] = Object.keys(blocks).filter((blockId) => current_page.blockNodes[blockId] === undefined)
+    const non_existing_block_ids: string[] = Object.keys(blocks).filter((blockId) => blocks[blockId].position === undefined)
 
     return (
         <div className={"w-1/2 p-3 m-5 bg-gray-800 rounded-2xl"}>
@@ -87,7 +95,9 @@ export default function BlockEditSidebar() {
                         </div>
                     </div>
                     <ReactFlowProvider>
-                    <TriggersGraph/>
+                        <TriggersGraphProvider>
+                            <TriggersGraph/>
+                        </TriggersGraphProvider>
                     </ReactFlowProvider>
                 </div>
             </div>
