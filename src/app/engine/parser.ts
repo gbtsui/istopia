@@ -100,7 +100,8 @@ const PageSchema: z.ZodType<Page> = z.object({
 
 
 const PieceContentSchema: z.ZodType<PieceContent> = z.object({
-    pages: z.record(z.string(), PageSchema)
+    pages: z.record(z.string(), PageSchema),
+    data_version: z.string().optional()
 })
 
 export default async function Parse(data: unknown): Promise<PieceContent> {

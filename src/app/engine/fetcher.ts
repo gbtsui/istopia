@@ -46,5 +46,5 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
         ...db_piece,
         view_number: db_piece.views.length,
         content: content,
-    } as PieceData
+    }
 }

@@ -39,7 +39,10 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
     const editPage = useEditorStore((state) => state.editPage)
     const editBlock = useEditorStore((state) => state.editBlock)
     const moveBlockCoordinates = useEditorStore((state) => state.moveBlockCoordinates)
-    const blocks = (currentPage && currentPage.blocks) ?? {}; //i love learning combinations of logic operators :D
+    const blocks = useEditorStore((state) => {
+        const page = state.content.pages[currentPageId || ""] || { blocks: {} };
+        return page.blocks;
+    }); //i love learning combinations of logic operators :D
     const [selectedEdge, setSelectedEdgeInternal] = useState<EngineEventListener|null>(null)
 
     const [blockNodes, setBlockNodes] = useState<BlockNodeData[]>([]);
@@ -80,10 +83,11 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
         return Object.values(currentPage?.blockNodes || {});
     }, [currentPage?.blockNodes]);*/
     const blockNodesArray = useMemo(() => {
-        return Object.values(currentPage?.blocks || {})
+        console.log(blocks)
+        return Object.values(blocks)
             .map((block): BlockNodeData | undefined => {
-                if (!block.position) return undefined
-
+                if (!block.position) return undefined;
+                console.log(block.position)
                 return {
                     id: block.props.id,
                     position: block.position,
@@ -92,10 +96,10 @@ export const TriggersGraphProvider = ({children}: { children: ReactNode }) => {
                         type: block.type
                     },
                     type: "blockNode"
-                } satisfies BlockNodeData
+                };
             })
-            .filter((block) => block !== undefined)
-    }, [currentPage?.blocks])
+            .filter((b): b is BlockNodeData => !!b);
+    }, [blocks]);
 
     const arraysAreEqual = (a: any[], b: any[]) => {
         if (a.length !== b.length) return false;

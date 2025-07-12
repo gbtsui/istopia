@@ -18,7 +18,7 @@ export interface File2PieceContent {
     data_version?: string;
 }
 
-export function migratePieceContentV1_V2(content: File2PieceContent | null | undefined): PieceContent | null | undefined {
+export function migratePieceContentV1_V2(content: File2PieceContent | null | undefined) {
     if (!content) return content;
 
     if (content.data_version && content.data_version !== "V1") {
@@ -69,5 +69,5 @@ export function migratePieceContentV1_V2(content: File2PieceContent | null | und
         ...content,
         pages: migratedPages,
         data_version: "V2",
-    } as PieceContent;
+    }
 }

@@ -71,7 +71,6 @@ export default function EditListenerArgumentBox() {
     }
 
     if (blockAction.arg_type === "string" &&
-        blockAction.arg_input_type === "dropdown" &&
         blockAction.arg_input_type === "dropdown") {
         if (blockAction.arg_input_choices_source === "outward_connections") {
             const connections = triggersGraph.currentPage?.outward_connections as string[];
