@@ -176,7 +176,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                         ...state.content.pages[page_id],
                         blocks: {
                             ...state.content.pages[page_id].blocks,
-                            [page_id]: newBlock,
+                            [newBlock.props.id]: newBlock,
                             ["root"]: {
                                 ...state.content.pages[page_id].blocks.root,
                                 props: {
