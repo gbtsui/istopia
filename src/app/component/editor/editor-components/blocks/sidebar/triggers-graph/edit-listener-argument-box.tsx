@@ -5,6 +5,7 @@ import {
 } from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
 import {BlockActionsList} from "@/app/engine/block-list";
 import {useEditorStore} from "@/app/component/editor/state/zustand";
+import {useEffect, useState} from "react";
 
 export default function EditListenerArgumentBox() {
     const triggersGraph = useTriggersGraph();
@@ -27,6 +28,7 @@ export default function EditListenerArgumentBox() {
     const pages = useEditorStore((state) => state.content.pages)
 
     //const eventDescription = BlockEventsList[targetBlockType][eventName.split(":")[1]]
+    const [arbitraryArgument, setArbitraryArgument] = useState<string | number | boolean | undefined>()
 
     const changeArgument = (newArg: string | number | boolean) => {
         console.log(newArg)
@@ -35,32 +37,75 @@ export default function EditListenerArgumentBox() {
         changeBlockListenerArguments(triggersGraph.currentPageId, self_id, {listener_target_id: target_id, listener_target_event: triggersGraph.selectedEdge?.target_event, self_action: blockActionName}, newArg)
     }
 
-    if (blockAction.arg_type === "null") return null;
+    useEffect(() => {
+        if (
+            arbitraryArgument === undefined &&
+            blockAction.arg_type === "string" &&
+            blockAction.arg_input_type === "dropdown" &&
+            blockAction.arg_input_choices_source === "outward_connections"
+        ) {
+            const currently_selected_page =
+                pages[triggersGraph.currentPageId as string]
+                    .blocks[self_id].props.listeners.find(
+                    (l) =>
+                        l.target_block_id === target_id &&
+                        l.action === blockActionName &&
+                        l.target_event === triggersGraph.selectedEdge?.target_event
+                );
 
-    if (blockAction.arg_input_type === "dropdown") {
+            if (currently_selected_page?.arbitrary_argument) {
+                setArbitraryArgument(currently_selected_page.arbitrary_argument);
+            }
+        }
+    }, [
+        arbitraryArgument,
+        blockAction.arg_type,
+        blockAction,
+        blockAction,
+        triggersGraph.currentPageId,
+        self_id,
+        target_id,
+        blockActionName,
+        triggersGraph.selectedEdge?.target_event,
+        pages,
+    ]);
+
+    if (blockAction.arg_type === "string" &&
+        blockAction.arg_input_type === "dropdown" &&
+        blockAction.arg_input_type === "dropdown") {
         if (blockAction.arg_input_choices_source === "outward_connections") {
-            const connections = triggersGraph.currentPage?.outward_connections as string[]
+            const connections = triggersGraph.currentPage?.outward_connections as string[];
+
             return (
                 <div>
                     <div className={"text-sm"}>{blockAction.arg_description}</div>
+                    <div>Currently selected: {arbitraryArgument}</div>
                     <div>
-                        <select className={"p-2 m-2 bg-gray-100 rounded-lg"} onChange={(e) => changeArgument(e.target.value)}>
-                            {
-                                connections.map(connection => (
-                                    <option value={connection}
-                                            key={connection}>{pages[connection].friendly_name}</option>
-                                ))
-                            }
+                        <select
+                            className={"p-2 m-2 bg-gray-100 rounded-lg"}
+                            onChange={(e) => {
+                                setArbitraryArgument(e.target.value);
+                                changeArgument(e.target.value);
+                            }}
+                            value={typeof arbitraryArgument === "string"? arbitraryArgument : ""}
+                        >
+                            <option value="">
+                                -- select an option --
+                            </option>
+                            {connections.map((connection) => (
+                                <option
+                                    value={connection}
+                                    key={connection}
+                                >
+                                    {pages[connection].friendly_name}
+                                </option>
+                            ))}
                         </select>
                     </div>
-
                 </div>
-            )
-        } else if (blockAction.arg_input_choices_source === "variables") {
-            return null //TODO: variables
+            );
         }
     }
-
     if (blockAction.arg_type === "string") {
         return (
             <input type={"text"}/>

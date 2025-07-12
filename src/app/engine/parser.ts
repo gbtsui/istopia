@@ -22,6 +22,7 @@ const EngineEventListenerSchema: z.ZodType<EngineEventListener> = z.object({
     target_block_id: z.string(),
     target_event: z.string(),
     action: z.string(),
+    arbitrary_argument: z.union([z.string(), z.number(), z.boolean()]).optional(),
     logical_conditions: z.array(z.lazy(() => LogicalConditionSchema))
 })
 

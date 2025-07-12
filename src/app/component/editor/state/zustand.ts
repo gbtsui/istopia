@@ -176,8 +176,14 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                         ...state.content.pages[page_id],
                         blocks: {
                             ...state.content.pages[page_id].blocks,
-                            [newBlock.props.id]: newBlock,
-                            ["root"]: {
+                            [newBlock.props.id]: {
+                                ...newBlock,
+                                props: {
+                                    ...newBlock.props,
+                                    parent_id: "root",
+                                }
+                            },
+                            root: {
                                 ...state.content.pages[page_id].blocks.root,
                                 props: {
                                     ...state.content.pages[page_id].blocks.root.props,
@@ -249,11 +255,14 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
         self_action: string
     }, new_args) => {
         const listeners = [...get().content.pages[page_id].blocks[block_id].props.listeners];
-        const listener = listeners.find((l) => l.self_block_id === block_id && l.action === self_action && l.target_block_id === listener_target_id && l.target_event === listener_target_event);
-        if (!listener) {
+        console.log(listeners)
+        const listenerIndex = listeners.findIndex((l) => l.self_block_id === block_id && l.action === self_action && l.target_block_id === listener_target_id && l.target_event === listener_target_event);
+        if (listenerIndex === -1) {
             return
         }
-        listener.arbitrary_argument = new_args
+        listeners[listenerIndex].arbitrary_argument = new_args
+        //listeners.splice(listenerIndex, 1, )
+        console.log(listeners)
         return set(state => ({
             content: {
                 ...state.content,
@@ -267,7 +276,7 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                                 ...state.content.pages[page_id].blocks[block_id],
                                 props: {
                                     ...state.content.pages[page_id].blocks[block_id].props,
-                                    listeners: [...state.content.pages[page_id].blocks[block_id].props.listeners, listener]
+                                    listeners: listeners
                                 }
                             }
                         }

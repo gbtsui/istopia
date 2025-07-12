@@ -1,5 +1,5 @@
 "use client";
-import {RefObject, useRef} from "react";
+import {useRef, useState} from "react";
 import {Page} from "@/app/types";
 
 export interface EngineEvent {
@@ -50,7 +50,7 @@ export type IstopiaEngine = (pages: Record<string, Page>) => {
     registerBlock: (id: string, handler: (action: string, value:  string | number | boolean | undefined | null) => void) => void;
     unregisterBlock: (id: string) => void;
 
-    currentPage: RefObject<string>;
+    currentPage: string;
     setCurrentPage: (new_id: string) => void;
     pages: Record<string, Page>;
 }
@@ -102,11 +102,12 @@ export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
     const listeners = useRef<Array<EngineEventListener>>([]); //array of all listeners
     const blockValues = useRef(<Record<string, Record<string, any>>>({})); //this is gross tbh.
     const blockHandlers = useRef(new Map<string, (action: string, value:  string | number | boolean | undefined | null) => void>()) //block with id X is listening for events, call this function when a event comes in
-    const currentPage = useRef<string>("")
+    const [currentPage, setCurrentPage] = useState<string>("");
+    /*const currentPage = useRef<string>("")
 
     const setCurrentPage = (new_page: string) => {
         currentPage.current = new_page
-    }
+    }*/
 
 
     const handleEvent = (event: EngineEvent)=> {
@@ -121,7 +122,14 @@ export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
                 const conditionsMet = listener.logical_conditions.every(logicalCondition => evaluateLogicalCondition(logicalCondition))
 
                 if (conditionsMet) {
-                    notifyListener(listener.self_block_id, listener.action, listener.arbitrary_argument ?? event.event.value)
+                    console.log(listener.arbitrary_argument)
+                    console.log(event.event.value)
+                    if (listener.arbitrary_argument !== undefined) {
+                        notifyListener(listener.self_block_id, listener.action, listener.arbitrary_argument)
+                    } else {
+                        notifyListener(listener.self_block_id, listener.action, event.event.value)
+
+                    }
                 }
             }
         })
