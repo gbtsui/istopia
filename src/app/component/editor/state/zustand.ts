@@ -6,6 +6,7 @@ import {flattenBlocks} from "@/app/api/utils/flatten-blocks";
 import getAncestryOfBlock, {getDescendantsOfBlock} from "@/app/api/utils/get-ancestry-of-block";
 import findActiveItem from "@/app/api/utils/find-active-item";
 import {insertActiveItemWithNesting} from "@/app/api/utils/insert-active-item";
+import {structuredClone} from "next/dist/compiled/@edge-runtime/primitives";
 
 interface EditorProps {
     content: PieceContent,
@@ -25,7 +26,15 @@ export interface EditorStore extends EditorProps {
     deletePage: (page_id: string) => void,
 
     editBlock: (page_id: string, block_id: string, new_props: BlockProps) => void,
-    moveBlockCoordinates: (page_id: string, block_id: string, new_position: {x: number, y:number} | undefined) => void,
+    moveBlockCoordinates: (page_id: string, block_id: string, new_position: {
+        x: number,
+        y: number
+    } | undefined) => void,
+    changeBlockListenerArguments: (page_id: string, block_id: string, data: {
+        listener_target_id: string,
+        listener_target_event: string,
+        self_action: string
+    }, new_args: string | number | boolean) => void,
     editPage: (page_id: string, new_data: Partial<Page>) => void,
     setPageCoordinates: (page_id: string, coordinates: { x: number, y: number }) => void,
 
@@ -226,6 +235,40 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
                             [block_id]: {
                                 ...state.content.pages[page_id].blocks[block_id],
                                 position: new_coordinates
+                            }
+                        }
+                    }
+                }
+            }
+        }))
+    },
+
+    changeBlockListenerArguments: (page_id, block_id, {listener_target_id, listener_target_event, self_action}: {
+        listener_target_id: string,
+        listener_target_event: string,
+        self_action: string
+    }, new_args) => {
+        const listeners = structuredClone(get().content.pages[page_id].blocks[block_id].props.listeners);
+        const listener = listeners.find((l) => l.self_block_id === block_id && l.action === self_action && l.target_block_id === listener_target_id && l.target_event === listener_target_event);
+        if (!listener) {
+            return
+        }
+        listener.arbitrary_argument = new_args
+        return set(state => ({
+            content: {
+                ...state.content,
+                pages: {
+                    ...state.content.pages,
+                    [page_id]: {
+                        ...state.content.pages[page_id],
+                        blocks: {
+                            ...state.content.pages[page_id].blocks,
+                            [block_id]: {
+                                ...state.content.pages[page_id].blocks[block_id],
+                                props: {
+                                    ...state.content.pages[page_id].blocks[block_id].props,
+                                    listeners: [...state.content.pages[page_id].blocks[block_id].props.listeners, listener]
+                                }
                             }
                         }
                     }
