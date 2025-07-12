@@ -93,8 +93,14 @@ export type BlockActionDescription =
             }
             |
             {
-                "arg_type": "string" | "number", "arg_input_type": "text" | "number" | "dropdown",     //what kind of input will be displayed
-                "arg_input_choices_source": string[] | undefined //chain of editorStore.content.pages[page_id][property_0][subproperty_1]...
+                "arg_type": "string" | "number",
+                "arg_input_type": "text" | "number",     //what kind of input will be displayed
+            }
+            |
+            {
+                "arg_type": "string",
+                "arg_input_type":"dropdown",
+                "arg_input_choices_source": "outward_connections" | "variables" | undefined
             }
         )
     )
@@ -112,11 +118,11 @@ export type BlockEventDescription = {
 export const BlockActionsList: Record<string, Record<string, BlockActionDescription>> = {
     "root": {
         "switchPage": {
-            "action_description":"Switch pages",
+            "action_description":"Switch pages to a target page.",
             "arg_type": "string",
             "arg_description": "ID of target page",
             "arg_input_type": "dropdown",
-            "arg_input_choices_source": ["outward_connections"]
+            "arg_input_choices_source": "outward_connections"
         }
     },
     "text": {},

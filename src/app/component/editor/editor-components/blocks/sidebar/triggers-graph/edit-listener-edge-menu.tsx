@@ -5,6 +5,8 @@ import {
 } from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/triggers-graph-context";
 import {useEffect} from "react";
 import {BlockActionsList, BlockEventsList} from "@/app/engine/block-list";
+import EditListenerArgumentBox
+    from "@/app/component/editor/editor-components/blocks/sidebar/triggers-graph/edit-listener-argument-box";
 
 function describeEventArgType(argType: "string" | "boolean" | "number" | "null"): string {
     switch (argType) {
@@ -99,12 +101,12 @@ export default function EditListenerEdgeMenu() {
                     </div>
                     <div>
                         <span
-                            className={"text-md"}>Action {blockActionName} {describeActionArgType(eventDescription.default_arg_type)}</span>
+                            className={"text-md"}>Action {blockActionName} {describeActionArgType(blockAction.arg_type)}</span>
                         <div className={"text-xs"}>{blockAction.action_description}</div>
                     </div>
                     <div className={"mt-5"}>
                         <p className={"text-sm"}>{blockAction.arg_type === "null" && <>(This action doesn't respond to any arguments but you can override them anyways if you want.)</>}</p>
-
+                        <EditListenerArgumentBox/>
                     </div>
                 </div>
             </div>
