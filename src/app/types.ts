@@ -28,7 +28,7 @@ export interface PieceData {
     published: boolean,
     rating?: number | null,
     view_number: number,
-    views: Array<ViewData>,
+    //views: Array<ViewData>,
     created_at: Date,
     last_updated: Date,
     content: PieceContent,
@@ -53,7 +53,9 @@ export interface ViewData {
     id: string,
     user_id: string,
     timestamp: Date,
-    piece_id: string
+    piece_id?: string,
+    piece_title?: string,
+    piece_author_id?: string,
 }
 
 export interface SaveData {
