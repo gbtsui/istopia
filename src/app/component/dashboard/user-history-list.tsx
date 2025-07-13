@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/app/api/data/db";
-import {PieceMetaData, PublicUser} from "@/app/types";
+import { PieceMetaData, PublicUser } from "@/app/types";
 import PieceMetadataThumbnailThingy from "@/app/component/piece/piece-metadata-thumbnail-thingy";
 
 type UserHistoryListProps = {
@@ -12,10 +12,12 @@ type UserHistoryListProps = {
 export default async function UserHistoryList(props: UserHistoryListProps) {
     const { user, is_user } = props;
 
+    // Don’t render if not the user
     if (!user || !is_user) {
         return null;
     }
 
+    // Fetch views for the user
     const views = await prisma.view.findMany({
         where: {
             user: {
@@ -32,12 +34,20 @@ export default async function UserHistoryList(props: UserHistoryListProps) {
         },
     });
 
-    const pieceIds = views.map((v) => v.piece_id);
+    // Get unique, non-null piece IDs
+    const pieceIds = Array.from(
+        new Set(
+            views
+                .map((v) => v.piece_id)
+                .filter((id): id is string => id !== null)
+        )
+    );
 
     if (pieceIds.length === 0) {
-        return [];
+        return null;
     }
 
+    // Fetch piece details
     const pieces = await prisma.piece.findMany({
         where: {
             id: { in: pieceIds },
@@ -49,21 +59,30 @@ export default async function UserHistoryList(props: UserHistoryListProps) {
             slug: true,
             summary: true,
             cover_image_link: true,
-            views: true,
             saves: true,
+            // Note: views is commented out in your query — can’t use views.length below
         },
     });
 
-    const pieces_metadata: Array<PieceMetaData> = pieces.map((data) => {
-        return {...data, view_number: data.views.length, save_number: data.saves.length, author_name: user.name as string}
-    })
+    // Map to PieceMetaData array
+    const pieces_metadata: PieceMetaData[] = pieces.map((piece) => ({
+        ...piece,
+        view_number: views.filter((v) => v.piece_id === piece.id).length,
+        save_number: piece.saves.length,
+        author_name: user.name as string,
+    }));
 
     return (
         <div
-            className={"w-full p-3 bg-black rounded-2xl border-1 border-gray-800 flex-row flex flex-1/2 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-gray-100  scrollbar-track-gray-700 transition-all"}>
+            className={
+                "w-full p-3 bg-black rounded-2xl border border-gray-800 flex-row flex overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-gray-100 scrollbar-track-gray-700 transition-all"
+            }
+        >
             {pieces_metadata.map((metadata) => (
-                <div key={metadata.id}><PieceMetadataThumbnailThingy metadata={metadata}/></div>
+                <div key={metadata.id}>
+                    <PieceMetadataThumbnailThingy metadata={metadata} />
+                </div>
             ))}
         </div>
-    )
+    );
 }

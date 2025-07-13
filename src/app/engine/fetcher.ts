@@ -20,7 +20,7 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
     if ("id" in params) {
         db_piece = await prisma.piece.findUnique({
             where: { id: params.id },
-            include: {views: true}
+            //include: {views: true}
         });
     } else if ("slug" in params && "username" in params) {
         db_piece = await prisma.piece.findFirst({
@@ -30,9 +30,9 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
                     name: params.username
                 }
             },
-            include: {
-                views: true
-            }
+            //include: {
+            //    views: true
+            //}
         });
     }
 
@@ -40,11 +40,18 @@ export default async function FetchPieceData(params: FetchByIdParams | FetchBySl
     if (!db_piece) {
         return null
     }
+
+    const view_number = await prisma.view.count({
+        where: {
+            piece_id: db_piece.id,
+        },
+    })
+
     const updated_content = migratePieceContentV1_V2(db_piece.content as unknown as File2PieceContent)
     const content: PieceContent = await Parse(updated_content)
     return {
         ...db_piece,
-        view_number: db_piece.views.length,
+        view_number: view_number,
         content: content,
     }
 }

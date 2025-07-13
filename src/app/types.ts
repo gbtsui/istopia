@@ -53,9 +53,9 @@ export interface ViewData {
     id: string,
     user_id: string,
     timestamp: Date,
-    piece_id?: string,
-    piece_title?: string,
-    piece_author_id?: string,
+    piece_id?: string | null,
+    piece_title?: string | null,
+    piece_author_id?: string | null,
 }
 
 export interface SaveData {
