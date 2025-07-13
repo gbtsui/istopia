@@ -1,15 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  /*--background: #0a0a0a;
+  --foreground: #ededed;*/
+
 }
 
-@theme inline {
-  --color-background: var(--background);
+@theme {
+  /*--color-background: var(--background);
   --color-foreground: var(--foreground);
-  /*--font-sans: var(--font-geist-sans);
-  //--font-mono: var(--font-geist-mono);*/
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);*/
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-serif: 'EB Garamond', serif;
+  --color-dark-mocha: #1e1d1b; /*main background*/
+  --color-charred-espresso: #282623; /*secondary panels*/
+
+  --color-creamed-latte: #e8e6e3; /*main text color*/
+  --color-london-fog: #aaa79f; /*muted text*/
+  --color-cerulean-aqua: #78cade;
+
+  --color-golden-brew: #d4b483; /*warm-highlight*/
+  --color-crimson-rosewater: #b86b77; /*error*/
+  --color-vintage-matcha: #6f9e8e; /*success*/
+  --color-ashen-americano: #3a3833; /*border colors*/
 }
 
 @plugin "tailwind-scrollbar";
@@ -23,7 +38,7 @@
  */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-dark-mocha);
+  color: var(--color-creamed-latte);
+  font-family: serif/*Arial, Helvetica, sans-serif;*/
 }
