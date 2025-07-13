@@ -49,6 +49,5 @@ export default async function CreatePiece(username: string, data: Partial<PieceD
         ...untyped_result,
         content: default_piece_content as PieceContent,
         view_number: 0,
-        views: []
     }
 }
