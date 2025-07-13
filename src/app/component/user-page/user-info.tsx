@@ -47,7 +47,7 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
     return (
         <div className={"relative"}>
             <form action={updateUser}>
-                <div className={"p-3 m-5 bg-gray-800 rounded-xl flex flex-row justify-between"}>
+                <div className={"p-3 m-5 bg-charred-espresso rounded-xl flex flex-row justify-between"}>
                     <div className={"flex flex-row justify-start gap-3 items-center"}>
                         <div className={"relative w-24 h-24"}>
                             <Image
@@ -78,26 +78,26 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                             {editingModeEnabled ?
                                 <>
                                     <h2>
-                                        <input className={"text-xl p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
+                                        <input className={"text-xl p-0.5 my-0.5 rounded-md bg-dark-mocha text-london-fog outline-0"}
                                                name={"display_name"}
                                                type={"text"}
-                                               defaultValue={user.display_name}
-                                               placeholder={"what do you want people to call you?"}
+                                               defaultValue={user.display_name ?? user.name}
+                                               placeholder={"display name"}
                                                required/>
                                     </h2>
                                     <h3>
-                                        <input className={"text-md p-0.5 my-0.5 rounded-md bg-gray-600 outline-0"}
+                                        <input className={"text-md p-0.5 my-0.5 rounded-md bg-dark-mocha text-london-fog outline-0"}
                                                name={"summary_text"}
                                                type={"text"}
                                                defaultValue={user.summary_text as string}
-                                               placeholder={"who are you?"}/>
+                                               placeholder={"summary text"}/>
                                     </h3>
                                 </>
                                 :
                                 <>
-                                    <h1 className={"text-xl text-gray-400"}>{user.name}</h1>
+                                    <h1 className={"text-xl text-london-fog"}>{user.name}</h1>
                                     <h2 className={"text-2xl"}>{user.display_name}</h2>
-                                    <h3 className={"text-lg text-gray-400"}>{user.summary_text}</h3>
+                                    <h3 className={"text-lg text-london-fog"}>{user.summary_text}</h3>
                                 </>
                             }
                         </div>
@@ -108,10 +108,10 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                     </div>
                 </div>
 
-                <div className={"p-3 m-5 bg-gray-800 rounded-xl w-1/2"}>
+                <div className={"p-3 m-5 bg-charred-espresso rounded-xl w-1/2"}>
                     {editingModeEnabled ?
                         <textarea
-                            className={"text-md p-2 w-full rounded-md bg-gray-600 min-h-screen"}
+                            className={"text-md p-2 w-full rounded-md bg-ashen-americano min-h-screen"}
                             name={"about_me"}
                             defaultValue={user.about_me as string}
                             placeholder={"what do you want people to know about you?"}
@@ -128,9 +128,9 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                 </div>
                 {
                     editingModeEnabled ?
-                        <div className={"absolute bottom-0 right-0"}>
+                        <div className={"fixed bottom-4 right-4"}>
                             <input type={"submit"}
-                                   className={"p-4 mx-5 bg-gray-200 text-black rounded-xl hover:bg-gray-500 transition-all"}
+                                   className={"p-4 bg-gray-200 text-black rounded-xl hover:bg-golden-brew transition-all"}
                                    name={"save"} value={"save"}/>
                         </div>
                         :
@@ -138,7 +138,7 @@ export default function UserInfoComponent(props: UserInfoComponentProps) {
                 }
                 {isLoggedInAsUser && !editingModeEnabled ?
                     <button type="button"
-                            className={"absolute bottom-0 right-0 p-4 mx-5 bg-gray-200 text-black rounded-xl hover:bg-gray-500 transition-all"}
+                            className={"fixed bottom-4 right-4 p-4 bg-gray-200 text-black rounded-xl hover:bg-golden-brew transition-all"}
                             onClick={() => setEditingModeEnabled(!editingModeEnabled)}>
                         Edit Profile
                     </button> : null}
