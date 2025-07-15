@@ -21,32 +21,30 @@ export default async function Dashboard(props: DashboardProps) {
     }
 
     return (
-        <div>
-            <div className={"text-center p-3 bg-gray-800 rounded"}>
+        <div className={"bg-dark-mocha flex w-full gap-3 justify-evenly items-center"}>
+            <div className={"text-center p-5 w-1/4 bg-charred-espresso rounded-xl flex flex-col gap-6"}>
                 {/*header and stuff goes here :)*/}
-                <h1 className={"text-3xl"}>dashboard</h1>
-                <h1>Welcome back, {user.display_name}.</h1>
+                <div>
+                    <h1 className={"text-3xl"}>dashboard</h1>
+                    <h1>Welcome back, {user.display_name}.</h1>
+                </div>
+                <div>
+                    <Link href={`/u/${username}`} className={"p-3 rounded-xl bg-golden-brew text-ashen-americano hover:bg-dark-mocha hover:text-creamed-latte transition-all"}>view your profile</Link>
+                </div>
             </div>
-            <div className={"w-full flex flex-row justify-evenly items-start gap-3 mt-5"}>
-                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
-                    <h1 className={"text-xl font-bold mb-3"}>my pieces</h1>
-                    <Suspense fallback={<div>loading pieces...</div>}>
-                        <UserPiecesList user={user as PublicUser} is_user={true}/>
-                    </Suspense>
-                    <Link href={"/editor/create"} className={"p-2 bg-gray-700 rounded-xl"}>+ create new</Link>
-                </div>
+            <div className={"text-center p-3 w-1/3 bg-charred-espresso self-start rounded-xl flex flex-col gap-6"}>
+                <h1 className={"text-xl font-bold mb-3 text-center"}>your pieces</h1>
+                <Suspense fallback={<div>loading pieces...</div>}>
+                    <UserPiecesList user={user as PublicUser} is_user={true}/>
+                </Suspense>
+                <Link href={"/editor/create"} className={"p-2 hover:bg-golden-brew bg-dark-mocha hover:text-ashen-americano transition-all rounded-xl"}>+ create new</Link>
+            </div>
 
-                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
-                    <h1 className={"text-xl font-bold mb-3"}>keep reading</h1>
-                    <Suspense fallback={<div>loading history...</div>}>
-                        <UserHistoryList user={user as PublicUser} is_user={true}/>
-                    </Suspense>
-                </div>
-
-                <div className={"p-3 w-1/3 bg-gray-800 rounded-lg"}>
-                    documentation
-                    <p className={"text-gray-400 bg-gray-700 w-full h-full rounded-xl"}>coming soon</p>
-                </div>
+            <div className={"p-3 w-1/3 bg-charred-espresso text-center self-start rounded-xl flex flex-col gap-6"}>
+                <h1 className={"text-xl font-bold mb-3"}>keep reading</h1>
+                <Suspense fallback={<div>loading history...</div>}>
+                    <UserHistoryList user={user as PublicUser} is_user={true}/>
+                </Suspense>
             </div>
         </div>
     )
