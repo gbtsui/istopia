@@ -12,7 +12,7 @@
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
-    "@prisma/client": "^6.10.1",
+    "@prisma/client": "^6.11.1",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.8",
     "@tsparticles/react": "^3.0.0",
@@ -22,7 +22,7 @@
     "@xyflow/react": "^12.6.4",
     "bcrypt": "^5.1.1",
     "framer-motion": "^12.10.0",
-    "next": "15.3.2",
+    "next": "^15.3.5",
     "next-auth": "^4.24.11",
     "prisma": "^6.10.1",
     "react": "^19.0.0",
@@ -33,14 +33,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "tailwind-scrollbar": "^4.0.2",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.1.11",
     "typescript": "^5"
   }
 }

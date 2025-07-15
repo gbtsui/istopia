@@ -80,16 +80,73 @@ export const BlockList: Array<BlockInfo<BlockProps> | BlockInfo<ContainerProps>>
     }
 ] //ALWAYS INITIALIZE IDS
 
-export const BlockActionsList: Record<string, Array<string>> = {
-    "root": ["switchPage"],
-    "text": [],
-    "typewriter": ["nextLine", "reset"],
-    "simple_container": []
+export type BlockActionDescription =
+    { "action_description": string }
+    &
+    (
+        { "arg_type": "null", }
+        |
+        { "arg_description": string } &
+        (
+            {
+                "arg_type": "boolean", "arg_input_type": "switch"
+            }
+            |
+            {
+                "arg_type": "string" | "number",
+                "arg_input_type": "text" | "number",     //what kind of input will be displayed
+            }
+            |
+            {
+                "arg_type": "string",
+                "arg_input_type":"dropdown",
+                "arg_input_choices_source": "outward_connections" | "variables" | undefined
+            }
+        )
+    )
+
+
+export type BlockEventDescription = {
+    "event_description": string,
+} & ({
+    "default_arg_type": "string" | "boolean" | "number",
+    "default_arg_description": string,
+} | {
+    "default_arg_type": "null"
+})
+
+export const BlockActionsList: Record<string, Record<string, BlockActionDescription>> = {
+    "root": {
+        "switchPage": {
+            "action_description":"Switch pages to a target page.",
+            "arg_type": "string",
+            "arg_description": "ID of target page",
+            "arg_input_type": "dropdown",
+            "arg_input_choices_source": "outward_connections"
+        }
+    },
+    "text": {},
+    "typewriter": {
+        "nextLine": {
+            "action_description":"Trigger the next line and start typing it.",
+            "arg_type": "null",
+        },
+        "reset": {
+            "action_description":"Reset all typed lines.",
+            "arg_type": "null",
+        }
+    },
+    "simple_container": {}
 }
 
-export const BlockEventsList: Record<string, Array<string>> = { //always return in the form of "<type>:<event>"
-    "root": [],
-    "text": [],
-    "typewriter": ["typingComplete"],
-    "simple_container": []
+export const BlockEventsList: Record<string, Record<string, BlockEventDescription>> = { //always return in the form of "<type>:<event>"
+    "root": {},
+    "text": {},
+    "typewriter": {
+        "typingComplete": {
+            "event_description": "Fires when all lines have finished typing.",
+            "default_arg_type": "null"
+        }
+    },
+    "simple_container": {}
 }

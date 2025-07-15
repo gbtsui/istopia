@@ -8,6 +8,8 @@ import Image from "next/image";
 
 export default function Navbar() {
     const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         const init = async () => {
             const result = await getSession()
@@ -15,17 +17,27 @@ export default function Navbar() {
                 return
             }
             setSession(result)
+            setLoading(false)
         }
-        init()
+        init().then(() => {})
     }, [])
     return (
-        <div className={"sticky p-5 m-3 bg-gray-800 flex flex-row justify-end gap-10 items-center rounded-xl"}>
+        <div className={"sticky p-5 m-3 bg-charred-espresso flex flex-row justify-end gap-10 items-center rounded-xl"}>
             <Link href="/browse">browse</Link>
-            {session ?
-                <ProfilePictureDropdown image_url={session.user?.image as string} username={session.user?.name as string}/>
-                :
-                <Link className={"p-3 bg-white text-black rounded-xl"} href="/signin">sign in</Link>
+            {
+                !loading ? (
+                    session ?
+                        <ProfilePictureDropdown image_url={session.user?.image as string}
+                                                username={session.user?.name as string}/>
+                        :
+                        <Link className={"p-3 bg-dark-mocha text-creamed-latte rounded-xl"} href="/signin">
+                            sign in
+                        </Link>
+                ) : (
+                    <div className={"p-3 bg-dark-mocha text-creamed-latte rounded-xl"}>loading...</div>
+                )
             }
+
         </div>
     )
 

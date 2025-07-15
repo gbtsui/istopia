@@ -26,7 +26,7 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
                     slug: true,
                     summary: true,
                     cover_image_link: true,
-                    views: true,
+                    //views: true,
                     saves: true,
                 }
             }
@@ -45,15 +45,33 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
                     slug: true,
                     summary: true,
                     cover_image_link: true,
-                    views: true,
+                    //views: true,
                     saves: true,
                 }
             }
         )
 
+    const ids = pieces.map(p => p.id); //i love semi-functional programming :D
+
+    const counts = await prisma.view.groupBy({
+        by: ["piece_id"],
+        _count: {
+            piece_id: true,
+        },
+        where: {
+            piece_id: {
+                in: ids
+            }
+        }
+    })
+
+    const viewCountMap = new Map<string, number>(
+        counts.map((c) => [c.piece_id!, c._count.piece_id])
+    )
+
 
     const pieces_metadata: Array<PieceMetaData> = pieces.map((data) => {
-        return {...data, view_number: data.views.length, save_number: data.saves.length, author_name: user.name as string}
+        return {...data, view_number: viewCountMap.get(data.id) || 0, save_number: data.saves.length, author_name: user.name as string}
     })
 
     console.log(pieces_metadata)
@@ -66,3 +84,5 @@ export default async function UserPiecesList(props: UserPiecesListProps) {
         </div>
     )
 }
+
+//a man trapped in a web of fear has nowhere to run and nowhere to hide

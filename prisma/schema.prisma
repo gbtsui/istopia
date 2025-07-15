@@ -32,12 +32,16 @@ model UnconfirmedUser {
 }
 
 model View {
-  id        String   @id @default(uuid())
-  user_id   String
-  timestamp DateTime @default(now())
-  piece_id  String
-  piece     Piece    @relation(fields: [piece_id], references: [id])
-  user      User     @relation(fields: [user_id], references: [id])
+  id              String   @id @default(uuid())
+  user_id         String
+  timestamp       DateTime @default(now())
+  piece_id        String?
+  piece_title     String?
+  piece_author_id String?
+  //piece     Piece    @relation(fields: [piece_id], references: [id])
+  user            User     @relation(fields: [user_id], references: [id])
+
+  @@index([piece_id])
 }
 
 model Piece {
@@ -54,7 +58,7 @@ model Piece {
   cover_image_link String?
   comments         Comment[]
   author           User      @relation(fields: [author_id], references: [id])
-  views            View[]
+  //views            View[]
   saves            Save[]
 
   @@unique([author_id, slug])
@@ -81,5 +85,5 @@ model Comment {
   piece_id  String
   author_id String
   author    User   @relation(fields: [author_id], references: [id])
-  piece     Piece  @relation(fields: [piece_id], references: [id])
+  piece     Piece  @relation(fields: [piece_id], references: [id], onDelete: Cascade)
 }

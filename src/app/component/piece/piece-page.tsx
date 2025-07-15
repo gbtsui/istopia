@@ -3,6 +3,7 @@
 import {PieceData} from "@/app/types";
 import Link from "next/link";
 import DeletePieceButton from "@/app/component/piece/delete-piece-button";
+import addPieceView from "@/app/api/data/pieces/add-piece-view";
 
 type PiecePageProps = {
     piece_data: PieceData,
@@ -12,6 +13,11 @@ type PiecePageProps = {
 
 export default function PiecePageComponent({props}: { props: PiecePageProps }) {
     const {piece_data, username, isLoggedInAsUser} = props;
+
+    const viewPiece = () => {
+        addPieceView({piece_id: piece_data.id, username});
+        window.open(`/u/${username}/${piece_data.slug}/read`, `_blank`);
+    }
 
     return (
         <div className={"relative"}>
@@ -23,9 +29,9 @@ export default function PiecePageComponent({props}: { props: PiecePageProps }) {
                         <p className={"text-sm text-gray-400"}>last updated {piece_data.last_updated.toString()}</p>
                     </div>
                     <div className={"flex flex-row justify-between items-center"}>
-                        <div className={"p-3 bg-black text-2xl rounded-xl"}>
-                            <a target={"_blank"} href={`/u/${username}/${piece_data.slug}/read`}>read!</a>
-                        </div>
+                        <button className={"p-3 bg-black text-2xl rounded-xl cursor-pointer"} onClick={viewPiece}>
+                            read
+                        </button>
                         {
                             isLoggedInAsUser &&
                             <div className={"w-1/3"}>

@@ -1,5 +1,5 @@
 "use client";
-import {RefObject, useRef} from "react";
+import {useRef, useState} from "react";
 import {Page} from "@/app/types";
 
 export interface EngineEvent {
@@ -16,7 +16,8 @@ export interface EngineEventListener {
     target_event: string; //what event are you listening to?
     action: string; //what action will the listener trigger?
     //conditions: Condition[] //what conditions are needed to run the event?
-    logical_conditions: LogicalCondition[] //what combinations of conditions are needed to run the event?
+    logical_conditions: LogicalCondition[]; //what combinations of conditions are needed to run the event?
+    arbitrary_argument?: string | number | boolean | null
 } //can only listen within a page!!! very important
 
 export interface Condition {
@@ -46,10 +47,10 @@ export type IstopiaEngine = (pages: Record<string, Page>) => {
     getBlockValue: (ref: ExternalValueRef) => any; //get a value from another block
     setBlockValue: (ref: ExternalValueRef, data: any) => void; //set a value from another block in the engine (can be from your own block as well)
 
-    registerBlock: (id: string, handler: (action: string) => void) => void;
+    registerBlock: (id: string, handler: (action: string, value:  string | number | boolean | undefined | null) => void) => void;
     unregisterBlock: (id: string) => void;
 
-    currentPage: RefObject<string>;
+    currentPage: string;
     setCurrentPage: (new_id: string) => void;
     pages: Record<string, Page>;
 }
@@ -100,12 +101,13 @@ const evaluateLogicalCondition = (logicalCondition: LogicalCondition): boolean =
 export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
     const listeners = useRef<Array<EngineEventListener>>([]); //array of all listeners
     const blockValues = useRef(<Record<string, Record<string, any>>>({})); //this is gross tbh.
-    const blockHandlers = useRef(new Map<string, (action: string) => void>()) //block with id X is listening for events, call this function when a event comes in //TODO: make this support arguments
-    const currentPage = useRef<string>("")
+    const blockHandlers = useRef(new Map<string, (action: string, value:  string | number | boolean | undefined | null) => void>()) //block with id X is listening for events, call this function when a event comes in
+    const [currentPage, setCurrentPage] = useState<string>("");
+    /*const currentPage = useRef<string>("")
 
     const setCurrentPage = (new_page: string) => {
         currentPage.current = new_page
-    }
+    }*/
 
 
     const handleEvent = (event: EngineEvent)=> {
@@ -120,7 +122,14 @@ export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
                 const conditionsMet = listener.logical_conditions.every(logicalCondition => evaluateLogicalCondition(logicalCondition))
 
                 if (conditionsMet) {
-                    notifyListener(listener.self_block_id, listener.action)
+                    console.log(listener.arbitrary_argument)
+                    console.log(event.event.value)
+                    if (listener.arbitrary_argument !== undefined) {
+                        notifyListener(listener.self_block_id, listener.action, listener.arbitrary_argument)
+                    } else {
+                        notifyListener(listener.self_block_id, listener.action, event.event.value)
+
+                    }
                 }
             }
         })
@@ -148,14 +157,14 @@ export const useEngine: IstopiaEngine = (pages: Record<string, Page>) => {
         //setBlock(ref.target_block_id)
     }
 
-    const notifyListener = (self_block_id: string, action: string) => {
+    const notifyListener = (self_block_id: string, action: string, value: string | number | boolean | undefined | null) => {
         const handler = blockHandlers.current.get(self_block_id)
         if (handler) {
-            handler(action) //run the block's event handler!
+            handler(action, value) //run the block's event handler!
         }
-    } //TODO: add arguments
+    }
 
-    const registerBlock = (id: string, handler: (action: string) => void)=> {
+    const registerBlock = (id: string, handler: (action: string, value: any) => void)=> {
         blockHandlers.current.set(id, handler);
     }
 

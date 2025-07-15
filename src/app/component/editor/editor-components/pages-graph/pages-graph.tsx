@@ -29,17 +29,17 @@ export default function PagesGraph() {
     const {
         page_nodes,
         setPageNodes,
-        pagesIAmAboutToDelete,
-        setPagesIAmAboutToDelete,
+        //pagesIAmAboutToDelete,
+        //setPagesIAmAboutToDelete,
         deleteDialogIsOpen,
         setDeleteDialogIsOpen,
-        edgesIAmAboutToDelete,
-        setEdgesIAmAboutToDelete,
+        //edgesIAmAboutToDelete,
+        //setEdgesIAmAboutToDelete,
         resolver,
         setResolver,
         edges,
         setEdges,
-        deletePageNode,
+        //deletePageNode,
         confirmDelete
     } = usePagesGraph()
 
@@ -56,15 +56,13 @@ export default function PagesGraph() {
         const nodes = pages_list.map((page) => {
             return page.flow_node_data;
         })
-        const new_edges = pages_list.map((page) => {
-            return page.outward_connections.map((outwardConnection) => {
-                return {
-                    id: `${page.id}-${outwardConnection}`,
-                    source: page.id,
-                    target: outwardConnection
-                } as PageNodeEdge
-            })
-        }).flat()
+        const new_edges = pages_list.flatMap((page) => {
+            return Array.from(new Set(page.outward_connections)).map((outwardConnection) => ({
+                id: `${page.id}-${outwardConnection}`,
+                source: page.id,
+                target: outwardConnection
+            } as PageNodeEdge))
+        })
         setEdges(new_edges)
         setPageNodes(nodes)
     }, [pages])

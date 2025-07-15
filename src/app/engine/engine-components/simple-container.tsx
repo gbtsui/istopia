@@ -7,7 +7,7 @@ import {useEngineContext} from "@/app/engine/engine-context";
 export default function SimpleContainer(props: ContainerProps) {
     const {children_ids, className} = props;
     const engine = useEngineContext()
-    const page_blocks = engine.pages[engine.currentPage.current].blocks;
+    const page_blocks = engine.pages[engine.currentPage].blocks;
     return <div className={className}>
         {
             (children_ids || []).map(id => {
